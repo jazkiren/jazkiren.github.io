@@ -1,11 +1,722 @@
-     border: none;
-      padding: 10px;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gng Chat Pro</title>
+  <style>
+    :root {
+      --bg-main: #313338;
+      --bg-sidebar: #2b2d31;
+      --bg-rail: #1e1f22;
+      --bg-card: #1e2024;
+      --accent: #5865f2;
+      --text-primary: #f2f3f5;
+      --text-muted: #949ba4;
+      --speaking-green: #23a55a;
+    }
+
+    /* Themes */
+    body.theme-amoled {
+      --bg-main: #000000;
+      --bg-sidebar: #0a0a0a;
+      --bg-rail: #050505;
+      --bg-card: #121212;
+    }
+    body.theme-cyber {
+      --bg-main: #0d0f18;
+      --bg-sidebar: #131722;
+      --bg-rail: #080a10;
+      --bg-card: #1a1f2c;
+      --accent: #00f0ff;
+    }
+    body.theme-purple {
+      --bg-main: #130f26;
+      --bg-sidebar: #1a1436;
+      --bg-rail: #0c0919;
+      --bg-card: #231b48;
+      --accent: #9d4edd;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-rail);
+      color: #dbdee1;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* Organized Top-Left Server Rail */
+    .server-rail {
+      width: 64px;
+      background-color: var(--bg-rail);
+      padding: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .server-icon {
+      width: 40px;
+      height: 40px;
+      background-color: var(--bg-main);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
       font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .server-icon:hover, .server-icon.active {
+      background-color: var(--accent);
+      border-radius: 10px;
+      transform: translateY(-1px);
+    }
+
+    .badge {
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      background-color: #f23f43;
+      color: white;
+      font-size: 0.65rem;
+      font-weight: bold;
+      padding: 1px 5px;
+      border-radius: 8px;
+      border: 2px solid var(--bg-rail);
+      display: none;
+    }
+
+    /* Sidebar Layout */
+    .sidebar {
+      width: 220px;
+      background-color: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .sidebar-header {
+      padding: 12px 14px;
+      height: 48px;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: bold;
+      padding: 12px 12px 6px 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .channel-list, .dm-list {
+      list-style: none;
+    }
+
+    .channel-item, .dm-item {
+      padding: 6px 10px;
+      margin: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .channel-item:hover, .channel-item.active,
+    .dm-item:hover, .dm-item.active {
+      background-color: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+    }
+
+    /* Footer Profile Area */
+    .user-footer {
+      background-color: rgba(0,0,0,0.2);
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+    }
+
+    .avatar-sm {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    /* Avatar Animations */
+    .anim-glow img { box-shadow: 0 0 6px var(--accent); }
+    .anim-pulse img { animation: pulseBorder 1.5s infinite alternate; }
+    .anim-rainbow img { animation: rainbowBorder 3s infinite linear; border: 1px solid transparent; }
+    .anim-cyber img { border: 1px dashed var(--accent); animation: rotateCyber 6s infinite linear; }
+
+    @keyframes pulseBorder {
+      from { box-shadow: 0 0 2px var(--accent); }
+      to { box-shadow: 0 0 8px var(--accent); }
+    }
+    @keyframes rainbowBorder {
+      0% { filter: hue-rotate(0deg); box-shadow: 0 0 4px #ff0000; }
+      100% { filter: hue-rotate(360deg); box-shadow: 0 0 4px #ff0000; }
+    }
+    @keyframes rotateCyber {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .settings-cog {
+      cursor: pointer;
+      color: #b5bac1;
+      font-size: 1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .settings-cog:hover {
+      color: var(--text-primary);
+      transform: rotate(45deg);
+    }
+
+    /* Main Chat View */
+    .chat-container {
+      flex: 1;
+      background-color: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      height: 48px;
+      border-bottom: 1px solid rgba(0,0,0,0.2);
+      padding: 0 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .header-btn {
+      position: relative;
+      cursor: pointer;
+      background: var(--bg-sidebar);
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      transition: background 0.2s;
+    }
+
+    .header-btn:hover {
+      background: #383a40;
+    }
+
+    .messages-view {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-group {
+      display: flex;
+      gap: 12px;
+      position: relative;
+      animation: slideFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes slideFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg-group:hover .msg-actions {
+      display: flex;
+    }
+
+    .msg-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      font-size: 0.9rem;
+    }
+
+    .msg-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .msg-author {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+    }
+
+    .msg-timestamp {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .reply-quote {
+      font-size: 0.75rem;
+      color: #b5bac1;
+      border-left: 2px solid #4e5058;
+      padding-left: 6px;
+      margin-bottom: 2px;
+    }
+
+    .mention-highlight {
+      background-color: rgba(88, 101, 242, 0.3);
+      color: #c9cdfb;
+      padding: 0 4px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
+    .msg-actions {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: -8px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid #3f4147;
+      border-radius: 4px;
+      gap: 2px;
+      padding: 2px;
+    }
+
+    .msg-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 5px;
+      font-size: 0.75rem;
+    }
+
+    .msg-action-btn:hover {
+      color: var(--text-primary);
+      background-color: #383a40;
+      border-radius: 3px;
+    }
+
+    .reactions-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .reaction-pill {
+      background: #2b2d31;
+      border: 1px solid #383a40;
+      border-radius: 10px;
+      padding: 1px 6px;
+      font-size: 0.7rem;
+      cursor: pointer;
+    }
+
+    /* Chat Box */
+    .input-wrapper {
+      padding: 0 14px 16px 14px;
+      position: relative;
+    }
+
+    .reply-banner {
+      display: none;
+      background-color: var(--bg-sidebar);
+      padding: 4px 10px;
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      font-size: 0.75rem;
+      color: #b5bac1;
+      justify-content: space-between;
+    }
+
+    .input-container {
+      display: flex;
+      background-color: #383a40;
+      border-radius: 8px;
+      align-items: center;
+      padding: 2px 10px;
+      border: 1px solid transparent;
+      transition: border-color 0.2s, background 0.2s;
+    }
+
+    .input-container:focus-within {
+      border-color: var(--accent);
+      background-color: #313338;
+    }
+
+    .chat-input {
+      flex: 1;
+      background-color: transparent;
+      border: none;
+      padding: 10px 6px;
+      color: var(--text-primary);
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .emoji-picker-btn {
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px;
+      opacity: 0.8;
+      transition: opacity 0.15s;
+    }
+
+    .emoji-picker-btn:hover {
+      opacity: 1;
+    }
+
+    .emoji-menu {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      right: 16px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid #383a40;
+      border-radius: 8px;
+      padding: 8px;
+      width: 220px;
+      height: 160px;
+      overflow-y: auto;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      z-index: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .emoji-item {
+      font-size: 1.1rem;
+      cursor: pointer;
+      text-align: center;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .emoji-item:hover {
+      background-color: #383a40;
+    }
+
+    /* Members Rail */
+    .members-rail {
+      width: 200px;
+      background-color: var(--bg-sidebar);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .member-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 4px;
+    }
+
+    .member-card:hover {
+      background-color: rgba(255,255,255,0.05);
+    }
+
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .online { background-color: #23a55a; }
+
+    /* Settings Overlay */
+    .fullscreen-settings {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: var(--bg-main);
+      z-index: 4000;
+    }
+
+    .settings-nav {
+      width: 200px;
+      background-color: var(--bg-sidebar);
+      padding: 30px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .settings-nav-item {
+      padding: 8px 10px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 0.82rem;
+    }
+
+    .settings-nav-item:hover, .settings-nav-item.active {
+      background-color: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+    }
+
+    .settings-content {
+      flex: 1;
+      padding: 30px 40px;
+      overflow-y: auto;
+      max-width: 520px;
+    }
+
+    .settings-section {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .settings-section.active {
+      display: flex;
+    }
+
+    .close-settings-btn {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      border: 1px solid #4e5058;
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .close-settings-btn:hover { color: white; border-color: white; }
+
+    .profile-card-preview {
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      margin-bottom: 10px;
+    }
+
+    .profile-banner-display {
+      height: 50px;
+      background-color: var(--accent);
+    }
+
+    .profile-card-body {
+      padding: 10px 14px 14px 14px;
+      position: relative;
+      top: -20px;
+    }
+
+    .profile-card-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 4px solid var(--bg-card);
+      object-fit: cover;
+    }
+
+    .soundboard-menu {
+      display: none;
+      position: absolute;
+      top: 50px; right: 14px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid #383a40;
+      border-radius: 8px;
+      padding: 10px;
+      z-index: 1500;
+      gap: 6px;
+      flex-direction: column;
+    }
+
+    .call-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: #0f1115;
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+    }
+
+    .call-grid {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .call-user-card {
+      flex: 1;
+      max-width: 380px;
+      height: 50vh;
+      background-color: var(--bg-card);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      border: 2px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+
+    .call-user-card.speaking {
+      border-color: var(--speaking-green) !important;
+      box-shadow: 0 0 16px rgba(35, 165, 90, 0.5);
+    }
+
+    .call-avatar-pulse {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .call-avatar-pulse img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    video.webcam-preview {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .call-controls {
+      display: flex;
+      gap: 12px;
+      background-color: var(--bg-sidebar);
+      padding: 12px 24px;
+      border-radius: 30px;
+      align-items: center;
+    }
+
+    .call-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      background-color: #383a40;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.15s;
+    }
+
+    .call-btn:hover { transform: scale(1.08); }
+    .call-btn.end-btn { background-color: #da373c; }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.85);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background-color: var(--bg-main);
+      padding: 24px;
+      border-radius: 6px;
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-box input, .modal-box select, .modal-box textarea {
+      padding: 8px 10px;
+      background-color: var(--bg-rail);
+      border: 1px solid var(--bg-sidebar);
+      color: white;
+      border-radius: 4px;
+      outline: none;
+      font-size: 0.85rem;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-weight: bold;
+      font-size: 0.82rem;
       border-radius: 4px;
       cursor: pointer;
     }
 
-    /* Banned Screen */
     .banned-screen {
       display: none;
       position: fixed;
@@ -17,18 +728,18 @@
       align-items: center;
       flex-direction: column;
       gap: 16px;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: bold;
     }
 
     .ban-box {
       background-color: #1e293b;
-      padding: 24px;
+      padding: 20px;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 320px;
+      gap: 10px;
+      width: 280px;
     }
   </style>
 </head>
@@ -37,17 +748,17 @@
   <div class="banned-screen" id="bannedScreen">
     ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
     <div class="ban-box">
-      <span style="font-size: 0.9rem; color: #949ba4;">Enter Unban Code:</span>
-      <input type="password" id="unbanCodeInput" style="padding: 10px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
+      <span style="font-size: 0.8rem; color: #949ba4;">Enter Unban Code:</span>
+      <input type="password" id="unbanCodeInput" style="padding: 8px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
       <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
-      <span id="banMsg" style="font-size: 0.8rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
+      <span id="banMsg" style="font-size: 0.75rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
     </div>
   </div>
 
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
-      <h2>Welcome to Gng Chat Pro!</h2>
-      <p style="color: #b5bac1; font-size: 0.9rem;">Enter your username to join.</p>
+      <h3 style="color: white;">Welcome to Gng Chat Pro!</h3>
+      <p style="color: #b5bac1; font-size: 0.8rem;">Enter your username to join.</p>
       <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
@@ -57,7 +768,7 @@
     <div class="close-settings-btn" onclick="toggleSettings(false)">✕</div>
     <div style="display: flex; height: 100%;">
       <div class="settings-nav">
-        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px;">USER SETTINGS</div>
+        <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: bold; margin-bottom: 6px;">USER SETTINGS</div>
         <div class="settings-nav-item active" onclick="switchSettingsTab('profile')">My Profile</div>
         <div class="settings-nav-item" onclick="switchSettingsTab('appearance')">Appearance & Themes</div>
         <div class="settings-nav-item" onclick="switchSettingsTab('audio')">Voice & Audio</div>
@@ -66,31 +777,31 @@
 
       <div class="settings-content">
         <div class="settings-section active" id="tab-profile">
-          <h2>User Profile</h2>
+          <h3 style="color: white;">User Profile</h3>
           
           <div class="profile-card-preview">
             <div class="profile-banner-display" id="previewBanner"></div>
             <div class="profile-card-body">
               <img id="previewAvatar" class="profile-card-avatar" src="" />
-              <h3 id="previewName" style="color: white; margin-top: 6px;"></h3>
-              <p id="previewStatus" style="font-size: 0.85rem; color: var(--text-muted);"></p>
-              <p id="previewBio" style="font-size: 0.9rem; color: white; margin-top: 10px;"></p>
+              <h4 id="previewName" style="color: white; margin-top: 4px; font-size: 0.95rem;"></h4>
+              <p id="previewStatus" style="font-size: 0.75rem; color: var(--text-muted);"></p>
+              <p id="previewBio" style="font-size: 0.8rem; color: white; margin-top: 6px;"></p>
             </div>
           </div>
 
-          <label style="font-size: 0.8rem; font-weight: bold;">DISPLAY NAME</label>
+          <label style="font-size: 0.75rem; font-weight: bold;">DISPLAY NAME</label>
           <input type="text" id="editNameInput" oninput="updateProfilePreview()" />
 
-          <label style="font-size: 0.8rem; font-weight: bold;">CUSTOM STATUS</label>
+          <label style="font-size: 0.75rem; font-weight: bold;">CUSTOM STATUS</label>
           <input type="text" id="editStatusInput" placeholder="What's on your mind?" oninput="updateProfilePreview()" />
 
-          <label style="font-size: 0.8rem; font-weight: bold;">ABOUT ME (BIO)</label>
-          <textarea id="editBioInput" rows="3" placeholder="Tell the gang about yourself..." oninput="updateProfilePreview()"></textarea>
+          <label style="font-size: 0.75rem; font-weight: bold;">ABOUT ME (BIO)</label>
+          <textarea id="editBioInput" rows="2" placeholder="Tell the gang about yourself..." oninput="updateProfilePreview()"></textarea>
 
-          <label style="font-size: 0.8rem; font-weight: bold;">BANNER COLOR</label>
+          <label style="font-size: 0.75rem; font-weight: bold;">BANNER COLOR</label>
           <input type="color" id="editBannerInput" value="#5865f2" onchange="updateProfilePreview()" />
 
-          <label style="font-size: 0.8rem; font-weight: bold;">AVATAR BORDER ANIMATION</label>
+          <label style="font-size: 0.75rem; font-weight: bold;">AVATAR BORDER ANIMATION</label>
           <select id="editAnimSelect" onchange="updateProfilePreview()">
             <option value="none">None</option>
             <option value="anim-glow">Neon Glow</option>
@@ -103,8 +814,8 @@
         </div>
 
         <div class="settings-section" id="tab-appearance">
-          <h2>Theme Customization</h2>
-          <label style="font-size: 0.8rem; font-weight: bold;">CHOOSE THEME</label>
+          <h3 style="color: white;">Theme Customization</h3>
+          <label style="font-size: 0.75rem; font-weight: bold;">CHOOSE THEME</label>
           <select id="themeSelect" onchange="applyTheme(this.value)">
             <option value="dark">Discord Dark</option>
             <option value="amoled">AMOLED Pitch Black</option>
@@ -114,19 +825,15 @@
         </div>
 
         <div class="settings-section" id="tab-audio">
-          <h2>Voice & Microphone Settings</h2>
-          <label style="font-size: 0.8rem; font-weight: bold;">INPUT DEVICE (MICROPHONE)</label>
+          <h3 style="color: white;">Voice & Microphone</h3>
+          <label style="font-size: 0.75rem; font-weight: bold;">INPUT DEVICE</label>
           <select id="micSelect">
             <option value="default">Default Microphone</option>
-            <option value="communications">Communications Mic</option>
           </select>
-
-          <label style="font-size: 0.8rem; font-weight: bold;">SPEAKING SENSITIVITY (GREEN RING TEST)</label>
-          <button class="btn-primary" onclick="testMicSensitivity()">Test Speaking Activation</button>
         </div>
 
         <div class="settings-section" id="tab-account">
-          <h2>Account Options</h2>
+          <h3 style="color: white;">Account Options</h3>
           <button class="btn-primary" style="background-color: #da373c;" onclick="logout()">Log Out & Clear Local Data</button>
         </div>
       </div>
@@ -135,8 +842,7 @@
 
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
-      <h2>🛠️ Owner & Admin Panel</h2>
-      <p style="color: #b5bac1; font-size: 0.85rem;">Authorized owner control center.</p>
+      <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
       <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot to Call Me</button>
       <button class="btn-primary" style="background-color: #383a40;" onclick="triggerFakeMention()">🔔 Trigger Test Mention</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
@@ -145,8 +851,8 @@
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div style="font-weight: bold; font-size: 1.4rem; color: #f2f3f5; display: flex; align-items: center; gap: 10px;">
-      <span class="shaking-phone">📞</span> Gng Voice Call — Live
+    <div style="font-weight: bold; font-size: 1.1rem; color: #f2f3f5; display: flex; align-items: center; gap: 8px;">
+      <span>📞</span> Gng Voice Call — Live
     </div>
     
     <div class="call-grid">
@@ -155,14 +861,14 @@
         <div class="call-avatar-pulse" id="userPulseCard">
           <img id="callUserAvatar" src="" />
         </div>
-        <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="callUserName">You</span>
+        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;" id="callUserName">You</span>
       </div>
 
       <div class="call-user-card" id="botCallCard">
         <div class="call-avatar-pulse">
           <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
         </div>
-        <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;">Bot</span>
+        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;">Bot</span>
       </div>
     </div>
 
@@ -202,9 +908,9 @@
         <div class="avatar-wrapper" id="userAvatarWrapper">
           <img id="userAvatarFooter" class="avatar-sm" src="" />
         </div>
-        <div style="display: flex; flex-direction: column;">
-          <span id="userNameFooter" style="font-weight: bold; font-size: 0.85rem;"></span>
-          <span id="userStatusFooter" style="font-size: 0.7rem; color: var(--text-muted);">Online</span>
+        <div style="display: flex; flex-direction: column; max-width: 110px;">
+          <span id="userNameFooter" style="font-weight: bold; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+          <span id="userStatusFooter" style="font-size: 0.65rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Online</span>
         </div>
       </div>
       <span class="settings-cog" onclick="toggleSettings(true)">⚙️</span>
@@ -217,9 +923,7 @@
       <div class="header-actions">
         <div class="header-btn" onclick="toggleSoundboard()" style="color: #f0b232;">🔊 Soundboard</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
-        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">
-          <span class="shaking-phone">📞</span> Start Call
-        </div>
+        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">📞 Start Call</div>
         <div class="header-btn" onclick="clearMentions()">
           📬 Inbox
           <span class="badge" id="inboxBadge">0</span>
@@ -255,7 +959,7 @@
     <div class="member-card" onclick="toggleSettings(true)">
       <img id="userAvatarMember" class="avatar-sm" src="" />
       <span id="userNameMember" style="color: var(--text-primary);"></span>
-      <span class="status-indicator online" id="statusDotMember"></span>
+      <span class="status-indicator online"></span>
     </div>
     <div class="member-card">
       <img class="avatar-sm" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
@@ -272,8 +976,7 @@
       bio: "Gang Chat member!",
       banner: "#5865f2",
       animation: "anim-glow",
-      theme: "dark",
-      statusState: "online"
+      theme: "dark"
     };
 
     let activeChannel = "general";
@@ -354,13 +1057,12 @@
       document.getElementById('callUserName').textContent = user.name;
       document.getElementById('callUserAvatar').src = user.avatar;
 
-      // Apply Avatar Animation
       const wrapper = document.getElementById('userAvatarWrapper');
       wrapper.className = `avatar-wrapper ${user.animation}`;
 
       applyTheme(user.theme || 'dark');
       
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome back @${user.name}! Access your full profile and settings anytime via ⚙️.`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome back @${user.name}! Everything is back up and running smoothly.`, null);
     }
 
     function switchChannel(channelName) {
@@ -392,7 +1094,7 @@
             <span class="msg-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
           </div>
           <div>${highlightedText}</div>
-          <div class="reactions-bar" id="react-${Date.now()}"></div>
+          <div class="reactions-bar"></div>
         </div>
         <div class="msg-actions">
           <button class="msg-action-btn" onclick="addReaction(this, '🔥')">🔥</button>
@@ -470,7 +1172,6 @@
       if (e.key === 'Enter') sendMessage();
     }
 
-    /* Soundboard & Voice Features */
     function toggleSoundboard() {
       const menu = document.getElementById('soundboardMenu');
       menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
@@ -514,14 +1215,12 @@
     function toggleMute() {
       isMuted = !isMuted;
       const btn = document.getElementById('muteBtn');
-      btn.classList.toggle('active', isMuted);
-      btn.textContent = isMuted ? '🔇' : '🎙️';
+      btn.textContent = isMuted ? 'ffffffff' : '🎙️';
     }
 
     async function toggleCamera() {
       const video = document.getElementById('webcamVideo');
       const pulseCard = document.getElementById('userPulseCard');
-      const btn = document.getElementById('camBtn');
 
       if (!isCamOn) {
         try {
@@ -530,7 +1229,6 @@
           video.style.display = 'block';
           pulseCard.style.display = 'none';
           isCamOn = true;
-          btn.classList.add('active');
         } catch (e) {
           alert('Camera permission denied.');
         }
@@ -539,11 +1237,9 @@
         video.style.display = 'none';
         pulseCard.style.display = 'block';
         isCamOn = false;
-        btn.classList.remove('active');
       }
     }
 
-    /* Fullscreen Settings Controls */
     function toggleSettings(show) {
       document.getElementById('fullscreenSettings').style.display = show ? 'block' : 'none';
       if (show) {
