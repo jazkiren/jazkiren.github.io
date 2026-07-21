@@ -3,8 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gng Chat</title>
+  <title>Gng Chat Pro</title>
   <style>
+    :root {
+      --bg-main: #313338;
+      --bg-sidebar: #2b2d31;
+      --bg-rail: #1e1f22;
+      --bg-card: #1e2024;
+      --accent: #5865f2;
+      --text-primary: #f2f3f5;
+      --text-muted: #949ba4;
+      --speaking-green: #23a55a;
+    }
+
+    /* Themes */
+    body.theme-amoled {
+      --bg-main: #000000;
+      --bg-sidebar: #0a0a0a;
+      --bg-rail: #050505;
+      --bg-card: #121212;
+    }
+    body.theme-cyber {
+      --bg-main: #0d0f18;
+      --bg-sidebar: #131722;
+      --bg-rail: #080a10;
+      --bg-card: #1a1f2c;
+      --accent: #00f0ff;
+    }
+    body.theme-purple {
+      --bg-main: #130f26;
+      --bg-sidebar: #1a1436;
+      --bg-rail: #0c0919;
+      --bg-card: #231b48;
+      --accent: #9d4edd;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -13,7 +46,7 @@
     }
 
     body {
-      background-color: #1e1f22;
+      background-color: var(--bg-rail);
       color: #dbdee1;
       height: 100vh;
       display: flex;
@@ -23,32 +56,32 @@
     /* 1. Server Rail */
     .server-rail {
       width: 72px;
-      background-color: #1e1f22;
+      background-color: var(--bg-rail);
       padding: 12px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 8px;
-      border-right: 2px solid #2b2d31;
+      border-right: 2px solid var(--bg-sidebar);
     }
 
     .server-icon {
       width: 48px;
       height: 48px;
-      background-color: #313338;
+      background-color: var(--bg-main);
       border-radius: 12px;
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
       font-weight: bold;
-      color: #f2f3f5;
+      color: var(--text-primary);
       position: relative;
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .server-icon:hover, .server-icon.active {
-      background-color: #5865f2;
+      background-color: var(--accent);
       border-radius: 10px;
       transform: translateY(-2px);
     }
@@ -63,15 +96,14 @@
       font-weight: bold;
       padding: 2px 6px;
       border-radius: 10px;
-      border: 3px solid #1e1f22;
+      border: 3px solid var(--bg-rail);
       display: none;
-      animation: popIn 0.2s ease-out;
     }
 
     /* 2. Sidebar */
     .sidebar {
       width: 240px;
-      background-color: #2b2d31;
+      background-color: var(--bg-sidebar);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -81,16 +113,13 @@
       padding: 16px;
       border-bottom: 2px solid #1f2023;
       font-weight: bold;
-      color: #f2f3f5;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      color: var(--text-primary);
     }
 
     .section-title {
       font-size: 0.75rem;
       text-transform: uppercase;
-      color: #949ba4;
+      color: var(--text-muted);
       font-weight: bold;
       padding: 16px 16px 8px 16px;
     }
@@ -104,7 +133,7 @@
       margin: 2px 8px;
       border-radius: 4px;
       cursor: pointer;
-      color: #949ba4;
+      color: var(--text-muted);
       font-weight: 500;
       display: flex;
       align-items: center;
@@ -115,7 +144,7 @@
     .channel-item:hover, .channel-item.active,
     .dm-item:hover, .dm-item.active {
       background-color: #35373c;
-      color: #f2f3f5;
+      color: var(--text-primary);
     }
 
     .user-footer {
@@ -132,11 +161,37 @@
       gap: 8px;
     }
 
+    .avatar-wrapper {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+    }
+
     .avatar-sm {
-      width: 32px;
-      height: 32px;
+      width: 100%;
+      height: 100%;
       border-radius: 50%;
       object-fit: cover;
+    }
+
+    /* Avatar Animations */
+    .anim-glow img { box-shadow: 0 0 10px var(--accent); }
+    .anim-pulse img { animation: pulseBorder 1.5s infinite alternate; }
+    .anim-rainbow img { animation: rainbowBorder 3s infinite linear; border: 2px solid transparent; }
+    .anim-cyber img { border: 2px dashed var(--accent); animation: rotateCyber 6s infinite linear; }
+
+    @keyframes pulseBorder {
+      from { box-shadow: 0 0 4px var(--accent); }
+      to { box-shadow: 0 0 16px var(--accent); }
+    }
+    @keyframes rainbowBorder {
+      0% { filter: hue-rotate(0deg); box-shadow: 0 0 8px #ff0000; }
+      100% { filter: hue-rotate(360deg); box-shadow: 0 0 8px #ff0000; }
+    }
+    @keyframes rotateCyber {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
     }
 
     .settings-cog {
@@ -147,27 +202,27 @@
     }
 
     .settings-cog:hover {
-      color: #f2f3f5;
+      color: var(--text-primary);
       transform: rotate(45deg);
     }
 
     /* 3. Main Chat View */
     .chat-container {
       flex: 1;
-      background-color: #313338;
+      background-color: var(--bg-main);
       display: flex;
       flex-direction: column;
     }
 
     .chat-header {
       height: 48px;
-      border-bottom: 2px solid #2b2d31;
+      border-bottom: 2px solid var(--bg-sidebar);
       padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-weight: bold;
-      color: #f2f3f5;
+      color: var(--text-primary);
     }
 
     .header-actions {
@@ -179,7 +234,7 @@
     .header-btn {
       position: relative;
       cursor: pointer;
-      background: #2b2d31;
+      background: var(--bg-sidebar);
       padding: 6px 12px;
       border-radius: 4px;
       font-size: 0.85rem;
@@ -211,8 +266,8 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .msg-group:hover .reply-btn {
-      display: block;
+    .msg-group:hover .msg-actions {
+      display: flex;
     }
 
     .msg-content {
@@ -229,12 +284,12 @@
 
     .msg-author {
       font-weight: bold;
-      color: #f2f3f5;
+      color: var(--text-primary);
     }
 
     .msg-timestamp {
       font-size: 0.75rem;
-      color: #949ba4;
+      color: var(--text-muted);
     }
 
     .reply-quote {
@@ -253,24 +308,46 @@
       font-weight: bold;
     }
 
-    .reply-btn {
+    .msg-actions {
       display: none;
       position: absolute;
       right: 10px;
       top: -10px;
-      background-color: #2b2d31;
+      background-color: var(--bg-sidebar);
       border: 1px solid #3f4147;
-      color: #b5bac1;
-      padding: 2px 8px;
       border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      transition: background 0.15s;
+      gap: 4px;
+      padding: 2px;
     }
 
-    .reply-btn:hover {
+    .msg-action-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+    }
+
+    .msg-action-btn:hover {
+      color: var(--text-primary);
       background-color: #383a40;
-      color: #f2f3f5;
+      border-radius: 3px;
+    }
+
+    .reactions-bar {
+      display: flex;
+      gap: 4px;
+      margin-top: 4px;
+    }
+
+    .reaction-pill {
+      background: #2b2d31;
+      border: 1px solid #383a40;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
     }
 
     /* Input Box Area */
@@ -281,14 +358,13 @@
 
     .reply-banner {
       display: none;
-      background-color: #2b2d31;
+      background-color: var(--bg-sidebar);
       padding: 6px 12px;
       border-top-left-radius: 8px;
       border-top-right-radius: 8px;
       font-size: 0.85rem;
       color: #b5bac1;
       justify-content: space-between;
-      animation: popIn 0.15s ease-out;
     }
 
     .input-container {
@@ -304,7 +380,7 @@
       background-color: transparent;
       border: none;
       padding: 14px;
-      color: #f2f3f5;
+      color: var(--text-primary);
       font-size: 0.95rem;
       outline: none;
     }
@@ -313,11 +389,6 @@
       cursor: pointer;
       font-size: 1.2rem;
       padding: 4px;
-      transition: transform 0.1s;
-    }
-
-    .emoji-picker-btn:hover {
-      transform: scale(1.2);
     }
 
     .emoji-menu {
@@ -325,7 +396,7 @@
       position: absolute;
       bottom: 80px;
       right: 20px;
-      background-color: #2b2d31;
+      background-color: var(--bg-sidebar);
       border: 1px solid #383a40;
       border-radius: 8px;
       padding: 10px;
@@ -353,7 +424,7 @@
     /* 4. Right Members Rail */
     .members-rail {
       width: 240px;
-      background-color: #2b2d31;
+      background-color: var(--bg-sidebar);
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -365,7 +436,14 @@
       align-items: center;
       gap: 12px;
       font-weight: bold;
-      color: #949ba4;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+    }
+
+    .member-card:hover {
+      background-color: #35373c;
     }
 
     .status-indicator {
@@ -375,78 +453,116 @@
     }
 
     .online { background-color: #23a55a; }
+    .idle { background-color: #f0b232; }
+    .dnd { background-color: #f23f43; }
+    .invisible { background-color: #80848e; }
 
-    /* Modals & Overlays */
-    .overlay {
+    /* Full-Screen Settings Overlay */
+    .fullscreen-settings {
+      display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: rgba(0,0,0,0.85);
-      display: flex; justify-content: center; align-items: center;
-      z-index: 1000;
-      animation: fadeIn 0.2s ease-out;
+      background-color: var(--bg-main);
+      z-index: 4000;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    .modal-box {
-      background-color: #313338;
-      padding: 28px;
-      border-radius: 6px;
-      width: 480px;
+    .settings-nav {
+      width: 240px;
+      background-color: var(--bg-sidebar);
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      gap: 8px;
     }
 
-    @keyframes popIn {
-      from { transform: scale(0.92); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-
-    .modal-box input, .modal-box select {
-      padding: 10px;
-      background-color: #1e1f22;
-      border: 1px solid #2b2d31;
-      color: white;
+    .settings-nav-item {
+      padding: 10px 14px;
       border-radius: 4px;
-      outline: none;
-    }
-
-    .preset-avatars {
-      display: flex;
-      gap: 10px;
-    }
-
-    .preset-avatars img {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
+      color: var(--text-muted);
       cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color 0.2s, transform 0.15s;
-    }
-
-    .preset-avatars img:hover { transform: scale(1.05); }
-    .preset-avatars img.selected { border-color: #5865f2; }
-
-    .btn-primary {
-      background-color: #5865f2;
-      color: white;
-      border: none;
-      padding: 10px;
       font-weight: bold;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.2s;
     }
 
-    .btn-primary:hover { background-color: #4752c4; }
+    .settings-nav-item:hover, .settings-nav-item.active {
+      background-color: #35373c;
+      color: var(--text-primary);
+    }
 
-    /* Bigger Call Screen Styles */
+    .settings-content {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+      max-width: 700px;
+    }
+
+    .settings-section {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .settings-section.active {
+      display: flex;
+    }
+
+    .close-settings-btn {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      cursor: pointer;
+      font-size: 1.5rem;
+      color: var(--text-muted);
+      border: 2px solid #4e5058;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .close-settings-btn:hover { color: white; border-color: white; }
+
+    /* Custom Banner & Profile Preview Card */
+    .profile-card-preview {
+      background-color: var(--bg-card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      margin-bottom: 20px;
+    }
+
+    .profile-banner-display {
+      height: 90px;
+      background-color: var(--accent);
+    }
+
+    .profile-card-body {
+      padding: 16px;
+      position: relative;
+      top: -30px;
+    }
+
+    .profile-card-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 6px solid var(--bg-card);
+      object-fit: cover;
+    }
+
+    /* Soundboard Floating Menu */
+    .soundboard-menu {
+      display: none;
+      position: absolute;
+      top: 60px; right: 20px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid #383a40;
+      border-radius: 8px;
+      padding: 12px;
+      z-index: 1500;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    /* Fullscreen Call Screen */
     .call-overlay {
       display: none;
       position: fixed;
@@ -457,7 +573,6 @@
       align-items: center;
       justify-content: space-between;
       padding: 30px;
-      animation: fadeIn 0.3s ease-out;
     }
 
     .call-grid {
@@ -474,7 +589,7 @@
       flex: 1;
       max-width: 500px;
       height: 60vh;
-      background-color: #1e2024;
+      background-color: var(--bg-card);
       border-radius: 16px;
       display: flex;
       flex-direction: column;
@@ -484,7 +599,14 @@
       position: relative;
       overflow: hidden;
       box-shadow: 0 12px 32px rgba(0,0,0,0.6);
-      border: 1px solid #2b2d31;
+      border: 3px solid transparent;
+      transition: border-color 0.15s ease;
+    }
+
+    /* Dynamic Speaking Green Border */
+    .call-user-card.speaking {
+      border-color: var(--speaking-green) !important;
+      box-shadow: 0 0 24px rgba(35, 165, 90, 0.6);
     }
 
     .call-avatar-pulse {
@@ -503,20 +625,6 @@
       z-index: 2;
     }
 
-    .pulse-ring {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      border-radius: 50%;
-      background-color: rgba(35, 165, 90, 0.4);
-      animation: pulseAnim 1.8s infinite ease-out;
-      z-index: 1;
-    }
-
-    @keyframes pulseAnim {
-      0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.7); opacity: 0; }
-    }
-
     video.webcam-preview {
       position: absolute;
       width: 100%;
@@ -527,33 +635,32 @@
 
     .call-controls {
       display: flex;
-      gap: 20px;
-      background-color: #2b2d31;
+      gap: 16px;
+      background-color: var(--bg-sidebar);
       padding: 16px 32px;
       border-radius: 40px;
+      align-items: center;
     }
 
     .call-btn {
-      width: 56px;
-      height: 56px;
+      width: 52px;
+      height: 52px;
       border-radius: 50%;
       border: none;
       background-color: #383a40;
       color: white;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       cursor: pointer;
       display: flex;
       justify-content: center;
       align-items: center;
-      transition: transform 0.15s, background 0.2s;
+      transition: transform 0.15s;
     }
 
     .call-btn:hover { transform: scale(1.1); }
     .call-btn.end-btn { background-color: #da373c; }
-    .call-btn.end-btn:hover { background-color: #a1282b; }
     .call-btn.active { background-color: #f23f43; }
 
-    /* Shaking Call Icon Animation */
     .shaking-phone {
       display: inline-block;
       animation: phoneShake 0.6s infinite ease-in-out;
@@ -568,18 +675,42 @@
       100% { transform: rotate(0deg); }
     }
 
-    /* Incoming Call Popup Modal */
-    .incoming-call-modal {
-      display: none;
+    /* Modals */
+    .overlay {
       position: fixed;
-      top: 20px; right: 20px;
-      background-color: #2b2d31;
-      border: 2px solid #5865f2;
-      padding: 20px;
-      border-radius: 12px;
-      z-index: 3000;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.85);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background-color: var(--bg-main);
+      padding: 28px;
+      border-radius: 6px;
+      width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-box input, .modal-box select, .modal-box textarea {
+      padding: 10px;
+      background-color: var(--bg-rail);
+      border: 1px solid var(--bg-sidebar);
+      color: white;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    .btn-primary {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
     }
 
     /* Banned Screen */
@@ -606,60 +737,114 @@
       flex-direction: column;
       gap: 12px;
       width: 320px;
-      border: 1px solid #334155;
-    }
-
-    .ban-box input {
-      padding: 10px;
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      color: white;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 1rem;
-      outline: none;
     }
   </style>
 </head>
-<body>
+<body class="theme-dark">
 
   <div class="banned-screen" id="bannedScreen">
     ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
     <div class="ban-box">
       <span style="font-size: 0.9rem; color: #949ba4;">Enter Unban Code:</span>
-      <input type="password" id="unbanCodeInput" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
+      <input type="password" id="unbanCodeInput" style="padding: 10px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
       <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
       <span id="banMsg" style="font-size: 0.8rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
     </div>
   </div>
 
-  <div class="incoming-call-modal" id="incomingCallModal">
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
-      <span class="shaking-phone" style="font-size: 1.8rem;">📞</span>
-      <div>
-        <div style="font-weight: bold; color: white;">Bot is calling you...</div>
-        <div style="font-size: 0.8rem; color: #949ba4;">Gng Chat Voice</div>
-      </div>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn-primary" style="background-color: #23a55a; flex: 1;" onclick="acceptBotCall()">Accept</button>
-      <button class="btn-primary" style="background-color: #da373c; flex: 1;" onclick="declineBotCall()">Decline</button>
-    </div>
-  </div>
-
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
-      <h2>Welcome to Gng Chat!</h2>
-      <p style="color: #b5bac1; font-size: 0.9rem;">Enter your username to join the chat.</p>
+      <h2>Welcome to Gng Chat Pro!</h2>
+      <p style="color: #b5bac1; font-size: 0.9rem;">Enter your username to join.</p>
       <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
 
+  <div class="fullscreen-settings" id="fullscreenSettings">
+    <div class="close-settings-btn" onclick="toggleSettings(false)">✕</div>
+    <div style="display: flex; height: 100%;">
+      <div class="settings-nav">
+        <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px;">USER SETTINGS</div>
+        <div class="settings-nav-item active" onclick="switchSettingsTab('profile')">My Profile</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('appearance')">Appearance & Themes</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('audio')">Voice & Audio</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('account')">Account & Security</div>
+      </div>
+
+      <div class="settings-content">
+        <div class="settings-section active" id="tab-profile">
+          <h2>User Profile</h2>
+          
+          <div class="profile-card-preview">
+            <div class="profile-banner-display" id="previewBanner"></div>
+            <div class="profile-card-body">
+              <img id="previewAvatar" class="profile-card-avatar" src="" />
+              <h3 id="previewName" style="color: white; margin-top: 6px;"></h3>
+              <p id="previewStatus" style="font-size: 0.85rem; color: var(--text-muted);"></p>
+              <p id="previewBio" style="font-size: 0.9rem; color: white; margin-top: 10px;"></p>
+            </div>
+          </div>
+
+          <label style="font-size: 0.8rem; font-weight: bold;">DISPLAY NAME</label>
+          <input type="text" id="editNameInput" oninput="updateProfilePreview()" />
+
+          <label style="font-size: 0.8rem; font-weight: bold;">CUSTOM STATUS</label>
+          <input type="text" id="editStatusInput" placeholder="What's on your mind?" oninput="updateProfilePreview()" />
+
+          <label style="font-size: 0.8rem; font-weight: bold;">ABOUT ME (BIO)</label>
+          <textarea id="editBioInput" rows="3" placeholder="Tell the gang about yourself..." oninput="updateProfilePreview()"></textarea>
+
+          <label style="font-size: 0.8rem; font-weight: bold;">BANNER COLOR</label>
+          <input type="color" id="editBannerInput" value="#5865f2" onchange="updateProfilePreview()" />
+
+          <label style="font-size: 0.8rem; font-weight: bold;">AVATAR BORDER ANIMATION</label>
+          <select id="editAnimSelect" onchange="updateProfilePreview()">
+            <option value="none">None</option>
+            <option value="anim-glow">Neon Glow</option>
+            <option value="anim-pulse">Pulsing Ring</option>
+            <option value="anim-rainbow">Rainbow Wave</option>
+            <option value="anim-cyber">Cyber Spark</option>
+          </select>
+
+          <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
+        </div>
+
+        <div class="settings-section" id="tab-appearance">
+          <h2>Theme Customization</h2>
+          <label style="font-size: 0.8rem; font-weight: bold;">CHOOSE THEME</label>
+          <select id="themeSelect" onchange="applyTheme(this.value)">
+            <option value="dark">Discord Dark</option>
+            <option value="amoled">AMOLED Pitch Black</option>
+            <option value="cyber">Neon Cyberpunk</option>
+            <option value="purple">Midnight Purple</option>
+          </select>
+        </div>
+
+        <div class="settings-section" id="tab-audio">
+          <h2>Voice & Microphone Settings</h2>
+          <label style="font-size: 0.8rem; font-weight: bold;">INPUT DEVICE (MICROPHONE)</label>
+          <select id="micSelect">
+            <option value="default">Default Microphone</option>
+            <option value="communications">Communications Mic</option>
+          </select>
+
+          <label style="font-size: 0.8rem; font-weight: bold;">SPEAKING SENSITIVITY (GREEN RING TEST)</label>
+          <button class="btn-primary" onclick="testMicSensitivity()">Test Speaking Activation</button>
+        </div>
+
+        <div class="settings-section" id="tab-account">
+          <h2>Account Options</h2>
+          <button class="btn-primary" style="background-color: #da373c;" onclick="logout()">Log Out & Clear Local Data</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
-      <h2>🛠️ Admin & Test Control Panel</h2>
-      <p style="color: #b5bac1; font-size: 0.85rem;">Test chat features and simulate actions.</p>
+      <h2>🛠️ Owner & Admin Panel</h2>
+      <p style="color: #b5bac1; font-size: 0.85rem;">Authorized owner control center.</p>
       <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot to Call Me</button>
       <button class="btn-primary" style="background-color: #383a40;" onclick="triggerFakeMention()">🔔 Trigger Test Mention</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
@@ -667,48 +852,22 @@
     </div>
   </div>
 
-  <div class="overlay" id="settingsModal" style="display: none;">
-    <div class="modal-box" style="width: 520px;">
-      <h2>Profile Customization</h2>
-      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">DISPLAY NAME</label>
-      <input type="text" id="editNameInput" />
-
-      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">CHOOSE PRESET AVATAR</label>
-      <div class="preset-avatars">
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Cyber" onclick="selectPreset(this.src, this)" class="selected" />
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Shadow" onclick="selectPreset(this.src, this)" />
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Blaze" onclick="selectPreset(this.src, this)" />
-        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Viper" onclick="selectPreset(this.src, this)" />
-      </div>
-
-      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">OR UPLOAD CUSTOM PIC</label>
-      <input type="file" id="fileUpload" accept="image/*" onchange="handleFileUpload(event)" />
-
-      <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button class="btn-primary" style="flex: 1;" onclick="saveSettings()">Save Changes</button>
-        <button class="btn-primary" style="background-color: #da373c;" onclick="toggleSettings(false)">Cancel</button>
-      </div>
-    </div>
-  </div>
-
   <div class="call-overlay" id="callOverlay">
-    <div style="font-weight: bold; font-size: 1.4rem; color: #f2f3f5; display: flex; align-items: center; gap: 10px;" id="callStatusText">
-      <span class="shaking-phone">📞</span> Gng Voice & Video Call — Connected
+    <div style="font-weight: bold; font-size: 1.4rem; color: #f2f3f5; display: flex; align-items: center; gap: 10px;">
+      <span class="shaking-phone">📞</span> Gng Voice Call — Live
     </div>
     
     <div class="call-grid">
-      <div class="call-user-card">
+      <div class="call-user-card" id="userCallCard">
         <video id="webcamVideo" class="webcam-preview" autoplay playsinline muted></video>
         <div class="call-avatar-pulse" id="userPulseCard">
-          <div class="pulse-ring"></div>
           <img id="callUserAvatar" src="" />
         </div>
         <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="callUserName">You</span>
       </div>
 
-      <div class="call-user-card">
+      <div class="call-user-card" id="botCallCard">
         <div class="call-avatar-pulse">
-          <div class="pulse-ring"></div>
           <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
         </div>
         <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;">Bot</span>
@@ -718,6 +877,7 @@
     <div class="call-controls">
       <button class="call-btn" id="muteBtn" onclick="toggleMute()">🎙️</button>
       <button class="call-btn" id="camBtn" onclick="toggleCamera()">📹</button>
+      <button class="call-btn" onclick="simulateSpeakingToggle()" title="Simulate Speaking">🗣️</button>
       <button class="call-btn end-btn" onclick="endCall()">📞</button>
     </div>
   </div>
@@ -730,7 +890,7 @@
   <div class="sidebar">
     <div>
       <div class="sidebar-header">
-        <span>Gng Chat</span>
+        <span>Gng Chat Pro</span>
       </div>
 
       <div class="section-title">Text Channels</div>
@@ -747,8 +907,13 @@
 
     <div class="user-footer">
       <div class="user-info">
-        <img id="userAvatarFooter" class="avatar-sm" src="" />
-        <span id="userNameFooter" style="font-weight: bold; font-size: 0.9rem;"></span>
+        <div class="avatar-wrapper" id="userAvatarWrapper">
+          <img id="userAvatarFooter" class="avatar-sm" src="" />
+        </div>
+        <div style="display: flex; flex-direction: column;">
+          <span id="userNameFooter" style="font-weight: bold; font-size: 0.85rem;"></span>
+          <span id="userStatusFooter" style="font-size: 0.7rem; color: var(--text-muted);">Online</span>
+        </div>
       </div>
       <span class="settings-cog" onclick="toggleSettings(true)">⚙️</span>
     </div>
@@ -758,7 +923,8 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="togglePanel(true)" style="color: #5865f2;">🛠️ Panel</div>
+        <div class="header-btn" onclick="toggleSoundboard()" style="color: #f0b232;">🔊 Soundboard</div>
+        <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
         <div class="header-btn" onclick="startCall()" style="color: #23a55a;">
           <span class="shaking-phone">📞</span> Start Call
         </div>
@@ -767,6 +933,12 @@
           <span class="badge" id="inboxBadge">0</span>
         </div>
       </div>
+    </div>
+
+    <div class="soundboard-menu" id="soundboardMenu">
+      <button class="btn-primary" onclick="playSoundEffect(880, 0.3)">📢 Airhorn Tone</button>
+      <button class="btn-primary" style="background-color: #23a55a;" onclick="playSoundEffect(523, 0.4)">🎉 GG Sound</button>
+      <button class="btn-primary" style="background-color: #e5a93c;" onclick="playSoundEffect(300, 0.5)">🎮 Victory Bell</button>
     </div>
 
     <div class="messages-view" id="messagesView"></div>
@@ -787,15 +959,15 @@
   </div>
 
   <div class="members-rail">
-    <div class="section-title" style="padding: 0;">ONLINE — 2</div>
-    <div class="member-card">
+    <div class="section-title" style="padding: 0;">ONLINE MEMBERS</div>
+    <div class="member-card" onclick="toggleSettings(true)">
       <img id="userAvatarMember" class="avatar-sm" src="" />
-      <span id="userNameMember" style="color: #f2f3f5;"></span>
-      <span class="status-indicator online"></span>
+      <span id="userNameMember" style="color: var(--text-primary);"></span>
+      <span class="status-indicator online" id="statusDotMember"></span>
     </div>
     <div class="member-card">
       <img class="avatar-sm" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
-      <span style="color: #f2f3f5;">Bot</span>
+      <span style="color: var(--text-primary);">Bot</span>
       <span class="status-indicator online"></span>
     </div>
   </div>
@@ -803,14 +975,19 @@
   <script>
     let user = {
       name: "",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Cyber"
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Cyber",
+      status: "Coding...",
+      bio: "Gang Chat member!",
+      banner: "#5865f2",
+      animation: "anim-glow",
+      theme: "dark",
+      statusState: "online"
     };
 
     let activeChannel = "general";
     let activeReply = null;
     let mentionCount = 0;
-    let botInterval = null;
-
+    let isSpeaking = false;
     let isMuted = false;
     let isCamOn = false;
     let webcamStream = null;
@@ -824,7 +1001,7 @@
         return;
       }
 
-      const savedUser = localStorage.getItem('gngChatUser');
+      const savedUser = localStorage.getItem('gngChatUserPro');
       if (savedUser) {
         user = JSON.parse(savedUser);
         document.getElementById('loginOverlay').style.display = 'none';
@@ -832,10 +1009,6 @@
       }
 
       buildEmojiPicker();
-
-      if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-      }
     };
 
     function buildEmojiPicker() {
@@ -859,24 +1032,13 @@
 
     function verifyUnbanCode() {
       const codeInput = document.getElementById('unbanCodeInput').value.trim();
-      const msg = document.getElementById('banMsg');
-
       if (codeInput === '9785') {
         localStorage.removeItem('gngChatBanned');
         document.getElementById('bannedScreen').style.display = 'none';
-        
-        const savedUser = localStorage.getItem('gngChatUser');
-        if (savedUser) {
-          user = JSON.parse(savedUser);
-          document.getElementById('loginOverlay').style.display = 'none';
-          initApp();
-        } else {
-          document.getElementById('loginOverlay').style.display = 'flex';
-        }
+        location.reload();
       } else {
-        localStorage.removeItem('gngChatUser');
-        msg.style.display = 'block';
-        document.getElementById('unbanCodeInput').value = '';
+        localStorage.removeItem('gngChatUserPro');
+        document.getElementById('banMsg').style.display = 'block';
       }
     }
 
@@ -884,7 +1046,7 @@
       const name = document.getElementById('usernameInput').value.trim();
       if (name !== "") {
         user.name = name;
-        localStorage.setItem('gngChatUser', JSON.stringify(user));
+        localStorage.setItem('gngChatUserPro', JSON.stringify(user));
         document.getElementById('loginOverlay').style.display = 'none';
         initApp();
       }
@@ -895,17 +1057,18 @@
       document.getElementById('userAvatarFooter').src = user.avatar;
       document.getElementById('userNameMember').textContent = user.name;
       document.getElementById('userAvatarMember').src = user.avatar;
-      document.getElementById('editNameInput').value = user.name;
+      document.getElementById('userStatusFooter').textContent = user.status;
+      
       document.getElementById('callUserName').textContent = user.name;
       document.getElementById('callUserAvatar').src = user.avatar;
-      
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type /panel for testing tools or click 📞 Start Call to join voice!`, null);
 
-      if (!botInterval) {
-        botInterval = setInterval(() => {
-          renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "hey", null);
-        }, 20000);
-      }
+      // Apply Avatar Animation
+      const wrapper = document.getElementById('userAvatarWrapper');
+      wrapper.className = `avatar-wrapper ${user.animation}`;
+
+      applyTheme(user.theme || 'dark');
+      
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome back @${user.name}! Access your full profile and settings anytime via ⚙️.`, null);
     }
 
     function switchChannel(channelName) {
@@ -914,9 +1077,7 @@
       if (document.getElementById(`chan-${channelName}`)) {
         document.getElementById(`chan-${channelName}`).classList.add('active');
       }
-
       document.getElementById('chatTitle').textContent = channelName.startsWith('dm') ? "@Bot" : `# ${channelName}`;
-      document.getElementById('chatInput').placeholder = `Message ${document.getElementById('chatTitle').textContent}...`;
     }
 
     function renderMessage(author, avatar, text, replyQuote) {
@@ -928,7 +1089,6 @@
       if (user.name && text.includes(`@${user.name}`)) {
         highlightedText = text.replace(new RegExp(`@${user.name}`, 'g'), `<span class="mention-highlight">@${user.name}</span>`);
         triggerMention();
-        sendNotification(`Mentioned by ${author}`, text);
       }
 
       msgGroup.innerHTML = `
@@ -940,12 +1100,25 @@
             <span class="msg-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
           </div>
           <div>${highlightedText}</div>
+          <div class="reactions-bar" id="react-${Date.now()}"></div>
         </div>
-        <button class="reply-btn" onclick="setReply('${author}', '${text.replace(/'/g, "\\'")}')">Reply</button>
+        <div class="msg-actions">
+          <button class="msg-action-btn" onclick="addReaction(this, '🔥')">🔥</button>
+          <button class="msg-action-btn" onclick="addReaction(this, '❤️')">❤️</button>
+          <button class="msg-action-btn" onclick="setReply('${author}', '${text.replace(/'/g, "\\'")}')">Reply</button>
+        </div>
       `;
 
       view.appendChild(msgGroup);
       view.scrollTop = view.scrollHeight;
+    }
+
+    function addReaction(btn, emoji) {
+      const parent = btn.closest('.msg-group').querySelector('.reactions-bar');
+      const pill = document.createElement('span');
+      pill.className = 'reaction-pill';
+      pill.textContent = `${emoji} 1`;
+      parent.appendChild(pill);
     }
 
     function sendMessage() {
@@ -962,48 +1135,19 @@
         renderMessage(user.name, user.avatar, text, activeReply ? `Replying to ${activeReply.author}: "${activeReply.text}"` : null);
         input.value = '';
         cancelReply();
-
-        if (text.toLowerCase().includes('@bot')) {
-          setTimeout(() => {
-            handleBotResponse(text);
-          }, 600);
-        }
       }
     }
 
     function handleAdminCommand(cmd) {
-      const parts = cmd.split(' ');
-      const command = parts[0].toLowerCase();
-
-      if (command === '/panel') {
-        togglePanel(true);
-      } else if (command === '/help') {
-        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "👑 Admin Commands: /panel, /ban [username], /clear, /rename [new_name]", null);
-      } else if (command === '/clear') {
-        document.getElementById('messagesView').innerHTML = '';
-        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "Chat cleared.", null);
-      } else if (command === '/ban') {
-        testBanSelf();
-      } else if (command === '/rename') {
-        const newName = parts.slice(1).join(' ');
-        if (newName) {
-          user.name = newName;
-          saveSettingsData();
-          renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Name updated to ${newName}.`, null);
-        }
-      } else {
-        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "Unknown command. Type /help for options.", null);
-      }
+      if (cmd === '/panel') promptPanelAccess();
     }
 
-    function handleBotResponse(text) {
-      const cleanText = text.replace(/@bot/gi, '').trim();
-      const isGibberish = cleanText.length > 0 && !/[aeiouyAEIOUY]/i.test(cleanText);
-
-      if (cleanText === '' || isGibberish) {
-        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `I don't get it...`, null);
-      } else {
-        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name}! What's good?`, null);
+    function promptPanelAccess() {
+      const code = prompt("Enter Admin Passcode to open Panel:");
+      if (code === '9785') {
+        togglePanel(true);
+      } else if (code !== null) {
+        alert("Access Denied: Incorrect Admin Passcode!");
       }
     }
 
@@ -1016,14 +1160,7 @@
 
     function clearMentions() {
       mentionCount = 0;
-      const badge = document.getElementById('inboxBadge');
-      badge.style.display = 'none';
-    }
-
-    function sendNotification(title, body) {
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification(title, { body: body, icon: user.avatar });
-      }
+      document.getElementById('inboxBadge').style.display = 'none';
     }
 
     function setReply(author, text) {
@@ -1041,13 +1178,18 @@
       if (e.key === 'Enter') sendMessage();
     }
 
-    /* Voice & Video Call Logic */
-    function playCallSound(freq, duration) {
+    /* Soundboard & Voice Features */
+    function toggleSoundboard() {
+      const menu = document.getElementById('soundboardMenu');
+      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function playSoundEffect(freq, duration) {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'sine';
+        osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
         gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
         osc.connect(gain);
@@ -1057,21 +1199,24 @@
       } catch (e) {}
     }
 
+    function simulateSpeakingToggle() {
+      isSpeaking = !isSpeaking;
+      const card = document.getElementById('userCallCard');
+      card.classList.toggle('speaking', isSpeaking);
+    }
+
     function startCall() {
       document.getElementById('callOverlay').style.display = 'flex';
-      playCallSound(440, 0.2);
+      playSoundEffect(440, 0.2);
     }
 
     function endCall() {
-      playCallSound(220, 0.3);
+      playSoundEffect(220, 0.3);
       document.getElementById('callOverlay').style.display = 'none';
       if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
         webcamStream = null;
       }
-      isCamOn = false;
-      document.getElementById('webcamVideo').style.display = 'none';
-      document.getElementById('userPulseCard').style.display = 'block';
     }
 
     function toggleMute() {
@@ -1095,12 +1240,10 @@
           isCamOn = true;
           btn.classList.add('active');
         } catch (e) {
-          alert('Camera permission denied or camera not found.');
+          alert('Camera permission denied.');
         }
       } else {
-        if (webcamStream) {
-          webcamStream.getTracks().forEach(track => track.stop());
-        }
+        if (webcamStream) webcamStream.getTracks().forEach(track => track.stop());
         video.style.display = 'none';
         pulseCard.style.display = 'block';
         isCamOn = false;
@@ -1108,29 +1251,64 @@
       }
     }
 
-    /* Panel & Bot Call Test Features */
+    /* Fullscreen Settings Controls */
+    function toggleSettings(show) {
+      document.getElementById('fullscreenSettings').style.display = show ? 'block' : 'none';
+      if (show) {
+        document.getElementById('editNameInput').value = user.name;
+        document.getElementById('editStatusInput').value = user.status || '';
+        document.getElementById('editBioInput').value = user.bio || '';
+        document.getElementById('editBannerInput').value = user.banner || '#5865f2';
+        document.getElementById('editAnimSelect').value = user.animation || 'none';
+        updateProfilePreview();
+      }
+    }
+
+    function switchSettingsTab(tabName) {
+      document.querySelectorAll('.settings-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.settings-section').forEach(el => el.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function updateProfilePreview() {
+      document.getElementById('previewName').textContent = document.getElementById('editNameInput').value || user.name;
+      document.getElementById('previewStatus').textContent = document.getElementById('editStatusInput').value || 'No status';
+      document.getElementById('previewBio').textContent = document.getElementById('editBioInput').value || 'No bio';
+      document.getElementById('previewAvatar').src = user.avatar;
+      document.getElementById('previewBanner').style.backgroundColor = document.getElementById('editBannerInput').value;
+    }
+
+    function applyTheme(themeName) {
+      document.body.className = `theme-${themeName}`;
+      user.theme = themeName;
+    }
+
+    function saveSettings() {
+      user.name = document.getElementById('editNameInput').value.trim() || user.name;
+      user.status = document.getElementById('editStatusInput').value.trim();
+      user.bio = document.getElementById('editBioInput').value.trim();
+      user.banner = document.getElementById('editBannerInput').value;
+      user.animation = document.getElementById('editAnimSelect').value;
+
+      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
+      initApp();
+      toggleSettings(false);
+    }
+
     function togglePanel(show) {
       document.getElementById('panelModal').style.display = show ? 'flex' : 'none';
     }
 
     function triggerBotCall() {
       togglePanel(false);
-      document.getElementById('incomingCallModal').style.display = 'block';
-      playCallSound(587.33, 0.4);
-    }
-
-    function acceptBotCall() {
-      document.getElementById('incomingCallModal').style.display = 'none';
       startCall();
-    }
-
-    function declineBotCall() {
-      document.getElementById('incomingCallModal').style.display = 'none';
     }
 
     function triggerFakeMention() {
       togglePanel(false);
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name} check out the panel features!`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name} testing admin triggers!`, null);
     }
 
     function testBanSelf() {
@@ -1139,37 +1317,9 @@
       document.getElementById('bannedScreen').style.display = 'flex';
     }
 
-    function toggleSettings(show) {
-      document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
-    }
-
-    function selectPreset(url, element) {
-      document.querySelectorAll('.preset-avatars img').forEach(img => img.classList.remove('selected'));
-      element.classList.add('selected');
-      user.avatar = url;
-    }
-
-    function handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          user.avatar = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function saveSettings() {
-      const newName = document.getElementById('editNameInput').value.trim();
-      if (newName !== '') user.name = newName;
-      saveSettingsData();
-      toggleSettings(false);
-    }
-
-    function saveSettingsData() {
-      localStorage.setItem('gngChatUser', JSON.stringify(user));
-      initApp();
+    function logout() {
+      localStorage.removeItem('gngChatUserPro');
+      location.reload();
     }
   </script>
 </body>
