@@ -1,245 +1,487 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Squad Chat</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Squad Chat</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 12px;
-        }
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        header {
-            text-align: center;
-            padding: 8px 0;
-        }
+    /* Light Theme Toggle Support */
+    body.light-theme {
+      background-color: #e2e8f0;
+      color: #0f172a;
+    }
 
-        h1 {
-            font-size: 1.4rem;
-            color: #38bdf8;
-            margin-bottom: 8px;
-        }
+    body.light-theme .app-container,
+    body.light-theme .modal-content {
+      background-color: #ffffff;
+      color: #0f172a;
+    }
 
-        .user-select {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-        }
+    body.light-theme .sidebar {
+      background-color: #f1f5f9;
+      border-right-color: #cbd5e1;
+    }
 
-        select {
-            padding: 6px 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #1e293b;
-            color: #38bdf8;
-            font-weight: bold;
-            outline: none;
-        }
+    body.light-theme .message.received {
+      background-color: #e2e8f0;
+      color: #0f172a;
+    }
 
-        /* Large Screen-Fitting Chat Container */
-        #chat-box {
-            flex: 1;
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 14px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            border: 1px solid #334155;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
-        }
+    body.light-theme .input-area,
+    body.light-theme .chat-header {
+      background-color: #ffffff;
+      border-color: #cbd5e1;
+    }
 
-        .msg {
-            background: #334155;
-            padding: 10px 14px;
-            border-radius: 12px;
-            max-width: 85%;
-            word-wrap: break-word;
-            line-height: 1.4;
-            font-size: 0.95rem;
-            align-self: flex-start;
-        }
+    body.light-theme .input-area input {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
 
-        .user {
-            font-weight: 700;
-            color: #38bdf8;
-            margin-right: 6px;
-        }
+    /* Sign-In Overlay */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(15, 23, 42, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
 
-        /* Emoji Row */
-        .emoji-bar {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding: 8px 0;
-            scrollbar-width: none;
-        }
+    .login-card {
+      background-color: #1e293b;
+      padding: 35px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      text-align: center;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
 
-        .emoji-bar::-webkit-scrollbar {
-            display: none;
-        }
+    .login-card h2 {
+      font-size: 1.5rem;
+    }
 
-        .emoji-btn {
-            background: #1e293b;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            padding: 6px 10px;
-            cursor: pointer;
-            flex-shrink: 0;
-            transition: transform 0.1s ease;
-        }
+    .login-card input {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background-color: #0f172a;
+      color: white;
+      font-size: 1rem;
+      outline: none;
+    }
 
-        .emoji-btn:active {
-            transform: scale(0.9);
-        }
+    .login-card button {
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
 
-        /* Input Bar */
-        .input-form {
-            display: flex;
-            gap: 8px;
-            padding-top: 4px;
-        }
+    /* Main Container (Bigger Layout) */
+    .app-container {
+      display: flex;
+      width: 95vw;
+      height: 92vh;
+      background-color: #1e293b;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
 
-        #message-input {
-            flex: 1;
-            padding: 12px;
-            border-radius: 10px;
-            border: 1px solid #334155;
-            background: #1e293b;
-            color: white;
-            font-size: 1rem;
-            outline: none;
-        }
+    /* Sidebar Styles */
+    .sidebar {
+      width: 280px;
+      background-color: #0f172a;
+      border-right: 1px solid #334155;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
 
-        #message-input:focus {
-            border-color: #38bdf8;
-        }
+    .sidebar-top h2 {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #94a3b8;
+      margin-bottom: 15px;
+    }
 
-        .send-btn {
-            padding: 12px 20px;
-            border-radius: 10px;
-            border: none;
-            background: #0284c7;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-        }
+    .user-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
 
-        .send-btn:hover {
-            background: #0369a1;
-        }
-    </style>
+    .user-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .online {
+      background-color: #22c55e;
+      box-shadow: 0 0 8px #22c55e88;
+    }
+
+    .offline {
+      background-color: #64748b;
+    }
+
+    .settings-btn {
+      background: #334155;
+      border: none;
+      color: white;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Chat Area */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #334155;
+      background-color: #1e293b;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+
+    .messages-container {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* Message Slide-in Animation */
+    .message {
+      max-width: 65%;
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 1rem;
+      line-height: 1.4;
+      animation: slideIn 0.25s ease-out forwards;
+      word-wrap: break-word;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .message.sent {
+      align-self: flex-end;
+      background-color: #3b82f6;
+      color: white;
+      border-bottom-right-radius: 2px;
+    }
+
+    .message.received {
+      align-self: flex-start;
+      background-color: #334155;
+      color: #f8fafc;
+      border-bottom-left-radius: 2px;
+    }
+
+    .msg-sender {
+      font-size: 0.75rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+      opacity: 0.8;
+    }
+
+    /* Input Bar */
+    .input-area {
+      padding: 20px;
+      border-top: 1px solid #334155;
+      display: flex;
+      gap: 12px;
+      background-color: #1e293b;
+    }
+
+    .input-area input {
+      flex: 1;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: white;
+      outline: none;
+      font-size: 1rem;
+    }
+
+    .input-area button {
+      background-color: #3b82f6;
+      border: none;
+      border-radius: 10px;
+      padding: 0 24px;
+      color: white;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    /* Settings Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+    }
+
+    .modal-content {
+      background-color: #1e293b;
+      padding: 30px;
+      border-radius: 16px;
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .modal-content h3 {
+      font-size: 1.3rem;
+    }
+
+    .setting-option {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .setting-option label {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .setting-option input, .setting-option select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #334155;
+      background-color: #0f172a;
+      color: white;
+    }
+
+    .close-modal-btn {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #22c55e;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body>
 
-    <header>
-        <h1>🎮 Squad Live Chat</h1>
-        <div class="user-select">
-            <label for="username">Who are you?</label>
-            <select id="username">
-                <option value="Nico">Nico</option>
-                <option value="Yujin">Yujin</option>
-                <option value="Barkon">Barkon</option>
-            </select>
-        </div>
-    </header>
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-card">
+      <h2>Welcome to Squad Chat</h2>
+      <input type="text" id="usernameInput" placeholder="Enter your display name..." />
+      <button onclick="signIn()">Join Chat</button>
+    </div>
+  </div>
 
-    <div id="chat-box"></div>
+  <div class="app-container">
+    <div class="sidebar">
+      <div class="sidebar-top">
+        <h2>Squad</h2>
+        <ul class="user-list">
+          <li class="user-item"><span class="status-dot online"></span> <span id="userSidebarName">You</span></li>
+          <li class="user-item"><span class="status-dot online"></span> Nico 🎮</li>
+          <li class="user-item"><span class="status-dot online"></span> Yujin ⭐</li>
+          <li class="user-item"><span class="status-dot offline"></span> Barkon 💤</li>
+        </ul>
+      </div>
 
-    <div class="emoji-bar">
-        <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
-        <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
-        <button class="emoji-btn" onclick="addEmoji('🎮')">🎮</button>
-        <button class="emoji-btn" onclick="addEmoji('💀')">💀</button>
-        <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
-        <button class="emoji-btn" onclick="addEmoji('🫠')">🫠</button>
-        <button class="emoji-btn" onclick="addEmoji('🫡')">🫡</button>
-        <button class="emoji-btn" onclick="addEmoji('🥹')">🥹</button>
-        <button class="emoji-btn" onclick="addEmoji('✨')">✨</button>
-        <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
-        <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
-        <button class="emoji-btn" onclick="addEmoji('🗿')">🗿</button>
-        <button class="emoji-btn" onclick="addEmoji('😭')">😭</button>
-        <button class="emoji-btn" onclick="addEmoji('🪩')">🪩</button>
-        <button class="emoji-btn" onclick="addEmoji('👀')">👀</button>
+      <button class="settings-btn" onclick="toggleSettings(true)">⚙️ Settings</button>
     </div>
 
-    <form class="input-form" onsubmit="sendMessage(event)">
-        <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
-        <button type="submit" class="send-btn">Send</button>
-    </form>
+    <div class="chat-area">
+      <div class="chat-header"># general</div>
+      
+      <div class="messages-container" id="messageBox">
+        <div class="message received">
+          <div class="msg-sender">Nico</div>
+          Yo! Welcome to the chat room 👋
+        </div>
+      </div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+      <div class="input-area">
+        <input type="text" id="userInput" placeholder="Type a message..." onkeydown="handleKey(event)" />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
 
-    <script>
-        // YOUR EXACT PROJECT CONFIG
-        const firebaseConfig = {
-            databaseURL: "https://text-meh-8276c-default-rtdb.firebaseio.com",
-            projectId: "text-meh-8276c"
-        };
+  <div class="modal" id="settingsModal">
+    <div class="modal-content">
+      <h3>Profile Settings</h3>
+      
+      <div class="setting-option">
+        <label>Display Name</label>
+        <input type="text" id="editNameInput" />
+      </div>
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const chatRef = database.ref('messages');
+      <div class="setting-option">
+        <label>Avatar Icon</label>
+        <select id="avatarSelect">
+          <option value="😎">😎 Cool</option>
+          <option value="🔥">🔥 Fire</option>
+          <option value="👑">👑 Crown</option>
+          <option value="👾">👾 Gamer</option>
+        </select>
+      </div>
 
-        // Send Message Function (Triggers on Enter or Click)
-        function sendMessage(e) {
-            if (e) e.preventDefault();
-            
-            const user = document.getElementById('username').value;
-            const input = document.getElementById('message-input');
-            const text = input.value.trim();
+      <div class="setting-option">
+        <label>Theme</label>
+        <select id="themeSelect" onchange="changeTheme(this.value)">
+          <option value="dark">Dark Mode</option>
+          <option value="light">Light Mode</option>
+        </select>
+      </div>
 
-            if (text !== "") {
-                chatRef.push({
-                    name: user,
-                    text: text
-                });
-                input.value = "";
-            }
-        }
+      <button class="close-modal-btn" onclick="saveSettings()">Save & Close</button>
+    </div>
+  </div>
 
-        // Add Quick Emoji to Textbox
-        function addEmoji(emoji) {
-            const input = document.getElementById('message-input');
-            input.value += emoji;
-            input.focus();
-        }
+  <script>
+    let currentUser = {
+      name: "Guest",
+      avatar: "😎"
+    };
 
-        // Listen for Live Messages
-        chatRef.on('child_added', (snapshot) => {
-            const data = snapshot.val();
-            const chatBox = document.getElementById('chat-box');
-            
-            const msgElement = document.createElement('div');
-            msgElement.classList.add('msg');
-            msgElement.innerHTML = `<span class="user">${data.name}:</span> ${data.text}`;
-            
-            chatBox.appendChild(msgElement);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        });
-    </script>
+    function signIn() {
+      const nameInput = document.getElementById('usernameInput').value.trim();
+      if (nameInput !== '') {
+        currentUser.name = nameInput;
+        document.getElementById('userSidebarName').textContent = currentUser.name + " " + currentUser.avatar;
+        document.getElementById('editNameInput').value = currentUser.name;
+        document.getElementById('loginOverlay').style.display = 'none';
+      }
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      
+      if (text !== '') {
+        const messageBox = document.getElementById('messageBox');
+        
+        const newMsg = document.createElement('div');
+        newMsg.className = 'message sent';
+        
+        const senderDiv = document.createElement('div');
+        senderDiv.className = 'msg-sender';
+        senderDiv.textContent = currentUser.name + " " + currentUser.avatar;
+        
+        newMsg.appendChild(senderDiv);
+        newMsg.appendChild(document.createTextNode(text));
+        
+        messageBox.appendChild(newMsg);
+        input.value = '';
+        messageBox.scrollTop = messageBox.scrollHeight;
+      }
+    }
+
+    function handleKey(event) {
+      if (event.key === 'Enter') {
+        sendMessage();
+      }
+    }
+
+    function toggleSettings(show) {
+      document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
+    }
+
+    function saveSettings() {
+      const newName = document.getElementById('editNameInput').value.trim();
+      const newAvatar = document.getElementById('avatarSelect').value;
+
+      if (newName !== '') {
+        currentUser.name = newName;
+      }
+      currentUser.avatar = newAvatar;
+
+      document.getElementById('userSidebarName').textContent = currentUser.name + " " + currentUser.avatar;
+      toggleSettings(false);
+    }
+
+    function changeTheme(theme) {
+      if (theme === 'light') {
+        document.body.classList.add('light-theme');
+      } else {
+        document.body.classList.remove('light-theme');
+      }
+    }
+  </script>
+
 </body>
 </html>
