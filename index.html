@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Discord Clone</title>
+  <title>Gng Chat</title>
   <style>
     * {
       box-sizing: border-box;
@@ -20,7 +20,7 @@
       overflow: hidden;
     }
 
-    /* 1. Server/Clan Rail */
+    /* 1. Server Rail */
     .server-rail {
       width: 72px;
       background-color: #1e1f22;
@@ -44,15 +44,16 @@
       font-weight: bold;
       color: #f2f3f5;
       position: relative;
-      transition: background 0.2s;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .server-icon:hover, .server-icon.active {
       background-color: #5865f2;
       border-radius: 10px;
+      transform: translateY(-2px);
     }
 
-    /* Notification Badge */
+    /* Badge */
     .badge {
       position: absolute;
       top: -4px;
@@ -65,9 +66,10 @@
       border-radius: 10px;
       border: 3px solid #1e1f22;
       display: none;
+      animation: popIn 0.2s ease-out;
     }
 
-    /* 2. Channel & Direct Messages Sidebar */
+    /* 2. Sidebar */
     .sidebar {
       width: 240px;
       background-color: #2b2d31;
@@ -108,6 +110,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
+      transition: background 0.15s ease, color 0.15s ease;
     }
 
     .channel-item:hover, .channel-item.active,
@@ -142,9 +145,13 @@
       cursor: pointer;
       color: #b5bac1;
       font-size: 1.2rem;
+      transition: transform 0.3s ease;
     }
 
-    .settings-cog:hover { color: #f2f3f5; }
+    .settings-cog:hover {
+      color: #f2f3f5;
+      transform: rotate(45deg);
+    }
 
     /* 3. Main Chat View */
     .chat-container {
@@ -172,6 +179,11 @@
       padding: 6px 12px;
       border-radius: 4px;
       font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+
+    .inbox-btn:hover {
+      background: #383a40;
     }
 
     .messages-view {
@@ -187,9 +199,23 @@
       display: flex;
       gap: 16px;
       position: relative;
+      animation: slideFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .msg-group:hover .reply-btn { display: block; }
+    @keyframes slideFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .msg-group:hover .reply-btn {
+      display: block;
+    }
 
     .msg-content {
       display: flex;
@@ -241,6 +267,12 @@
       border-radius: 4px;
       font-size: 0.75rem;
       cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .reply-btn:hover {
+      background-color: #383a40;
+      color: #f2f3f5;
     }
 
     /* Input Box */
@@ -257,6 +289,7 @@
       font-size: 0.85rem;
       color: #b5bac1;
       justify-content: space-between;
+      animation: popIn 0.15s ease-out;
     }
 
     .chat-input {
@@ -268,6 +301,11 @@
       color: #f2f3f5;
       font-size: 0.95rem;
       outline: none;
+      transition: box-shadow 0.2s;
+    }
+
+    .chat-input:focus {
+      box-shadow: 0 0 0 2px #5865f2;
     }
 
     /* 4. Right Members Rail */
@@ -296,23 +334,35 @@
 
     .online { background-color: #23a55a; }
 
-    /* Modals & Sign-in */
+    /* Modals & Overlays */
     .overlay {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
       background-color: rgba(0,0,0,0.85);
       display: flex; justify-content: center; align-items: center;
       z-index: 1000;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
     }
 
     .modal-box {
       background-color: #313338;
       padding: 28px;
-      border-radius: 4px;
+      border-radius: 6px;
       width: 480px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
     .modal-box input, .modal-box select {
@@ -321,6 +371,7 @@
       border: 1px solid #2b2d31;
       color: white;
       border-radius: 4px;
+      outline: none;
     }
 
     .preset-avatars {
@@ -334,6 +385,11 @@
       border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+
+    .preset-avatars img:hover {
+      transform: scale(1.05);
     }
 
     .preset-avatars img.selected { border-color: #5865f2; }
@@ -346,22 +402,48 @@
       font-weight: bold;
       border-radius: 4px;
       cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background-color: #4752c4;
+    }
+
+    /* Banned Overlay Screen */
+    .banned-screen {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: #0f172a;
+      color: #f23f43;
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 1.5rem;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
+  <div class="banned-screen" id="bannedScreen">
+    ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
+    <span style="font-size: 1rem; color: #949ba4;">IP / Session Restriction Active</span>
+  </div>
+
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
-      <h2>Welcome Back!</h2>
-      <p style="color: #b5bac1; font-size: 0.9rem;">Please enter your username to enter the clan server.</p>
-      <input type="text" id="usernameInput" placeholder="Username" />
+      <h2>Welcome to Gng Chat!</h2>
+      <p style="color: #b5bac1; font-size: 0.9rem;">Enter your username to join the chat.</p>
+      <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
 
   <div class="overlay" id="settingsModal" style="display: none;">
-    <div class="modal-box" style="width: 560px;">
+    <div class="modal-box" style="width: 520px;">
       <h2>Profile Customization</h2>
       
       <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">DISPLAY NAME</label>
@@ -375,7 +457,7 @@
         <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Viper" onclick="selectPreset(this.src, this)" />
       </div>
 
-      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">OR UPLOAD YOUR OWN PIC</label>
+      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">OR UPLOAD CUSTOM PIC</label>
       <input type="file" id="fileUpload" accept="image/*" onchange="handleFileUpload(event)" />
 
       <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -393,18 +475,18 @@
   <div class="sidebar">
     <div>
       <div class="sidebar-header">
-        <span>Squad Clan</span>
+        <span>Gng Chat</span>
       </div>
 
       <div class="section-title">Text Channels</div>
       <ul class="channel-list">
-        <li class="channel-item active" onclick="switchChannel('general')"># general</li>
-        <li class="channel-item" onclick="switchChannel('lounge')"># lounge</li>
+        <li class="channel-item active" id="chan-general" onclick="switchChannel('general')"># general</li>
+        <li class="channel-item" id="chan-lounge" onclick="switchChannel('lounge')"># lounge</li>
       </ul>
 
       <div class="section-title">Direct Messages</div>
       <ul class="dm-list">
-        <li class="dm-item" onclick="switchChannel('dm-bot')">💬 @Bot</li>
+        <li class="dm-item" id="chan-dm-bot" onclick="switchChannel('dm-bot')">💬 @Bot</li>
       </ul>
     </div>
 
@@ -460,10 +542,16 @@
     let activeChannel = "general";
     let activeReply = null;
     let mentionCount = 0;
+    let botInterval = null;
 
-    // Direct Memory Check
     window.onload = function() {
-      const savedUser = localStorage.getItem('discordCloneUser');
+      // Check ban status
+      if (localStorage.getItem('gngChatBanned') === 'true') {
+        document.getElementById('bannedScreen').style.display = 'flex';
+        return;
+      }
+
+      const savedUser = localStorage.getItem('gngChatUser');
       if (savedUser) {
         user = JSON.parse(savedUser);
         document.getElementById('loginOverlay').style.display = 'none';
@@ -475,7 +563,7 @@
       const name = document.getElementById('usernameInput').value.trim();
       if (name !== "") {
         user.name = name;
-        localStorage.setItem('discordCloneUser', JSON.stringify(user));
+        localStorage.setItem('gngChatUser', JSON.stringify(user));
         document.getElementById('loginOverlay').style.display = 'none';
         initApp();
       }
@@ -488,12 +576,24 @@
       document.getElementById('userAvatarMember').src = user.avatar;
       document.getElementById('editNameInput').value = user.name;
       
-      // Default welcome message
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to the server @${user.name}! Type @bot to talk to me.`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type @bot to talk or use admin commands like /help.`, null);
+
+      // Start 20s Bot Auto-Say Loop
+      if (!botInterval) {
+        botInterval = setInterval(() => {
+          renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "hey", null);
+        }, 20000);
+      }
     }
 
     function switchChannel(channelName) {
       activeChannel = channelName;
+      
+      document.querySelectorAll('.channel-item, .dm-item').forEach(el => el.classList.remove('active'));
+      if (document.getElementById(`chan-${channelName}`)) {
+        document.getElementById(`chan-${channelName}`).classList.add('active');
+      }
+
       document.getElementById('chatTitle').textContent = channelName.startsWith('dm') ? "@Bot" : `# ${channelName}`;
       document.getElementById('chatInput').placeholder = `Message ${document.getElementById('chatTitle').textContent}...`;
     }
@@ -505,9 +605,11 @@
 
       let highlightedText = text;
       if (user.name && text.includes(`@${user.name}`)) {
-        highlightedText = text.replace(`@${user.name}`, `<span class="mention-highlight">@${user.name}</span>`);
+        highlightedText = text.replace(new RegExp(`@${user.name}`, 'g'), `<span class="mention-highlight">@${user.name}</span>`);
         triggerMention();
       }
+
+      const escapedQuote = replyQuote ? replyQuote.replace(/"/g, '&quot;') : '';
 
       msgGroup.innerHTML = `
         <img class="avatar-sm" src="${avatar}" />
@@ -519,7 +621,7 @@
           </div>
           <div>${highlightedText}</div>
         </div>
-        <button class="reply-btn" onclick="setReply('${author}', '${text}')">Reply</button>
+        <button class="reply-btn" onclick="setReply('${author}', '${text.replace(/'/g, "\\'")}')">Reply</button>
       `;
 
       view.appendChild(msgGroup);
@@ -531,11 +633,17 @@
       const text = input.value.trim();
 
       if (text !== '') {
+        // Handle Admin Commands
+        if (text.startsWith('/')) {
+          handleAdminCommand(text);
+          input.value = '';
+          return;
+        }
+
         renderMessage(user.name, user.avatar, text, activeReply ? `Replying to ${activeReply.author}: "${activeReply.text}"` : null);
         input.value = '';
         cancelReply();
 
-        // Bot Logic
         if (text.toLowerCase().includes('@bot')) {
           setTimeout(() => {
             handleBotResponse(text);
@@ -544,16 +652,43 @@
       }
     }
 
+    function handleAdminCommand(cmd) {
+      const parts = cmd.split(' ');
+      const command = parts[0].toLowerCase();
+
+      if (command === '/help') {
+        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "👑 Admin Commands: /ban [username], /clear, /rename [new_name]", null);
+      } else if (command === '/clear') {
+        document.getElementById('messagesView').innerHTML = '';
+        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "Chat cleared.", null);
+      } else if (command === '/ban') {
+        const target = parts[1];
+        if (target && target.toLowerCase() === user.name.toLowerCase()) {
+          localStorage.setItem('gngChatBanned', 'true');
+          document.getElementById('bannedScreen').style.display = 'flex';
+        } else {
+          renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `User ${target || 'unknown'} banned.`, null);
+        }
+      } else if (command === '/rename') {
+        const newName = parts.slice(1).join(' ');
+        if (newName) {
+          user.name = newName;
+          saveSettingsData();
+          renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Name updated to ${newName}.`, null);
+        }
+      } else {
+        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "Unknown command. Type /help for options.", null);
+      }
+    }
+
     function handleBotResponse(text) {
       const cleanText = text.replace(/@bot/gi, '').trim();
-      
-      // Check for gibberish or empty prompt
       const isGibberish = cleanText.length > 0 && !/[aeiouyAEIOUY]/i.test(cleanText);
 
       if (cleanText === '' || isGibberish) {
         renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `I don't get it...`, null);
       } else {
-        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name}! I heard you. What's up?`, null);
+        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name}! What's good?`, null);
       }
     }
 
@@ -609,10 +744,13 @@
     function saveSettings() {
       const newName = document.getElementById('editNameInput').value.trim();
       if (newName !== '') user.name = newName;
-
-      localStorage.setItem('discordCloneUser', JSON.stringify(user));
-      initApp();
+      saveSettingsData();
       toggleSettings(false);
+    }
+
+    function saveSettingsData() {
+      localStorage.setItem('gngChatUser', JSON.stringify(user));
+      initApp();
     }
   </script>
 </body>
