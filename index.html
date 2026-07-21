@@ -12,51 +12,43 @@
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     }
 
+    /* Dynamic Body Background */
     body {
-      background-color: #0f172a;
+      background: #0f172a;
       color: #f8fafc;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       overflow: hidden;
+      transition: background 0.3s ease;
     }
 
-    /* Light Theme Toggle Support */
-    body.light-theme {
-      background-color: #e2e8f0;
-      color: #0f172a;
+    /* Background Customization Options */
+    body.bg-dark { background: #0f172a; }
+    body.bg-neon {
+      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+    }
+    body.bg-sunset {
+      background: linear-gradient(-45deg, #2e1065, #701a75, #831843, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+    }
+    body.bg-cyber {
+      background: linear-gradient(-45deg, #064e3b, #0284c7, #1e1b4b, #0f172a);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
     }
 
-    body.light-theme .app-container,
-    body.light-theme .modal-content {
-      background-color: #ffffff;
-      color: #0f172a;
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
-    body.light-theme .sidebar {
-      background-color: #f1f5f9;
-      border-right-color: #cbd5e1;
-    }
-
-    body.light-theme .message.received {
-      background-color: #e2e8f0;
-      color: #0f172a;
-    }
-
-    body.light-theme .input-area,
-    body.light-theme .chat-header {
-      background-color: #ffffff;
-      border-color: #cbd5e1;
-    }
-
-    body.light-theme .input-area input {
-      background-color: #f8fafc;
-      border-color: #cbd5e1;
-      color: #0f172a;
-    }
-
-    /* Sign-In Overlay */
+    /* Sign-In Modal */
     .login-overlay {
       position: fixed;
       top: 0;
@@ -82,9 +74,7 @@
       gap: 15px;
     }
 
-    .login-card h2 {
-      font-size: 1.5rem;
-    }
+    .login-card h2 { font-size: 1.5rem; }
 
     .login-card input {
       padding: 12px;
@@ -107,21 +97,23 @@
       cursor: pointer;
     }
 
-    /* Main Container (Bigger Layout) */
+    /* App Container */
     .app-container {
       display: flex;
       width: 95vw;
       height: 92vh;
-      background-color: #1e293b;
+      background-color: rgba(30, 41, 59, 0.9);
+      backdrop-filter: blur(12px);
       border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    /* Sidebar Styles */
+    /* Sidebar */
     .sidebar {
       width: 280px;
-      background-color: #0f172a;
+      background-color: rgba(15, 23, 42, 0.8);
       border-right: 1px solid #334155;
       padding: 20px;
       display: flex;
@@ -164,15 +156,11 @@
       box-shadow: 0 0 8px #22c55e88;
     }
 
-    .offline {
-      background-color: #64748b;
-    }
-
     .settings-btn {
       background: #334155;
       border: none;
       color: white;
-      padding: 10px;
+      padding: 12px;
       border-radius: 8px;
       cursor: pointer;
       font-weight: bold;
@@ -182,7 +170,7 @@
       gap: 8px;
     }
 
-    /* Chat Area */
+    /* Chat Window */
     .chat-area {
       flex: 1;
       display: flex;
@@ -192,7 +180,7 @@
     .chat-header {
       padding: 20px 24px;
       border-bottom: 1px solid #334155;
-      background-color: #1e293b;
+      background-color: rgba(30, 41, 59, 0.8);
       font-size: 1.3rem;
       font-weight: bold;
     }
@@ -206,21 +194,21 @@
       gap: 14px;
     }
 
-    /* Message Slide-in Animation */
+    /* Animated Messages */
     .message {
       max-width: 65%;
       padding: 12px 18px;
       border-radius: 12px;
       font-size: 1rem;
       line-height: 1.4;
-      animation: slideIn 0.25s ease-out forwards;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
       word-wrap: break-word;
     }
 
-    @keyframes slideIn {
+    @keyframes popIn {
       from {
         opacity: 0;
-        transform: translateY(12px) scale(0.98);
+        transform: translateY(15px) scale(0.95);
       }
       to {
         opacity: 1;
@@ -255,7 +243,7 @@
       border-top: 1px solid #334155;
       display: flex;
       gap: 12px;
-      background-color: #1e293b;
+      background-color: rgba(30, 41, 59, 0.8);
     }
 
     .input-area input {
@@ -304,10 +292,6 @@
       gap: 15px;
     }
 
-    .modal-content h3 {
-      font-size: 1.3rem;
-    }
-
     .setting-option {
       display: flex;
       flex-direction: column;
@@ -327,19 +311,26 @@
       color: white;
     }
 
-    .close-modal-btn {
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .modal-actions button {
+      flex: 1;
       padding: 10px;
       border: none;
       border-radius: 8px;
-      background-color: #22c55e;
-      color: white;
       font-weight: bold;
       cursor: pointer;
-      margin-top: 10px;
     }
+
+    .save-btn { background-color: #22c55e; color: white; }
+    .logout-btn { background-color: #ef4444; color: white; }
   </style>
 </head>
-<body>
+<body class="bg-dark" id="bodyBg">
 
   <div class="login-overlay" id="loginOverlay">
     <div class="login-card">
@@ -352,12 +343,9 @@
   <div class="app-container">
     <div class="sidebar">
       <div class="sidebar-top">
-        <h2>Squad</h2>
-        <ul class="user-list">
-          <li class="user-item"><span class="status-dot online"></span> <span id="userSidebarName">You</span></li>
-          <li class="user-item"><span class="status-dot online"></span> Nico 🎮</li>
-          <li class="user-item"><span class="status-dot online"></span> Yujin ⭐</li>
-          <li class="user-item"><span class="status-dot offline"></span> Barkon 💤</li>
+        <h2>Online Members</h2>
+        <ul class="user-list" id="userList">
+          <li class="user-item"><span class="status-dot online"></span> 🤖 Bot</li>
         </ul>
       </div>
 
@@ -367,12 +355,7 @@
     <div class="chat-area">
       <div class="chat-header"># general</div>
       
-      <div class="messages-container" id="messageBox">
-        <div class="message received">
-          <div class="msg-sender">Nico</div>
-          Yo! Welcome to the chat room 👋
-        </div>
-      </div>
+      <div class="messages-container" id="messageBox"></div>
 
       <div class="input-area">
         <input type="text" id="userInput" placeholder="Type a message..." onkeydown="handleKey(event)" />
@@ -383,7 +366,7 @@
 
   <div class="modal" id="settingsModal">
     <div class="modal-content">
-      <h3>Profile Settings</h3>
+      <h3>Profile & Customization</h3>
       
       <div class="setting-option">
         <label>Display Name</label>
@@ -391,41 +374,96 @@
       </div>
 
       <div class="setting-option">
-        <label>Avatar Icon</label>
+        <label>Avatar Emoji</label>
         <select id="avatarSelect">
           <option value="😎">😎 Cool</option>
           <option value="🔥">🔥 Fire</option>
           <option value="👑">👑 Crown</option>
           <option value="👾">👾 Gamer</option>
+          <option value="⚡">⚡ Electric</option>
         </select>
       </div>
 
       <div class="setting-option">
-        <label>Theme</label>
-        <select id="themeSelect" onchange="changeTheme(this.value)">
-          <option value="dark">Dark Mode</option>
-          <option value="light">Light Mode</option>
+        <label>Animated Background</label>
+        <select id="bgSelect" onchange="changeBackground(this.value)">
+          <option value="bg-dark">Dark Mode (Default)</option>
+          <option value="bg-neon">Neon Glow (Animated)</option>
+          <option value="bg-sunset">Purple Sunset (Animated)</option>
+          <option value="bg-cyber">Cyber Matrix (Animated)</option>
         </select>
       </div>
 
-      <button class="close-modal-btn" onclick="saveSettings()">Save & Close</button>
+      <div class="modal-actions">
+        <button class="save-btn" onclick="saveSettings()">Save</button>
+        <button class="logout-btn" onclick="logout()">Sign Out</button>
+      </div>
     </div>
   </div>
 
   <script>
     let currentUser = {
-      name: "Guest",
-      avatar: "😎"
+      name: "",
+      avatar: "😎",
+      bg: "bg-dark"
+    };
+
+    // Load Saved Session Memory on Startup
+    window.onload = function() {
+      const savedUser = localStorage.getItem('squadChatUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        document.getElementById('loginOverlay').style.display = 'none';
+        initChat();
+      }
     };
 
     function signIn() {
       const nameInput = document.getElementById('usernameInput').value.trim();
       if (nameInput !== '') {
         currentUser.name = nameInput;
-        document.getElementById('userSidebarName').textContent = currentUser.name + " " + currentUser.avatar;
-        document.getElementById('editNameInput').value = currentUser.name;
+        localStorage.setItem('squadChatUser', JSON.stringify(currentUser));
         document.getElementById('loginOverlay').style.display = 'none';
+        initChat();
       }
+    }
+
+    function initChat() {
+      updateSidebar();
+      changeBackground(currentUser.bg);
+      
+      // Send Bot Welcome Message once logged in
+      const messageBox = document.getElementById('messageBox');
+      if (messageBox.children.length === 0) {
+        addMessage("Bot", "🤖", "Welcome to the chat, " + currentUser.name + "! 👋 Feel free to customize your profile in Settings.", "received");
+      }
+    }
+
+    function updateSidebar() {
+      const userList = document.getElementById('userList');
+      userList.innerHTML = `
+        <li class="user-item"><span class="status-dot online"></span> ${currentUser.name} ${currentUser.avatar} (You)</li>
+        <li class="user-item"><span class="status-dot online"></span> Bot 🤖</li>
+      `;
+      document.getElementById('editNameInput').value = currentUser.name;
+      document.getElementById('avatarSelect').value = currentUser.avatar;
+      document.getElementById('bgSelect').value = currentUser.bg;
+    }
+
+    function addMessage(sender, avatar, text, type) {
+      const messageBox = document.getElementById('messageBox');
+      const newMsg = document.createElement('div');
+      newMsg.className = `message ${type}`;
+      
+      const senderDiv = document.createElement('div');
+      senderDiv.className = 'msg-sender';
+      senderDiv.textContent = sender + " " + avatar;
+      
+      newMsg.appendChild(senderDiv);
+      newMsg.appendChild(document.createTextNode(text));
+      
+      messageBox.appendChild(newMsg);
+      messageBox.scrollTop = messageBox.scrollHeight;
     }
 
     function sendMessage() {
@@ -433,21 +471,8 @@
       const text = input.value.trim();
       
       if (text !== '') {
-        const messageBox = document.getElementById('messageBox');
-        
-        const newMsg = document.createElement('div');
-        newMsg.className = 'message sent';
-        
-        const senderDiv = document.createElement('div');
-        senderDiv.className = 'msg-sender';
-        senderDiv.textContent = currentUser.name + " " + currentUser.avatar;
-        
-        newMsg.appendChild(senderDiv);
-        newMsg.appendChild(document.createTextNode(text));
-        
-        messageBox.appendChild(newMsg);
+        addMessage(currentUser.name, currentUser.avatar, text, 'sent');
         input.value = '';
-        messageBox.scrollTop = messageBox.scrollHeight;
       }
     }
 
@@ -461,25 +486,27 @@
       document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
     }
 
+    function changeBackground(themeClass) {
+      currentUser.bg = themeClass;
+      document.getElementById('bodyBg').className = themeClass;
+    }
+
     function saveSettings() {
       const newName = document.getElementById('editNameInput').value.trim();
-      const newAvatar = document.getElementById('avatarSelect').value;
-
       if (newName !== '') {
         currentUser.name = newName;
       }
-      currentUser.avatar = newAvatar;
+      currentUser.avatar = document.getElementById('avatarSelect').value;
+      currentUser.bg = document.getElementById('bgSelect').value;
 
-      document.getElementById('userSidebarName').textContent = currentUser.name + " " + currentUser.avatar;
+      localStorage.setItem('squadChatUser', JSON.stringify(currentUser));
+      updateSidebar();
       toggleSettings(false);
     }
 
-    function changeTheme(theme) {
-      if (theme === 'light') {
-        document.body.classList.add('light-theme');
-      } else {
-        document.body.classList.remove('light-theme');
-      }
+    function logout() {
+      localStorage.removeItem('squadChatUser');
+      location.reload();
     }
   </script>
 
