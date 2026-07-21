@@ -53,7 +53,6 @@
       transform: translateY(-2px);
     }
 
-    /* Badge */
     .badge {
       position: absolute;
       top: -4px;
@@ -119,7 +118,6 @@
       color: #f2f3f5;
     }
 
-    /* User Profile Footer */
     .user-footer {
       background-color: #232428;
       padding: 10px 14px;
@@ -275,9 +273,10 @@
       color: #f2f3f5;
     }
 
-    /* Input Box */
+    /* Input Box Area */
     .input-wrapper {
       padding: 0 16px 24px 16px;
+      position: relative;
     }
 
     .reply-banner {
@@ -292,20 +291,63 @@
       animation: popIn 0.15s ease-out;
     }
 
-    .chat-input {
-      width: 100%;
+    .input-container {
+      display: flex;
       background-color: #383a40;
+      border-radius: 8px;
+      align-items: center;
+      padding-right: 10px;
+    }
+
+    .chat-input {
+      flex: 1;
+      background-color: transparent;
       border: none;
       padding: 14px;
-      border-radius: 8px;
       color: #f2f3f5;
       font-size: 0.95rem;
       outline: none;
-      transition: box-shadow 0.2s;
     }
 
-    .chat-input:focus {
-      box-shadow: 0 0 0 2px #5865f2;
+    .emoji-picker-btn {
+      cursor: pointer;
+      font-size: 1.2rem;
+      padding: 4px;
+      transition: transform 0.1s;
+    }
+
+    .emoji-picker-btn:hover {
+      transform: scale(1.2);
+    }
+
+    .emoji-menu {
+      display: none;
+      position: absolute;
+      bottom: 80px;
+      right: 20px;
+      background-color: #2b2d31;
+      border: 1px solid #383a40;
+      border-radius: 8px;
+      padding: 10px;
+      width: 250px;
+      height: 180px;
+      overflow-y: auto;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      z-index: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+
+    .emoji-item {
+      font-size: 1.3rem;
+      cursor: pointer;
+      text-align: center;
+      padding: 4px;
+      border-radius: 4px;
+    }
+
+    .emoji-item:hover {
+      background-color: #383a40;
     }
 
     /* 4. Right Members Rail */
@@ -404,47 +446,50 @@
 
     .btn-primary:hover { background-color: #4752c4; }
 
-    /* Call Screen Styles */
+    /* Bigger Call Screen Styles */
     .call-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: #111214;
+      background-color: #0f1115;
       z-index: 2000;
       flex-direction: column;
       align-items: center;
       justify-content: space-between;
-      padding: 40px;
+      padding: 30px;
       animation: fadeIn 0.3s ease-out;
     }
 
     .call-grid {
       display: flex;
-      gap: 20px;
+      gap: 30px;
       justify-content: center;
       align-items: center;
       flex: 1;
       width: 100%;
+      max-width: 1200px;
     }
 
     .call-user-card {
-      width: 280px;
-      height: 220px;
-      background-color: #2b2d31;
-      border-radius: 12px;
+      flex: 1;
+      max-width: 500px;
+      height: 60vh;
+      background-color: #1e2024;
+      border-radius: 16px;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 12px;
+      gap: 20px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.6);
+      border: 1px solid #2b2d31;
     }
 
     .call-avatar-pulse {
-      width: 80px;
-      height: 80px;
+      width: 130px;
+      height: 130px;
       border-radius: 50%;
       position: relative;
     }
@@ -469,7 +514,7 @@
 
     @keyframes pulseAnim {
       0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.6); opacity: 0; }
+      100% { transform: scale(1.7); opacity: 0; }
     }
 
     video.webcam-preview {
@@ -484,18 +529,18 @@
       display: flex;
       gap: 20px;
       background-color: #2b2d31;
-      padding: 14px 28px;
-      border-radius: 30px;
+      padding: 16px 32px;
+      border-radius: 40px;
     }
 
     .call-btn {
-      width: 50px;
-      height: 50px;
+      width: 56px;
+      height: 56px;
       border-radius: 50%;
       border: none;
       background-color: #383a40;
       color: white;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       cursor: pointer;
       display: flex;
       justify-content: center;
@@ -507,6 +552,35 @@
     .call-btn.end-btn { background-color: #da373c; }
     .call-btn.end-btn:hover { background-color: #a1282b; }
     .call-btn.active { background-color: #f23f43; }
+
+    /* Shaking Call Icon Animation */
+    .shaking-phone {
+      display: inline-block;
+      animation: phoneShake 0.6s infinite ease-in-out;
+    }
+
+    @keyframes phoneShake {
+      0% { transform: rotate(0deg); }
+      20% { transform: rotate(15deg); }
+      40% { transform: rotate(-15deg); }
+      60% { transform: rotate(10deg); }
+      80% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    /* Incoming Call Popup Modal */
+    .incoming-call-modal {
+      display: none;
+      position: fixed;
+      top: 20px; right: 20px;
+      background-color: #2b2d31;
+      border: 2px solid #5865f2;
+      padding: 20px;
+      border-radius: 12px;
+      z-index: 3000;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
 
     /* Banned Screen */
     .banned-screen {
@@ -559,6 +633,20 @@
     </div>
   </div>
 
+  <div class="incoming-call-modal" id="incomingCallModal">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+      <span class="shaking-phone" style="font-size: 1.8rem;">📞</span>
+      <div>
+        <div style="font-weight: bold; color: white;">Bot is calling you...</div>
+        <div style="font-size: 0.8rem; color: #949ba4;">Gng Chat Voice</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px;">
+      <button class="btn-primary" style="background-color: #23a55a; flex: 1;" onclick="acceptBotCall()">Accept</button>
+      <button class="btn-primary" style="background-color: #da373c; flex: 1;" onclick="declineBotCall()">Decline</button>
+    </div>
+  </div>
+
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
       <h2>Welcome to Gng Chat!</h2>
@@ -568,10 +656,20 @@
     </div>
   </div>
 
+  <div class="overlay" id="panelModal" style="display: none;">
+    <div class="modal-box">
+      <h2>🛠️ Admin & Test Control Panel</h2>
+      <p style="color: #b5bac1; font-size: 0.85rem;">Test chat features and simulate actions.</p>
+      <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot to Call Me</button>
+      <button class="btn-primary" style="background-color: #383a40;" onclick="triggerFakeMention()">🔔 Trigger Test Mention</button>
+      <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
+      <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
+    </div>
+  </div>
+
   <div class="overlay" id="settingsModal" style="display: none;">
     <div class="modal-box" style="width: 520px;">
       <h2>Profile Customization</h2>
-      
       <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">DISPLAY NAME</label>
       <input type="text" id="editNameInput" />
 
@@ -594,7 +692,9 @@
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="callStatusText">Gng Voice Call — Connected</div>
+    <div style="font-weight: bold; font-size: 1.4rem; color: #f2f3f5; display: flex; align-items: center; gap: 10px;" id="callStatusText">
+      <span class="shaking-phone">📞</span> Gng Voice & Video Call — Connected
+    </div>
     
     <div class="call-grid">
       <div class="call-user-card">
@@ -603,7 +703,7 @@
           <div class="pulse-ring"></div>
           <img id="callUserAvatar" src="" />
         </div>
-        <span style="font-weight: bold; color: #f2f3f5;" id="callUserName">You</span>
+        <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="callUserName">You</span>
       </div>
 
       <div class="call-user-card">
@@ -611,7 +711,7 @@
           <div class="pulse-ring"></div>
           <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
         </div>
-        <span style="font-weight: bold; color: #f2f3f5;">Bot</span>
+        <span style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;">Bot</span>
       </div>
     </div>
 
@@ -658,7 +758,10 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">📞 Start Call</div>
+        <div class="header-btn" onclick="togglePanel(true)" style="color: #5865f2;">🛠️ Panel</div>
+        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">
+          <span class="shaking-phone">📞</span> Start Call
+        </div>
         <div class="header-btn" onclick="clearMentions()">
           📬 Inbox
           <span class="badge" id="inboxBadge">0</span>
@@ -669,11 +772,17 @@
     <div class="messages-view" id="messagesView"></div>
 
     <div class="input-wrapper">
+      <div class="emoji-menu" id="emojiMenu"></div>
+
       <div class="reply-banner" id="replyBanner">
         <span id="replyBannerText">Replying to...</span>
         <span style="cursor: pointer;" onclick="cancelReply()">✕</span>
       </div>
-      <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+      
+      <div class="input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+        <span class="emoji-picker-btn" onclick="toggleEmojiPicker()">😊</span>
+      </div>
     </div>
   </div>
 
@@ -707,6 +816,8 @@
     let webcamStream = null;
     let audioCtx = null;
 
+    const emojis = ["😂", "🔥", "⚔️", "💀", "😎", "👍", "❤️", "🎮", "🚀", "🎉", "💩", "🤖", "👀", "💯", "✨"];
+
     window.onload = function() {
       if (localStorage.getItem('gngChatBanned') === 'true') {
         document.getElementById('bannedScreen').style.display = 'flex';
@@ -720,17 +831,37 @@
         initApp();
       }
 
+      buildEmojiPicker();
+
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
     };
+
+    function buildEmojiPicker() {
+      const menu = document.getElementById('emojiMenu');
+      emojis.forEach(e => {
+        const span = document.createElement('span');
+        span.className = 'emoji-item';
+        span.textContent = e;
+        span.onclick = () => {
+          document.getElementById('chatInput').value += e;
+          toggleEmojiPicker();
+        };
+        menu.appendChild(span);
+      });
+    }
+
+    function toggleEmojiPicker() {
+      const menu = document.getElementById('emojiMenu');
+      menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
+    }
 
     function verifyUnbanCode() {
       const codeInput = document.getElementById('unbanCodeInput').value.trim();
       const msg = document.getElementById('banMsg');
 
       if (codeInput === '9785') {
-        // Correct code: Unban user
         localStorage.removeItem('gngChatBanned');
         document.getElementById('bannedScreen').style.display = 'none';
         
@@ -743,7 +874,6 @@
           document.getElementById('loginOverlay').style.display = 'flex';
         }
       } else {
-        // Wrong code: Permanently delete saved user account memory & keep banned
         localStorage.removeItem('gngChatUser');
         msg.style.display = 'block';
         document.getElementById('unbanCodeInput').value = '';
@@ -769,7 +899,7 @@
       document.getElementById('callUserName').textContent = user.name;
       document.getElementById('callUserAvatar').src = user.avatar;
       
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type @bot to talk or click 📞 Start Call to join voice!`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type /panel for testing tools or click 📞 Start Call to join voice!`, null);
 
       if (!botInterval) {
         botInterval = setInterval(() => {
@@ -780,7 +910,6 @@
 
     function switchChannel(channelName) {
       activeChannel = channelName;
-      
       document.querySelectorAll('.channel-item, .dm-item').forEach(el => el.classList.remove('active'));
       if (document.getElementById(`chan-${channelName}`)) {
         document.getElementById(`chan-${channelName}`).classList.add('active');
@@ -846,19 +975,15 @@
       const parts = cmd.split(' ');
       const command = parts[0].toLowerCase();
 
-      if (command === '/help') {
-        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "👑 Admin Commands: /ban [username], /clear, /rename [new_name]", null);
+      if (command === '/panel') {
+        togglePanel(true);
+      } else if (command === '/help') {
+        renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "👑 Admin Commands: /panel, /ban [username], /clear, /rename [new_name]", null);
       } else if (command === '/clear') {
         document.getElementById('messagesView').innerHTML = '';
         renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "Chat cleared.", null);
       } else if (command === '/ban') {
-        const target = parts[1];
-        if (target && target.toLowerCase() === user.name.toLowerCase()) {
-          localStorage.setItem('gngChatBanned', 'true');
-          document.getElementById('bannedScreen').style.display = 'flex';
-        } else {
-          renderMessage("System", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `User ${target || 'unknown'} banned.`, null);
-        }
+        testBanSelf();
       } else if (command === '/rename') {
         const newName = parts.slice(1).join(' ');
         if (newName) {
@@ -916,6 +1041,7 @@
       if (e.key === 'Enter') sendMessage();
     }
 
+    /* Voice & Video Call Logic */
     function playCallSound(freq, duration) {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -980,6 +1106,37 @@
         isCamOn = false;
         btn.classList.remove('active');
       }
+    }
+
+    /* Panel & Bot Call Test Features */
+    function togglePanel(show) {
+      document.getElementById('panelModal').style.display = show ? 'flex' : 'none';
+    }
+
+    function triggerBotCall() {
+      togglePanel(false);
+      document.getElementById('incomingCallModal').style.display = 'block';
+      playCallSound(587.33, 0.4);
+    }
+
+    function acceptBotCall() {
+      document.getElementById('incomingCallModal').style.display = 'none';
+      startCall();
+    }
+
+    function declineBotCall() {
+      document.getElementById('incomingCallModal').style.display = 'none';
+    }
+
+    function triggerFakeMention() {
+      togglePanel(false);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name} check out the panel features!`, null);
+    }
+
+    function testBanSelf() {
+      togglePanel(false);
+      localStorage.setItem('gngChatBanned', 'true');
+      document.getElementById('bannedScreen').style.display = 'flex';
     }
 
     function toggleSettings(show) {
