@@ -3,512 +3,617 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Squad Chat</title>
+  <title>Discord Clone</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      font-family: 'gg sans', 'Noto Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     }
 
-    /* Dynamic Body Background */
     body {
-      background: #0f172a;
-      color: #f8fafc;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background-color: #1e1f22;
+      color: #dbdee1;
       height: 100vh;
+      display: flex;
       overflow: hidden;
-      transition: background 0.3s ease;
     }
 
-    /* Background Customization Options */
-    body.bg-dark { background: #0f172a; }
-    body.bg-neon {
-      background: linear-gradient(-45deg, #0f172a, #1e1b4b, #311042, #0f172a);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-    }
-    body.bg-sunset {
-      background: linear-gradient(-45deg, #2e1065, #701a75, #831843, #0f172a);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-    }
-    body.bg-cyber {
-      background: linear-gradient(-45deg, #064e3b, #0284c7, #1e1b4b, #0f172a);
-      background-size: 400% 400%;
-      animation: gradientBG 10s ease infinite;
-    }
-
-    @keyframes gradientBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-
-    /* Sign-In Modal */
-    .login-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(15, 23, 42, 0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .login-card {
-      background-color: #1e293b;
-      padding: 35px;
-      border-radius: 16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      text-align: center;
-      width: 320px;
+    /* 1. Server/Clan Rail */
+    .server-rail {
+      width: 72px;
+      background-color: #1e1f22;
+      padding: 12px 0;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      align-items: center;
+      gap: 8px;
+      border-right: 2px solid #2b2d31;
     }
 
-    .login-card h2 { font-size: 1.5rem; }
-
-    .login-card input {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background-color: #0f172a;
-      color: white;
-      font-size: 1rem;
-      outline: none;
-    }
-
-    .login-card button {
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background-color: #3b82f6;
-      color: white;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    /* App Container */
-    .app-container {
+    .server-icon {
+      width: 48px;
+      height: 48px;
+      background-color: #313338;
+      border-radius: 12px;
       display: flex;
-      width: 95vw;
-      height: 92vh;
-      background-color: rgba(30, 41, 59, 0.9);
-      backdrop-filter: blur(12px);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
+      color: #f2f3f5;
+      position: relative;
+      transition: background 0.2s;
     }
 
-    /* Sidebar */
+    .server-icon:hover, .server-icon.active {
+      background-color: #5865f2;
+      border-radius: 10px;
+    }
+
+    /* Notification Badge */
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background-color: #f23f43;
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 10px;
+      border: 3px solid #1e1f22;
+      display: none;
+    }
+
+    /* 2. Channel & Direct Messages Sidebar */
     .sidebar {
-      width: 280px;
-      background-color: rgba(15, 23, 42, 0.8);
-      border-right: 1px solid #334155;
-      padding: 20px;
+      width: 240px;
+      background-color: #2b2d31;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    .sidebar-top h2 {
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #94a3b8;
-      margin-bottom: 15px;
-    }
-
-    .user-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .user-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-    }
-
-    .online {
-      background-color: #22c55e;
-      box-shadow: 0 0 8px #22c55e88;
-    }
-
-    .settings-btn {
-      background: #334155;
-      border: none;
-      color: white;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
+    .sidebar-header {
+      padding: 16px;
+      border-bottom: 2px solid #1f2023;
       font-weight: bold;
+      color: #f2f3f5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .section-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      color: #949ba4;
+      font-weight: bold;
+      padding: 16px 16px 8px 16px;
+    }
+
+    .channel-list, .dm-list {
+      list-style: none;
+    }
+
+    .channel-item, .dm-item {
+      padding: 8px 16px;
+      margin: 2px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: #949ba4;
+      font-weight: 500;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
     }
 
-    /* Chat Window */
-    .chat-area {
+    .channel-item:hover, .channel-item.active,
+    .dm-item:hover, .dm-item.active {
+      background-color: #35373c;
+      color: #f2f3f5;
+    }
+
+    /* User Profile Footer */
+    .user-footer {
+      background-color: #232428;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .avatar-sm {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .settings-cog {
+      cursor: pointer;
+      color: #b5bac1;
+      font-size: 1.2rem;
+    }
+
+    .settings-cog:hover { color: #f2f3f5; }
+
+    /* 3. Main Chat View */
+    .chat-container {
       flex: 1;
+      background-color: #313338;
       display: flex;
       flex-direction: column;
     }
 
     .chat-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid #334155;
-      background-color: rgba(30, 41, 59, 0.8);
-      font-size: 1.3rem;
+      height: 48px;
+      border-bottom: 2px solid #2b2d31;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       font-weight: bold;
+      color: #f2f3f5;
     }
 
-    .messages-container {
+    .inbox-btn {
+      position: relative;
+      cursor: pointer;
+      background: #2b2d31;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+    }
+
+    .messages-view {
       flex: 1;
-      padding: 24px;
+      padding: 16px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 16px;
     }
 
-    /* Animated Messages */
-    .message {
-      max-width: 65%;
-      padding: 12px 18px;
-      border-radius: 12px;
-      font-size: 1rem;
-      line-height: 1.4;
-      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-      word-wrap: break-word;
-    }
-
-    @keyframes popIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px) scale(0.95);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .message.sent {
-      align-self: flex-end;
-      background-color: #3b82f6;
-      color: white;
-      border-bottom-right-radius: 2px;
-    }
-
-    .message.received {
-      align-self: flex-start;
-      background-color: #334155;
-      color: #f8fafc;
-      border-bottom-left-radius: 2px;
-    }
-
-    .msg-sender {
-      font-size: 0.75rem;
-      font-weight: bold;
-      margin-bottom: 4px;
-      opacity: 0.8;
-    }
-
-    /* Input Bar */
-    .input-area {
-      padding: 20px;
-      border-top: 1px solid #334155;
+    .msg-group {
       display: flex;
-      gap: 12px;
-      background-color: rgba(30, 41, 59, 0.8);
+      gap: 16px;
+      position: relative;
     }
 
-    .input-area input {
-      flex: 1;
-      background-color: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 14px 18px;
-      color: white;
-      outline: none;
-      font-size: 1rem;
+    .msg-group:hover .reply-btn { display: block; }
+
+    .msg-content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
     }
 
-    .input-area button {
-      background-color: #3b82f6;
-      border: none;
-      border-radius: 10px;
-      padding: 0 24px;
-      color: white;
+    .msg-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .msg-author {
       font-weight: bold;
-      font-size: 1rem;
+      color: #f2f3f5;
+    }
+
+    .msg-timestamp {
+      font-size: 0.75rem;
+      color: #949ba4;
+    }
+
+    .reply-quote {
+      font-size: 0.8rem;
+      color: #b5bac1;
+      border-left: 2px solid #4e5058;
+      padding-left: 8px;
+      margin-bottom: 4px;
+    }
+
+    .mention-highlight {
+      background-color: rgba(88, 101, 242, 0.3);
+      color: #c9cdfb;
+      padding: 0 4px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
+    .reply-btn {
+      display: none;
+      position: absolute;
+      right: 10px;
+      top: -10px;
+      background-color: #2b2d31;
+      border: 1px solid #3f4147;
+      color: #b5bac1;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
       cursor: pointer;
     }
 
-    /* Settings Modal */
-    .modal {
+    /* Input Box */
+    .input-wrapper {
+      padding: 0 16px 24px 16px;
+    }
+
+    .reply-banner {
       display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background-color: rgba(0,0,0,0.7);
-      justify-content: center;
-      align-items: center;
-      z-index: 200;
-    }
-
-    .modal-content {
-      background-color: #1e293b;
-      padding: 30px;
-      border-radius: 16px;
-      width: 360px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
-
-    .setting-option {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .setting-option label {
+      background-color: #2b2d31;
+      padding: 6px 12px;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
       font-size: 0.85rem;
-      color: #94a3b8;
+      color: #b5bac1;
+      justify-content: space-between;
     }
 
-    .setting-option input, .setting-option select {
-      padding: 10px;
+    .chat-input {
+      width: 100%;
+      background-color: #383a40;
+      border: none;
+      padding: 14px;
       border-radius: 8px;
-      border: 1px solid #334155;
-      background-color: #0f172a;
-      color: white;
+      color: #f2f3f5;
+      font-size: 0.95rem;
+      outline: none;
     }
 
-    .modal-actions {
+    /* 4. Right Members Rail */
+    .members-rail {
+      width: 240px;
+      background-color: #2b2d31;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .member-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: bold;
+      color: #949ba4;
+    }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .online { background-color: #23a55a; }
+
+    /* Modals & Sign-in */
+    .overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(0,0,0,0.85);
+      display: flex; justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-box {
+      background-color: #313338;
+      padding: 28px;
+      border-radius: 4px;
+      width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .modal-box input, .modal-box select {
+      padding: 10px;
+      background-color: #1e1f22;
+      border: 1px solid #2b2d31;
+      color: white;
+      border-radius: 4px;
+    }
+
+    .preset-avatars {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
     }
 
-    .modal-actions button {
-      flex: 1;
-      padding: 10px;
+    .preset-avatars img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .preset-avatars img.selected { border-color: #5865f2; }
+
+    .btn-primary {
+      background-color: #5865f2;
+      color: white;
       border: none;
-      border-radius: 8px;
+      padding: 10px;
       font-weight: bold;
+      border-radius: 4px;
       cursor: pointer;
     }
-
-    .save-btn { background-color: #22c55e; color: white; }
-    .logout-btn { background-color: #ef4444; color: white; }
   </style>
 </head>
-<body class="bg-dark" id="bodyBg">
+<body>
 
-  <div class="login-overlay" id="loginOverlay">
-    <div class="login-card">
-      <h2>Welcome to Squad Chat</h2>
-      <input type="text" id="usernameInput" placeholder="Enter your display name..." />
-      <button onclick="signIn()">Join Chat</button>
+  <div class="overlay" id="loginOverlay">
+    <div class="modal-box">
+      <h2>Welcome Back!</h2>
+      <p style="color: #b5bac1; font-size: 0.9rem;">Please enter your username to enter the clan server.</p>
+      <input type="text" id="usernameInput" placeholder="Username" />
+      <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
 
-  <div class="app-container">
-    <div class="sidebar">
-      <div class="sidebar-top">
-        <h2>Online Members</h2>
-        <ul class="user-list" id="userList">
-          <li class="user-item"><span class="status-dot online"></span> 🤖 Bot</li>
-        </ul>
+  <div class="overlay" id="settingsModal" style="display: none;">
+    <div class="modal-box" style="width: 560px;">
+      <h2>Profile Customization</h2>
+      
+      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">DISPLAY NAME</label>
+      <input type="text" id="editNameInput" />
+
+      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">CHOOSE PRESET AVATAR</label>
+      <div class="preset-avatars">
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Cyber" onclick="selectPreset(this.src, this)" class="selected" />
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Shadow" onclick="selectPreset(this.src, this)" />
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Blaze" onclick="selectPreset(this.src, this)" />
+        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Viper" onclick="selectPreset(this.src, this)" />
       </div>
 
-      <button class="settings-btn" onclick="toggleSettings(true)">⚙️ Settings</button>
-    </div>
+      <label style="font-size: 0.8rem; font-weight: bold; color: #b5bac1;">OR UPLOAD YOUR OWN PIC</label>
+      <input type="file" id="fileUpload" accept="image/*" onchange="handleFileUpload(event)" />
 
-    <div class="chat-area">
-      <div class="chat-header"># general</div>
-      
-      <div class="messages-container" id="messageBox"></div>
-
-      <div class="input-area">
-        <input type="text" id="userInput" placeholder="Type a message..." onkeydown="handleKey(event)" />
-        <button onclick="sendMessage()">Send</button>
+      <div style="display: flex; gap: 10px; margin-top: 10px;">
+        <button class="btn-primary" style="flex: 1;" onclick="saveSettings()">Save Changes</button>
+        <button class="btn-primary" style="background-color: #da373c;" onclick="toggleSettings(false)">Cancel</button>
       </div>
     </div>
   </div>
 
-  <div class="modal" id="settingsModal">
-    <div class="modal-content">
-      <h3>Profile & Customization</h3>
-      
-      <div class="setting-option">
-        <label>Display Name</label>
-        <input type="text" id="editNameInput" />
+  <div class="server-rail">
+    <div class="server-icon active">⚔️</div>
+    <div class="server-icon">🔥</div>
+  </div>
+
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-header">
+        <span>Squad Clan</span>
       </div>
 
-      <div class="setting-option">
-        <label>Avatar Emoji</label>
-        <select id="avatarSelect">
-          <option value="😎">😎 Cool</option>
-          <option value="🔥">🔥 Fire</option>
-          <option value="👑">👑 Crown</option>
-          <option value="👾">👾 Gamer</option>
-          <option value="⚡">⚡ Electric</option>
-        </select>
-      </div>
+      <div class="section-title">Text Channels</div>
+      <ul class="channel-list">
+        <li class="channel-item active" onclick="switchChannel('general')"># general</li>
+        <li class="channel-item" onclick="switchChannel('lounge')"># lounge</li>
+      </ul>
 
-      <div class="setting-option">
-        <label>Animated Background</label>
-        <select id="bgSelect" onchange="changeBackground(this.value)">
-          <option value="bg-dark">Dark Mode (Default)</option>
-          <option value="bg-neon">Neon Glow (Animated)</option>
-          <option value="bg-sunset">Purple Sunset (Animated)</option>
-          <option value="bg-cyber">Cyber Matrix (Animated)</option>
-        </select>
-      </div>
+      <div class="section-title">Direct Messages</div>
+      <ul class="dm-list">
+        <li class="dm-item" onclick="switchChannel('dm-bot')">💬 @Bot</li>
+      </ul>
+    </div>
 
-      <div class="modal-actions">
-        <button class="save-btn" onclick="saveSettings()">Save</button>
-        <button class="logout-btn" onclick="logout()">Sign Out</button>
+    <div class="user-footer">
+      <div class="user-info">
+        <img id="userAvatarFooter" class="avatar-sm" src="" />
+        <span id="userNameFooter" style="font-weight: bold; font-size: 0.9rem;"></span>
       </div>
+      <span class="settings-cog" onclick="toggleSettings(true)">⚙️</span>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <span id="chatTitle"># general</span>
+      <div class="inbox-btn" onclick="clearMentions()">
+        📬 Inbox
+        <span class="badge" id="inboxBadge">0</span>
+      </div>
+    </div>
+
+    <div class="messages-view" id="messagesView"></div>
+
+    <div class="input-wrapper">
+      <div class="reply-banner" id="replyBanner">
+        <span id="replyBannerText">Replying to...</span>
+        <span style="cursor: pointer;" onclick="cancelReply()">✕</span>
+      </div>
+      <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+    </div>
+  </div>
+
+  <div class="members-rail">
+    <div class="section-title" style="padding: 0;">ONLINE — 2</div>
+    <div class="member-card">
+      <img id="userAvatarMember" class="avatar-sm" src="" />
+      <span id="userNameMember" style="color: #f2f3f5;"></span>
+      <span class="status-indicator online"></span>
+    </div>
+    <div class="member-card">
+      <img class="avatar-sm" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
+      <span style="color: #f2f3f5;">Bot</span>
+      <span class="status-indicator online"></span>
     </div>
   </div>
 
   <script>
-    let currentUser = {
+    let user = {
       name: "",
-      avatar: "😎",
-      bg: "bg-dark"
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Cyber"
     };
 
-    // Load Saved Session Memory on Startup
+    let activeChannel = "general";
+    let activeReply = null;
+    let mentionCount = 0;
+
+    // Direct Memory Check
     window.onload = function() {
-      const savedUser = localStorage.getItem('squadChatUser');
+      const savedUser = localStorage.getItem('discordCloneUser');
       if (savedUser) {
-        currentUser = JSON.parse(savedUser);
+        user = JSON.parse(savedUser);
         document.getElementById('loginOverlay').style.display = 'none';
-        initChat();
+        initApp();
       }
     };
 
     function signIn() {
-      const nameInput = document.getElementById('usernameInput').value.trim();
-      if (nameInput !== '') {
-        currentUser.name = nameInput;
-        localStorage.setItem('squadChatUser', JSON.stringify(currentUser));
+      const name = document.getElementById('usernameInput').value.trim();
+      if (name !== "") {
+        user.name = name;
+        localStorage.setItem('discordCloneUser', JSON.stringify(user));
         document.getElementById('loginOverlay').style.display = 'none';
-        initChat();
+        initApp();
       }
     }
 
-    function initChat() {
-      updateSidebar();
-      changeBackground(currentUser.bg);
+    function initApp() {
+      document.getElementById('userNameFooter').textContent = user.name;
+      document.getElementById('userAvatarFooter').src = user.avatar;
+      document.getElementById('userNameMember').textContent = user.name;
+      document.getElementById('userAvatarMember').src = user.avatar;
+      document.getElementById('editNameInput').value = user.name;
       
-      // Send Bot Welcome Message once logged in
-      const messageBox = document.getElementById('messageBox');
-      if (messageBox.children.length === 0) {
-        addMessage("Bot", "🤖", "Welcome to the chat, " + currentUser.name + "! 👋 Feel free to customize your profile in Settings.", "received");
-      }
+      // Default welcome message
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to the server @${user.name}! Type @bot to talk to me.`, null);
     }
 
-    function updateSidebar() {
-      const userList = document.getElementById('userList');
-      userList.innerHTML = `
-        <li class="user-item"><span class="status-dot online"></span> ${currentUser.name} ${currentUser.avatar} (You)</li>
-        <li class="user-item"><span class="status-dot online"></span> Bot 🤖</li>
+    function switchChannel(channelName) {
+      activeChannel = channelName;
+      document.getElementById('chatTitle').textContent = channelName.startsWith('dm') ? "@Bot" : `# ${channelName}`;
+      document.getElementById('chatInput').placeholder = `Message ${document.getElementById('chatTitle').textContent}...`;
+    }
+
+    function renderMessage(author, avatar, text, replyQuote) {
+      const view = document.getElementById('messagesView');
+      const msgGroup = document.createElement('div');
+      msgGroup.className = 'msg-group';
+
+      let highlightedText = text;
+      if (user.name && text.includes(`@${user.name}`)) {
+        highlightedText = text.replace(`@${user.name}`, `<span class="mention-highlight">@${user.name}</span>`);
+        triggerMention();
+      }
+
+      msgGroup.innerHTML = `
+        <img class="avatar-sm" src="${avatar}" />
+        <div class="msg-content">
+          ${replyQuote ? `<div class="reply-quote">${replyQuote}</div>` : ''}
+          <div class="msg-header">
+            <span class="msg-author">${author}</span>
+            <span class="msg-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+          <div>${highlightedText}</div>
+        </div>
+        <button class="reply-btn" onclick="setReply('${author}', '${text}')">Reply</button>
       `;
-      document.getElementById('editNameInput').value = currentUser.name;
-      document.getElementById('avatarSelect').value = currentUser.avatar;
-      document.getElementById('bgSelect').value = currentUser.bg;
-    }
 
-    function addMessage(sender, avatar, text, type) {
-      const messageBox = document.getElementById('messageBox');
-      const newMsg = document.createElement('div');
-      newMsg.className = `message ${type}`;
-      
-      const senderDiv = document.createElement('div');
-      senderDiv.className = 'msg-sender';
-      senderDiv.textContent = sender + " " + avatar;
-      
-      newMsg.appendChild(senderDiv);
-      newMsg.appendChild(document.createTextNode(text));
-      
-      messageBox.appendChild(newMsg);
-      messageBox.scrollTop = messageBox.scrollHeight;
+      view.appendChild(msgGroup);
+      view.scrollTop = view.scrollHeight;
     }
 
     function sendMessage() {
-      const input = document.getElementById('userInput');
+      const input = document.getElementById('chatInput');
       const text = input.value.trim();
-      
+
       if (text !== '') {
-        addMessage(currentUser.name, currentUser.avatar, text, 'sent');
+        renderMessage(user.name, user.avatar, text, activeReply ? `Replying to ${activeReply.author}: "${activeReply.text}"` : null);
         input.value = '';
+        cancelReply();
+
+        // Bot Logic
+        if (text.toLowerCase().includes('@bot')) {
+          setTimeout(() => {
+            handleBotResponse(text);
+          }, 600);
+        }
       }
     }
 
-    function handleKey(event) {
-      if (event.key === 'Enter') {
-        sendMessage();
+    function handleBotResponse(text) {
+      const cleanText = text.replace(/@bot/gi, '').trim();
+      
+      // Check for gibberish or empty prompt
+      const isGibberish = cleanText.length > 0 && !/[aeiouyAEIOUY]/i.test(cleanText);
+
+      if (cleanText === '' || isGibberish) {
+        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `I don't get it...`, null);
+      } else {
+        renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name}! I heard you. What's up?`, null);
       }
+    }
+
+    function triggerMention() {
+      mentionCount++;
+      const badge = document.getElementById('inboxBadge');
+      badge.textContent = mentionCount;
+      badge.style.display = 'block';
+    }
+
+    function clearMentions() {
+      mentionCount = 0;
+      const badge = document.getElementById('inboxBadge');
+      badge.style.display = 'none';
+    }
+
+    function setReply(author, text) {
+      activeReply = { author, text };
+      document.getElementById('replyBannerText').textContent = `Replying to @${author}`;
+      document.getElementById('replyBanner').style.display = 'flex';
+    }
+
+    function cancelReply() {
+      activeReply = null;
+      document.getElementById('replyBanner').style.display = 'none';
+    }
+
+    function handleKey(e) {
+      if (e.key === 'Enter') sendMessage();
     }
 
     function toggleSettings(show) {
       document.getElementById('settingsModal').style.display = show ? 'flex' : 'none';
     }
 
-    function changeBackground(themeClass) {
-      currentUser.bg = themeClass;
-      document.getElementById('bodyBg').className = themeClass;
+    function selectPreset(url, element) {
+      document.querySelectorAll('.preset-avatars img').forEach(img => img.classList.remove('selected'));
+      element.classList.add('selected');
+      user.avatar = url;
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          user.avatar = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
     }
 
     function saveSettings() {
       const newName = document.getElementById('editNameInput').value.trim();
-      if (newName !== '') {
-        currentUser.name = newName;
-      }
-      currentUser.avatar = document.getElementById('avatarSelect').value;
-      currentUser.bg = document.getElementById('bgSelect').value;
+      if (newName !== '') user.name = newName;
 
-      localStorage.setItem('squadChatUser', JSON.stringify(currentUser));
-      updateSidebar();
+      localStorage.setItem('discordCloneUser', JSON.stringify(user));
+      initApp();
       toggleSettings(false);
     }
-
-    function logout() {
-      localStorage.removeItem('squadChatUser');
-      location.reload();
-    }
   </script>
-
 </body>
 </html>
