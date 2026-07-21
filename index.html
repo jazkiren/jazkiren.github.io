@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Squad Chat</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; text-align: center; padding: 20px; }
+        #chat-box { width: 90%; max-width: 500px; height: 300px; background: #16213e; margin: 20px auto; overflow-y: scroll; padding: 10px; border-radius: 8px; text-align: left; }
+        .msg { margin: 8px 0; padding: 6px 10px; background: #0f3460; border-radius: 5px; }
+        .user { font-weight: bold; color: #00adb5; }
+        select, input, button { padding: 10px; margin: 5px; border-radius: 5px; border: none; }
+        .emoji-btn { background: none; font-size: 20px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>🎮 Squad Live Chat</h1>
+
+    <label for="username">Who are you? </label>
+    <select id="username">
+        <option value="Nico">Nico</option>
+        <option value="Yujin">Yujin</option>
+        <option value="Barkon">Barkon</option>
+    </select>
+
+    <div id="chat-box"></div>
+
+    <div>
+        <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
+        <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+        <button class="emoji-btn" onclick="addEmoji('🎮')">🎮</button>
+        <button class="emoji-btn" onclick="addEmoji('💀')">💀</button>
+        <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+    </div>
+
+    <input type="text" id="message-input" placeholder="Type a message..." style="width: 60%;">
+    <button onclick="sendMessage()" style="background: #00adb5; color: white; font-weight: bold;">Send</button>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // YOUR EXACT PROJECT CONFIG
+        const firebaseConfig = {
+            databaseURL: "https://text-meh-8276c-default-rtdb.firebaseio.com",
+            projectId: "text-meh-8276c"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const chatRef = database.ref('messages');
+
+        // Send Message Function
+        function sendMessage() {
+            const user = document.getElementById('username').value;
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+
+            if (text !== "") {
+                chatRef.push({
+                    name: user,
+                    text: text
+                });
+                input.value = "";
+            }
+        }
+
+        // Add Quick Emoji to Textbox
+        function addEmoji(emoji) {
+            document.getElementById('message-input').value += emoji;
+        }
+
+        // Listen for Live Messages
+        chatRef.on('child_added', (snapshot) => {
+            const data = snapshot.val();
+            const chatBox = document.getElementById('chat-box');
+            
+            const msgElement = document.createElement('div');
+            msgElement.classList.add('msg');
+            msgElement.innerHTML = `<span class="user">${data.name}:</span> ${data.text}`;
+            
+            chatBox.appendChild(msgElement);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    </script>
+</body>
+</html>
