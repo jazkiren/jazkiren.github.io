@@ -16,7 +16,6 @@
       --speaking-green: #23a55a;
     }
 
-    /* Themes */
     body.theme-amoled {
       --bg-main: #000000;
       --bg-sidebar: #0a0a0a;
@@ -53,7 +52,7 @@
       overflow: hidden;
     }
 
-    /* Organized Top-Left Server Rail */
+    /* Server Rail */
     .server-rail {
       width: 64px;
       background-color: var(--bg-rail);
@@ -101,7 +100,7 @@
       display: none;
     }
 
-    /* Sidebar Layout */
+    /* Sidebar */
     .sidebar {
       width: 220px;
       background-color: var(--bg-sidebar);
@@ -155,7 +154,6 @@
       color: var(--text-primary);
     }
 
-    /* Footer Profile Area */
     .user-footer {
       background-color: rgba(0,0,0,0.2);
       padding: 8px 10px;
@@ -184,7 +182,6 @@
       object-fit: cover;
     }
 
-    /* Avatar Animations */
     .anim-glow img { box-shadow: 0 0 6px var(--accent); }
     .anim-pulse img { animation: pulseBorder 1.5s infinite alternate; }
     .anim-rainbow img { animation: rainbowBorder 3s infinite linear; border: 1px solid transparent; }
@@ -215,7 +212,7 @@
       transform: rotate(45deg);
     }
 
-    /* Main Chat View */
+    /* Main Chat Container */
     .chat-container {
       flex: 1;
       background-color: var(--bg-main);
@@ -362,7 +359,7 @@
       cursor: pointer;
     }
 
-    /* Chat Box */
+    /* Sleek Chat Box Input */
     .input-wrapper {
       padding: 0 14px 16px 14px;
       position: relative;
@@ -446,7 +443,7 @@
       background-color: #383a40;
     }
 
-    /* Members Rail */
+    /* Members Sidebar */
     .members-rail {
       width: 200px;
       background-color: var(--bg-sidebar);
@@ -571,18 +568,64 @@
       object-fit: cover;
     }
 
-    .soundboard-menu {
+    /* Calling Overlay & Incoming Call Screen */
+    .incoming-call-overlay {
       display: none;
-      position: absolute;
-      top: 50px; right: 14px;
-      background-color: var(--bg-sidebar);
-      border: 1px solid #383a40;
-      border-radius: 8px;
-      padding: 10px;
-      z-index: 1500;
-      gap: 6px;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: rgba(15, 17, 21, 0.92);
+      z-index: 3000;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      backdrop-filter: blur(8px);
     }
+
+    .caller-avatar-ring {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      position: relative;
+      animation: callPulse 1.4s infinite ease-in-out;
+    }
+
+    .caller-avatar-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    @keyframes callPulse {
+      0% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.7); }
+      70% { box-shadow: 0 0 0 25px rgba(88, 101, 242, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0); }
+    }
+
+    .incoming-actions {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .action-btn-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      color: white;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease;
+    }
+
+    .action-btn-circle:hover { transform: scale(1.1); }
+    .btn-accept { background-color: #23a55a; }
+    .btn-decline { background-color: #da373c; }
 
     .call-overlay {
       display: none;
@@ -843,10 +886,23 @@
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
       <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
-      <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot to Call Me</button>
+      <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot Call</button>
       <button class="btn-primary" style="background-color: #383a40;" onclick="triggerFakeMention()">🔔 Trigger Test Mention</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
       <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
+    </div>
+  </div>
+
+  <div class="incoming-call-overlay" id="incomingCallOverlay">
+    <div class="caller-avatar-ring">
+      <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
+    </div>
+    <div style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;">Incoming Voice Call...</div>
+    <div style="color: var(--text-muted); font-size: 0.85rem;">Bot is inviting you to a voice chat</div>
+
+    <div class="incoming-actions">
+      <button class="action-btn-circle btn-decline" onclick="declineIncomingCall()" title="Decline Call">✕</button>
+      <button class="action-btn-circle btn-accept" onclick="acceptIncomingCall()" title="Accept Call">📞</button>
     </div>
   </div>
 
@@ -921,20 +977,13 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="toggleSoundboard()" style="color: #f0b232;">🔊 Soundboard</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
-        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">📞 Start Call</div>
+        <div class="header-btn" onclick="initiateCallSequence()" style="color: #23a55a;">📞 Start Call</div>
         <div class="header-btn" onclick="clearMentions()">
           📬 Inbox
           <span class="badge" id="inboxBadge">0</span>
         </div>
       </div>
-    </div>
-
-    <div class="soundboard-menu" id="soundboardMenu">
-      <button class="btn-primary" onclick="playSoundEffect(880, 0.3)">📢 Airhorn Tone</button>
-      <button class="btn-primary" style="background-color: #23a55a;" onclick="playSoundEffect(523, 0.4)">🎉 GG Sound</button>
-      <button class="btn-primary" style="background-color: #e5a93c;" onclick="playSoundEffect(300, 0.5)">🎮 Victory Bell</button>
     </div>
 
     <div class="messages-view" id="messagesView"></div>
@@ -986,7 +1035,12 @@
     let isMuted = false;
     let isCamOn = false;
     let webcamStream = null;
-    let audioCtx = null;
+
+    // Real sound assets
+    const discordRingAudio = new Audio('https://raw.githubusercontent.com/xi-3/Discord-Sound-Effects/main/Ringtone.mp3');
+    discordRingAudio.loop = true;
+
+    const whatsappTextAudio = new Audio('https://raw.githubusercontent.com/shreyas14/WhatsApp-web-clone/master/public/sounds/notification.mp3');
 
     const emojis = ["😂", "🔥", "⚔️", "💀", "😎", "👍", "❤️", "🎮", "🚀", "🎉", "💩", "🤖", "👀", "💯", "✨"];
 
@@ -1062,7 +1116,7 @@
 
       applyTheme(user.theme || 'dark');
       
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome back @${user.name}! Everything is back up and running smoothly.`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome back @${user.name}! Enjoy the updated voice ringers and clean styling.`, null, false);
     }
 
     function switchChannel(channelName) {
@@ -1074,7 +1128,7 @@
       document.getElementById('chatTitle').textContent = channelName.startsWith('dm') ? "@Bot" : `# ${channelName}`;
     }
 
-    function renderMessage(author, avatar, text, replyQuote) {
+    function renderMessage(author, avatar, text, replyQuote, playSound = true) {
       const view = document.getElementById('messagesView');
       const msgGroup = document.createElement('div');
       msgGroup.className = 'msg-group';
@@ -1105,6 +1159,11 @@
 
       view.appendChild(msgGroup);
       view.scrollTop = view.scrollHeight;
+
+      if (playSound) {
+        whatsappTextAudio.currentTime = 0;
+        whatsappTextAudio.play().catch(() => {});
+      }
     }
 
     function addReaction(btn, emoji) {
@@ -1126,7 +1185,7 @@
           return;
         }
 
-        renderMessage(user.name, user.avatar, text, activeReply ? `Replying to ${activeReply.author}: "${activeReply.text}"` : null);
+        renderMessage(user.name, user.avatar, text, activeReply ? `Replying to ${activeReply.author}: "${activeReply.text}"` : null, true);
         input.value = '';
         cancelReply();
       }
@@ -1172,24 +1231,24 @@
       if (e.key === 'Enter') sendMessage();
     }
 
-    function toggleSoundboard() {
-      const menu = document.getElementById('soundboardMenu');
-      menu.style.display = menu.style.display === 'flex' ? 'none' : 'flex';
+    /* Call Sequence with Animation and Discord Calling Sound */
+    function initiateCallSequence() {
+      document.getElementById('incomingCallOverlay').style.display = 'flex';
+      discordRingAudio.currentTime = 0;
+      discordRingAudio.play().catch(() => {});
     }
 
-    function playSoundEffect(freq, duration) {
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
+    function acceptIncomingCall() {
+      discordRingAudio.pause();
+      discordRingAudio.currentTime = 0;
+      document.getElementById('incomingCallOverlay').style.display = 'none';
+      document.getElementById('callOverlay').style.display = 'flex';
+    }
+
+    function declineIncomingCall() {
+      discordRingAudio.pause();
+      discordRingAudio.currentTime = 0;
+      document.getElementById('incomingCallOverlay').style.display = 'none';
     }
 
     function simulateSpeakingToggle() {
@@ -1198,13 +1257,7 @@
       card.classList.toggle('speaking', isSpeaking);
     }
 
-    function startCall() {
-      document.getElementById('callOverlay').style.display = 'flex';
-      playSoundEffect(440, 0.2);
-    }
-
     function endCall() {
-      playSoundEffect(220, 0.3);
       document.getElementById('callOverlay').style.display = 'none';
       if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
@@ -1215,7 +1268,7 @@
     function toggleMute() {
       isMuted = !isMuted;
       const btn = document.getElementById('muteBtn');
-      btn.textContent = isMuted ? 'ffffffff' : '🎙️';
+      btn.textContent = isMuted ? '🔇' : '🎙️';
     }
 
     async function toggleCamera() {
@@ -1291,12 +1344,12 @@
 
     function triggerBotCall() {
       togglePanel(false);
-      startCall();
+      initiateCallSequence();
     }
 
     function triggerFakeMention() {
       togglePanel(false);
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name} testing admin triggers!`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Hey @${user.name} testing admin triggers!`, null, true);
     }
 
     function testBanSelf() {
