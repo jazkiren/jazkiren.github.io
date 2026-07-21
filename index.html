@@ -172,7 +172,13 @@
       color: #f2f3f5;
     }
 
-    .inbox-btn {
+    .header-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .header-btn {
       position: relative;
       cursor: pointer;
       background: #2b2d31;
@@ -182,7 +188,7 @@
       transition: background 0.2s;
     }
 
-    .inbox-btn:hover {
+    .header-btn:hover {
       background: #383a40;
     }
 
@@ -203,14 +209,8 @@
     }
 
     @keyframes slideFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .msg-group:hover .reply-btn {
@@ -388,10 +388,7 @@
       transition: border-color 0.2s, transform 0.15s;
     }
 
-    .preset-avatars img:hover {
-      transform: scale(1.05);
-    }
-
+    .preset-avatars img:hover { transform: scale(1.05); }
     .preset-avatars img.selected { border-color: #5865f2; }
 
     .btn-primary {
@@ -405,11 +402,113 @@
       transition: background 0.2s;
     }
 
-    .btn-primary:hover {
-      background-color: #4752c4;
+    .btn-primary:hover { background-color: #4752c4; }
+
+    /* Call Screen Styles */
+    .call-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background-color: #111214;
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 40px;
+      animation: fadeIn 0.3s ease-out;
     }
 
-    /* Banned Overlay Screen */
+    .call-grid {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      flex: 1;
+      width: 100%;
+    }
+
+    .call-user-card {
+      width: 280px;
+      height: 220px;
+      background-color: #2b2d31;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .call-avatar-pulse {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .call-avatar-pulse img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+      z-index: 2;
+    }
+
+    .pulse-ring {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      border-radius: 50%;
+      background-color: rgba(35, 165, 90, 0.4);
+      animation: pulseAnim 1.8s infinite ease-out;
+      z-index: 1;
+    }
+
+    @keyframes pulseAnim {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    video.webcam-preview {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+    }
+
+    .call-controls {
+      display: flex;
+      gap: 20px;
+      background-color: #2b2d31;
+      padding: 14px 28px;
+      border-radius: 30px;
+    }
+
+    .call-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: none;
+      background-color: #383a40;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 0.15s, background 0.2s;
+    }
+
+    .call-btn:hover { transform: scale(1.1); }
+    .call-btn.end-btn { background-color: #da373c; }
+    .call-btn.end-btn:hover { background-color: #a1282b; }
+    .call-btn.active { background-color: #f23f43; }
+
+    /* Banned Screen */
     .banned-screen {
       display: none;
       position: fixed;
@@ -467,6 +566,35 @@
     </div>
   </div>
 
+  <div class="call-overlay" id="callOverlay">
+    <div style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="callStatusText">Gng Voice Call — Connected</div>
+    
+    <div class="call-grid">
+      <div class="call-user-card">
+        <video id="webcamVideo" class="webcam-preview" autoplay playsinline muted></video>
+        <div class="call-avatar-pulse" id="userPulseCard">
+          <div class="pulse-ring"></div>
+          <img id="callUserAvatar" src="" />
+        </div>
+        <span style="font-weight: bold; color: #f2f3f5;" id="callUserName">You</span>
+      </div>
+
+      <div class="call-user-card">
+        <div class="call-avatar-pulse">
+          <div class="pulse-ring"></div>
+          <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
+        </div>
+        <span style="font-weight: bold; color: #f2f3f5;">Bot</span>
+      </div>
+    </div>
+
+    <div class="call-controls">
+      <button class="call-btn" id="muteBtn" onclick="toggleMute()">🎙️</button>
+      <button class="call-btn" id="camBtn" onclick="toggleCamera()">📹</button>
+      <button class="call-btn end-btn" onclick="endCall()">📞</button>
+    </div>
+  </div>
+
   <div class="server-rail">
     <div class="server-icon active">⚔️</div>
     <div class="server-icon">🔥</div>
@@ -502,9 +630,12 @@
   <div class="chat-container">
     <div class="chat-header">
       <span id="chatTitle"># general</span>
-      <div class="inbox-btn" onclick="clearMentions()">
-        📬 Inbox
-        <span class="badge" id="inboxBadge">0</span>
+      <div class="header-actions">
+        <div class="header-btn" onclick="startCall()" style="color: #23a55a;">📞 Start Call</div>
+        <div class="header-btn" onclick="clearMentions()">
+          📬 Inbox
+          <span class="badge" id="inboxBadge">0</span>
+        </div>
       </div>
     </div>
 
@@ -544,8 +675,13 @@
     let mentionCount = 0;
     let botInterval = null;
 
+    // Call state variables
+    let isMuted = false;
+    let isCamOn = false;
+    let webcamStream = null;
+    let audioCtx = null;
+
     window.onload = function() {
-      // Check ban status
       if (localStorage.getItem('gngChatBanned') === 'true') {
         document.getElementById('bannedScreen').style.display = 'flex';
         return;
@@ -556,6 +692,11 @@
         user = JSON.parse(savedUser);
         document.getElementById('loginOverlay').style.display = 'none';
         initApp();
+      }
+
+      // Request Notification Permission
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
       }
     };
 
@@ -575,10 +716,11 @@
       document.getElementById('userNameMember').textContent = user.name;
       document.getElementById('userAvatarMember').src = user.avatar;
       document.getElementById('editNameInput').value = user.name;
+      document.getElementById('callUserName').textContent = user.name;
+      document.getElementById('callUserAvatar').src = user.avatar;
       
-      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type @bot to talk or use admin commands like /help.`, null);
+      renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", `Welcome to Gng Chat @${user.name}! Type @bot to talk or click 📞 Start Call to join voice!`, null);
 
-      // Start 20s Bot Auto-Say Loop
       if (!botInterval) {
         botInterval = setInterval(() => {
           renderMessage("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot", "hey", null);
@@ -607,9 +749,8 @@
       if (user.name && text.includes(`@${user.name}`)) {
         highlightedText = text.replace(new RegExp(`@${user.name}`, 'g'), `<span class="mention-highlight">@${user.name}</span>`);
         triggerMention();
+        sendNotification(`Mentioned by ${author}`, text);
       }
-
-      const escapedQuote = replyQuote ? replyQuote.replace(/"/g, '&quot;') : '';
 
       msgGroup.innerHTML = `
         <img class="avatar-sm" src="${avatar}" />
@@ -633,7 +774,6 @@
       const text = input.value.trim();
 
       if (text !== '') {
-        // Handle Admin Commands
         if (text.startsWith('/')) {
           handleAdminCommand(text);
           input.value = '';
@@ -705,6 +845,12 @@
       badge.style.display = 'none';
     }
 
+    function sendNotification(title, body) {
+      if ("Notification" in window && Notification.permission === "granted") {
+        new Notification(title, { body: body, icon: user.avatar });
+      }
+    }
+
     function setReply(author, text) {
       activeReply = { author, text };
       document.getElementById('replyBannerText').textContent = `Replying to @${author}`;
@@ -718,6 +864,73 @@
 
     function handleKey(e) {
       if (e.key === 'Enter') sendMessage();
+    }
+
+    /* Voice & Video Call Logic */
+    function playCallSound(freq, duration) {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function startCall() {
+      document.getElementById('callOverlay').style.display = 'flex';
+      playCallSound(440, 0.2); // Join sound tone
+    }
+
+    function endCall() {
+      playCallSound(220, 0.3); // Leave sound tone
+      document.getElementById('callOverlay').style.display = 'none';
+      if (webcamStream) {
+        webcamStream.getTracks().forEach(track => track.stop());
+        webcamStream = null;
+      }
+      isCamOn = false;
+      document.getElementById('webcamVideo').style.display = 'none';
+      document.getElementById('userPulseCard').style.display = 'block';
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      const btn = document.getElementById('muteBtn');
+      btn.classList.toggle('active', isMuted);
+      btn.textContent = isMuted ? '🔇' : '🎙️';
+    }
+
+    async function toggleCamera() {
+      const video = document.getElementById('webcamVideo');
+      const pulseCard = document.getElementById('userPulseCard');
+      const btn = document.getElementById('camBtn');
+
+      if (!isCamOn) {
+        try {
+          webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          video.srcObject = webcamStream;
+          video.style.display = 'block';
+          pulseCard.style.display = 'none';
+          isCamOn = true;
+          btn.classList.add('active');
+        } catch (e) {
+          alert('Camera permission denied or camera not found.');
+        }
+      } else {
+        if (webcamStream) {
+          webcamStream.getTracks().forEach(track => track.stop());
+        }
+        video.style.display = 'none';
+        pulseCard.style.display = 'block';
+        isCamOn = false;
+        btn.classList.remove('active');
+      }
     }
 
     function toggleSettings(show) {
