@@ -523,13 +523,40 @@
       font-size: 1.5rem;
       font-weight: bold;
     }
+
+    .ban-box {
+      background-color: #1e293b;
+      padding: 24px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      width: 320px;
+      border: 1px solid #334155;
+    }
+
+    .ban-box input {
+      padding: 10px;
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      color: white;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 1rem;
+      outline: none;
+    }
   </style>
 </head>
 <body>
 
   <div class="banned-screen" id="bannedScreen">
     ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
-    <span style="font-size: 1rem; color: #949ba4;">IP / Session Restriction Active</span>
+    <div class="ban-box">
+      <span style="font-size: 0.9rem; color: #949ba4;">Enter Unban Code:</span>
+      <input type="password" id="unbanCodeInput" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
+      <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
+      <span id="banMsg" style="font-size: 0.8rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
+    </div>
   </div>
 
   <div class="overlay" id="loginOverlay">
@@ -675,7 +702,6 @@
     let mentionCount = 0;
     let botInterval = null;
 
-    // Call state variables
     let isMuted = false;
     let isCamOn = false;
     let webcamStream = null;
@@ -694,11 +720,35 @@
         initApp();
       }
 
-      // Request Notification Permission
       if ("Notification" in window && Notification.permission === "default") {
         Notification.requestPermission();
       }
     };
+
+    function verifyUnbanCode() {
+      const codeInput = document.getElementById('unbanCodeInput').value.trim();
+      const msg = document.getElementById('banMsg');
+
+      if (codeInput === '9785') {
+        // Correct code: Unban user
+        localStorage.removeItem('gngChatBanned');
+        document.getElementById('bannedScreen').style.display = 'none';
+        
+        const savedUser = localStorage.getItem('gngChatUser');
+        if (savedUser) {
+          user = JSON.parse(savedUser);
+          document.getElementById('loginOverlay').style.display = 'none';
+          initApp();
+        } else {
+          document.getElementById('loginOverlay').style.display = 'flex';
+        }
+      } else {
+        // Wrong code: Permanently delete saved user account memory & keep banned
+        localStorage.removeItem('gngChatUser');
+        msg.style.display = 'block';
+        document.getElementById('unbanCodeInput').value = '';
+      }
+    }
 
     function signIn() {
       const name = document.getElementById('usernameInput').value.trim();
@@ -866,7 +916,6 @@
       if (e.key === 'Enter') sendMessage();
     }
 
-    /* Voice & Video Call Logic */
     function playCallSound(freq, duration) {
       try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -884,11 +933,11 @@
 
     function startCall() {
       document.getElementById('callOverlay').style.display = 'flex';
-      playCallSound(440, 0.2); // Join sound tone
+      playCallSound(440, 0.2);
     }
 
     function endCall() {
-      playCallSound(220, 0.3); // Leave sound tone
+      playCallSound(220, 0.3);
       document.getElementById('callOverlay').style.display = 'none';
       if (webcamStream) {
         webcamStream.getTracks().forEach(track => track.stop());
