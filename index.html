@@ -2,39 +2,192 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Squad Chat</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; text-align: center; padding: 20px; }
-        #chat-box { width: 90%; max-width: 500px; height: 300px; background: #16213e; margin: 20px auto; overflow-y: scroll; padding: 10px; border-radius: 8px; text-align: left; }
-        .msg { margin: 8px 0; padding: 6px 10px; background: #0f3460; border-radius: 5px; }
-        .user { font-weight: bold; color: #00adb5; }
-        select, input, button { padding: 10px; margin: 5px; border-radius: 5px; border: none; }
-        .emoji-btn { background: none; font-size: 20px; cursor: pointer; }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 12px;
+        }
+
+        header {
+            text-align: center;
+            padding: 8px 0;
+        }
+
+        h1 {
+            font-size: 1.4rem;
+            color: #38bdf8;
+            margin-bottom: 8px;
+        }
+
+        .user-select {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        select {
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #38bdf8;
+            font-weight: bold;
+            outline: none;
+        }
+
+        /* Large Screen-Fitting Chat Container */
+        #chat-box {
+            flex: 1;
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 14px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border: 1px solid #334155;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .msg {
+            background: #334155;
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 85%;
+            word-wrap: break-word;
+            line-height: 1.4;
+            font-size: 0.95rem;
+            align-self: flex-start;
+        }
+
+        .user {
+            font-weight: 700;
+            color: #38bdf8;
+            margin-right: 6px;
+        }
+
+        /* Emoji Row */
+        .emoji-bar {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding: 8px 0;
+            scrollbar-width: none;
+        }
+
+        .emoji-bar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .emoji-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            padding: 6px 10px;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.1s ease;
+        }
+
+        .emoji-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Input Bar */
+        .input-form {
+            display: flex;
+            gap: 8px;
+            padding-top: 4px;
+        }
+
+        #message-input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        #message-input:focus {
+            border-color: #38bdf8;
+        }
+
+        .send-btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            background: #0284c7;
+            color: white;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .send-btn:hover {
+            background: #0369a1;
+        }
     </style>
 </head>
 <body>
 
-    <h1>🎮 Squad Live Chat</h1>
-
-    <label for="username">Who are you? </label>
-    <select id="username">
-        <option value="Nico">Nico</option>
-        <option value="Yujin">Yujin</option>
-        <option value="Barkon">Barkon</option>
-    </select>
+    <header>
+        <h1>🎮 Squad Live Chat</h1>
+        <div class="user-select">
+            <label for="username">Who are you?</label>
+            <select id="username">
+                <option value="Nico">Nico</option>
+                <option value="Yujin">Yujin</option>
+                <option value="Barkon">Barkon</option>
+            </select>
+        </div>
+    </header>
 
     <div id="chat-box"></div>
 
-    <div>
+    <div class="emoji-bar">
         <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
         <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
         <button class="emoji-btn" onclick="addEmoji('🎮')">🎮</button>
         <button class="emoji-btn" onclick="addEmoji('💀')">💀</button>
         <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
+        <button class="emoji-btn" onclick="addEmoji('🫠')">🫠</button>
+        <button class="emoji-btn" onclick="addEmoji('🫡')">🫡</button>
+        <button class="emoji-btn" onclick="addEmoji('🥹')">🥹</button>
+        <button class="emoji-btn" onclick="addEmoji('✨')">✨</button>
+        <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
+        <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
+        <button class="emoji-btn" onclick="addEmoji('🗿')">🗿</button>
+        <button class="emoji-btn" onclick="addEmoji('😭')">😭</button>
+        <button class="emoji-btn" onclick="addEmoji('🪩')">🪩</button>
+        <button class="emoji-btn" onclick="addEmoji('👀')">👀</button>
     </div>
 
-    <input type="text" id="message-input" placeholder="Type a message..." style="width: 60%;">
-    <button onclick="sendMessage()" style="background: #00adb5; color: white; font-weight: bold;">Send</button>
+    <form class="input-form" onsubmit="sendMessage(event)">
+        <input type="text" id="message-input" placeholder="Type a message..." autocomplete="off">
+        <button type="submit" class="send-btn">Send</button>
+    </form>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -51,8 +204,10 @@
         const database = firebase.database();
         const chatRef = database.ref('messages');
 
-        // Send Message Function
-        function sendMessage() {
+        // Send Message Function (Triggers on Enter or Click)
+        function sendMessage(e) {
+            if (e) e.preventDefault();
+            
             const user = document.getElementById('username').value;
             const input = document.getElementById('message-input');
             const text = input.value.trim();
@@ -68,7 +223,9 @@
 
         // Add Quick Emoji to Textbox
         function addEmoji(emoji) {
-            document.getElementById('message-input').value += emoji;
+            const input = document.getElementById('message-input');
+            input.value += emoji;
+            input.focus();
         }
 
         // Listen for Live Messages
