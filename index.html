@@ -18,203 +18,240 @@
       --text-primary: #f2f3f5;
       --text-muted: #949ba4;
       --speaking-green: #23a55a;
+      --danger: #da373c;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-    body { background-color: var(--bg-rail); color: #dbdee1; height: 100vh; display: flex; overflow: hidden; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    
+    /* Website Entrance Animation */
+    body { 
+      background-color: var(--bg-rail); 
+      color: #dbdee1; 
+      height: 100vh; 
+      display: flex; 
+      overflow: hidden; 
+      animation: fadeInPage 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: scale(0.99); }
+      to { opacity: 1; transform: scale(1); }
+    }
 
     /* Layout Rails */
     .server-rail { width: 64px; background-color: var(--bg-rail); padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
-    .server-icon { width: 40px; height: 40px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; }
+    .server-icon { width: 44px; height: 44px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; font-size: 1.2rem; }
     .server-icon:hover, .server-icon.active { background-color: var(--accent); border-radius: 10px; }
 
-    .sidebar { width: 220px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; }
-    .sidebar-header { padding: 12px 14px; height: 48px; border-bottom: 1px solid rgba(0,0,0,0.2); font-weight: 700; color: var(--text-primary); display: flex; align-items: center; }
+    .sidebar { width: 240px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; }
+    .sidebar-header { padding: 12px 14px; height: 52px; border-bottom: 1px solid rgba(0,0,0,0.2); font-weight: 700; color: var(--text-primary); display: flex; align-items: center; font-size: 1rem; }
     .section-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 12px 6px 12px; }
-    .section-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; }
-    .add-btn { cursor: pointer; color: var(--text-muted); font-weight: bold; font-size: 0.9rem; }
+    .section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; }
+    .add-btn { cursor: pointer; color: var(--text-muted); font-weight: bold; font-size: 1rem; }
     .add-btn:hover { color: white; }
     
     .channel-list, .dm-list { list-style: none; }
-    .channel-item, .dm-item { padding: 6px 10px; margin: 2px 6px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-    .channel-item:hover, .channel-item.active, .dm-item:hover, .dm-item.active { background-color: rgba(255,255,255,0.06); color: var(--text-primary); }
+    .channel-item, .dm-item { padding: 8px 12px; margin: 2px 6px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
+    .channel-item:hover, .channel-item.active, .dm-item:hover, .dm-item.active { background-color: rgba(255,255,255,0.08); color: var(--text-primary); }
 
-    .user-footer { background-color: rgba(0,0,0,0.2); padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; }
-    .user-info { display: flex; align-items: center; gap: 8px; }
-    .avatar-wrapper { position: relative; width: 28px; height: 28px; border-radius: 50%; }
-    .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
-    .settings-cog { cursor: pointer; color: #b5bac1; font-size: 1rem; }
+    .user-footer { background-color: rgba(0,0,0,0.25); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .avatar-wrapper { position: relative; width: 32px; height: 32px; border-radius: 50%; }
+    .avatar-sm { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+
+    /* Spinning Gear Cog Button */
+    .settings-cog { 
+      cursor: pointer; 
+      color: #b5bac1; 
+      font-size: 1.3rem; 
+      display: inline-block;
+      transition: transform 0.5s ease, color 0.2s ease;
+    }
+    .settings-cog:hover { color: white; }
+    .settings-cog.spin {
+      transform: rotate(360deg);
+    }
 
     /* Chat Main Area */
     .chat-container { flex: 1; background-color: var(--bg-main); display: flex; flex-direction: column; }
-    .chat-header { height: 48px; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: var(--text-primary); }
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
+    .chat-header { height: 52px; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: var(--text-primary); font-size: 1.1rem; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s, transform 0.15s; }
+    .header-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
 
-    .messages-view { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-    .msg-group { display: flex; gap: 12px; position: relative; padding: 4px 8px; border-radius: 4px; }
-    .msg-group:hover { background-color: rgba(0,0,0,0.1); }
-    .msg-content { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; flex: 1; }
-    .msg-header { display: flex; align-items: center; gap: 6px; }
-    .msg-author { font-weight: 600; color: var(--text-primary); font-size: 0.85rem; }
-    .msg-timestamp { font-size: 0.7rem; color: var(--text-muted); }
-
-    /* Reply Snippet Banner inside Message */
-    .reply-snippet {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      border-left: 2px solid var(--accent);
-      padding-left: 8px;
-      margin-bottom: 2px;
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      background: rgba(0,0,0,0.15);
-      border-radius: 0 4px 4px 0;
-      padding: 2px 8px;
+    .messages-view { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    
+    /* Texting Animation */
+    .msg-group { 
+      display: flex; 
+      gap: 12px; 
+      position: relative; 
+      padding: 6px 10px; 
+      border-radius: 6px; 
+      animation: popInMsg 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    
+    @keyframes popInMsg {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
-    .reply-action-btn {
-      display: none;
-      position: absolute;
-      right: 12px;
-      top: 4px;
-      background: var(--bg-sidebar);
-      padding: 2px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      color: var(--text-muted);
-      border: 1px solid rgba(255,255,255,0.1);
-    }
+    .msg-group:hover { background-color: rgba(0,0,0,0.15); }
+    .msg-content { display: flex; flex-direction: column; gap: 4px; font-size: 0.95rem; flex: 1; }
+    .msg-header { display: flex; align-items: center; gap: 8px; }
+    .msg-author { font-weight: 600; color: var(--text-primary); font-size: 0.9rem; }
+    .msg-timestamp { font-size: 0.75rem; color: var(--text-muted); }
+
+    .reply-snippet { font-size: 0.8rem; color: var(--text-muted); border-left: 3px solid var(--accent); padding: 3px 8px; margin-bottom: 4px; background: rgba(0,0,0,0.2); border-radius: 0 4px 4px 0; }
+    .reply-action-btn { display: none; position: absolute; right: 12px; top: 6px; background: var(--bg-sidebar); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
     .msg-group:hover .reply-action-btn { display: block; }
     .reply-action-btn:hover { color: white; background: var(--accent); }
 
-    .chat-img-attachment { max-width: 280px; max-height: 200px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.1); }
+    .chat-img-attachment { max-width: 320px; max-height: 240px; border-radius: 8px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.1); }
 
-    .input-wrapper { padding: 0 14px 16px 14px; position: relative; }
-    
-    /* Replying Active Header Bar */
-    .reply-active-bar {
-      display: none;
-      background-color: #2b2d31;
-      padding: 6px 12px;
-      border-radius: 8px 8px 0 0;
-      font-size: 0.78rem;
-      color: var(--text-muted);
-      justify-content: space-between;
-      align-items: center;
-      border-left: 3px solid var(--accent);
-    }
+    .input-wrapper { padding: 0 16px 16px 16px; position: relative; }
+    .reply-active-bar { display: none; background-color: #2b2d31; padding: 8px 14px; border-radius: 8px 8px 0 0; font-size: 0.82rem; color: var(--text-muted); justify-content: space-between; align-items: center; border-left: 4px solid var(--accent); }
+    .input-container { display: flex; background-color: #383a40; border-radius: 8px; align-items: center; padding: 4px 12px; gap: 10px; }
+    .chat-input { flex: 1; background-color: transparent; border: none; padding: 12px 6px; color: var(--text-primary); font-size: 0.95rem; outline: none; }
+    .input-btn { cursor: pointer; font-size: 1.2rem; color: var(--text-muted); transition: color 0.2s, transform 0.15s; }
+    .input-btn:hover { color: white; transform: scale(1.1); }
 
-    .input-container { display: flex; background-color: #383a40; border-radius: 8px; align-items: center; padding: 2px 10px; gap: 8px; }
-    .chat-input { flex: 1; background-color: transparent; border: none; padding: 10px 6px; color: var(--text-primary); font-size: 0.88rem; outline: none; }
-    .input-btn { cursor: pointer; font-size: 1.1rem; color: var(--text-muted); transition: color 0.2s; }
-    .input-btn:hover { color: white; }
+    .emoji-picker { display: none; position: absolute; bottom: 65px; right: 20px; background-color: var(--bg-sidebar); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; grid-template-columns: repeat(6, 1fr); gap: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); z-index: 100; }
+    .emoji-item { cursor: pointer; font-size: 1.5rem; text-align: center; border-radius: 6px; padding: 4px; transition: transform 0.1s; }
+    .emoji-item:hover { background-color: rgba(255,255,255,0.1); transform: scale(1.15); }
 
-    /* Emoji Picker Modal */
-    .emoji-picker {
-      display: none;
-      position: absolute;
-      bottom: 60px;
-      right: 20px;
-      background-color: var(--bg-sidebar);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 10px;
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-      z-index: 100;
-    }
-    .emoji-item { cursor: pointer; font-size: 1.3rem; text-align: center; border-radius: 4px; padding: 2px; }
-    .emoji-item:hover { background-color: rgba(255,255,255,0.1); }
-
-    .members-rail { width: 200px; background-color: var(--bg-sidebar); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .member-card { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.82rem; color: var(--text-muted); padding: 4px 6px; border-radius: 4px; }
-    .status-indicator { width: 8px; height: 8px; border-radius: 50%; }
+    .members-rail { width: 220px; background-color: var(--bg-sidebar); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .member-card { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 0.88rem; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; }
+    .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
     .online { background-color: #23a55a; }
     .offline { background-color: #80848e; }
 
     /* Modals & Overlays */
-    .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 8px; width: 340px; display: flex; flex-direction: column; gap: 12px; }
+    .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeInModal 0.2s ease-out; }
     
-    .modal-box.panel-box { width: 620px; max-width: 90vw; max-height: 85vh; overflow-y: auto; padding: 28px; }
-    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
-    .panel-card { background-color: var(--bg-rail); padding: 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
-
-    .modal-box input { padding: 10px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 4px; outline: none; }
-    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-    .btn-danger { background-color: #da373c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
-
-    /* CALL OVERLAY */
-    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0b0c0e; z-index: 2000; flex-direction: column; justify-content: space-between; padding: 20px; }
-    
-    .call-grid { 
-      display: flex; 
-      flex: 1; 
-      width: 100%; 
-      height: 100%; 
-      align-items: center; 
-      justify-content: center; 
-      gap: 20px; 
-      padding: 10px; 
-      overflow: hidden; 
+    @keyframes fadeInModal {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
+
+    .modal-box { background-color: var(--bg-main); padding: 28px; border-radius: 12px; width: 380px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
+    .modal-box input { padding: 12px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 6px; outline: none; font-size: 0.95rem; }
+    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s, transform 0.1s; }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: transform 0.1s; }
+    .btn-danger:hover { transform: translateY(-1px); }
+
+    /* CALL OVERLAY ANIMATIONS */
+    .call-overlay { 
+      display: none; 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh; 
+      background-color: #08090a; 
+      z-index: 2000; 
+      flex-direction: column; 
+      justify-content: space-between; 
+      padding: 30px; 
+      animation: callEnter 0.35s cubic-bezier(0.1, 0.9, 0.2, 1);
+    }
+
+    @keyframes callEnter {
+      from { opacity: 0; transform: scale(1.05); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .call-title-header { text-align: center; font-weight: bold; font-size: 1.8rem; color: white; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+    .call-grid { display: flex; flex: 1; width: 100%; height: 100%; align-items: center; justify-content: center; gap: 24px; padding: 20px 0; overflow: hidden; }
 
     .call-card { 
       flex: 1; 
       height: 100%; 
-      max-height: 80vh; 
+      max-height: 78vh; 
       background-color: var(--bg-card); 
-      border-radius: 12px; 
+      border-radius: 20px; 
       display: flex; 
       flex-direction: column; 
       justify-content: center; 
       align-items: center; 
-      gap: 12px; 
+      gap: 18px; 
       position: relative; 
       overflow: hidden;
       border: 20px solid #000000;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      animation: popCard 0.3s ease-out;
     }
 
-    .call-card video { 
-      width: 100%; 
-      height: 100%; 
-      object-fit: cover; 
-      position: absolute; 
-      top: 0; 
-      left: 0; 
+    @keyframes popCard {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
     }
 
-    .call-card-userinfo { 
-      position: relative; 
-      z-index: 2; 
-      display: flex; 
-      flex-direction: column; 
-      align-items: center; 
-      gap: 8px; 
-    }
+    .call-card video { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
+    .call-card-userinfo { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .call-card-userinfo img { width: 120px; height: 120px; border-radius: 50%; border: 4px solid var(--accent); box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+    .call-user-name { font-weight: 700; color: white; font-size: 1.8rem; letter-spacing: 0.5px; }
 
-    .hand-icon {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 2rem;
-      background: rgba(0,0,0,0.6);
-      padding: 6px 12px;
-      border-radius: 20px;
-      z-index: 5;
-      display: none;
-    }
+    .hand-icon { position: absolute; top: 20px; right: 20px; font-size: 2.8rem; background: rgba(0,0,0,0.7); padding: 8px 16px; border-radius: 30px; z-index: 5; display: none; }
 
-    .call-controls { display: flex; justify-content: center; gap: 16px; margin-top: 15px; z-index: 10; }
-    .call-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background-color: #383a40; color: white; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; }
+    .call-controls { display: flex; justify-content: center; gap: 24px; margin-top: 10px; z-index: 10; }
+    .call-btn { width: 68px; height: 68px; border-radius: 50%; border: none; background-color: #2b2d31; color: white; font-size: 1.8rem; cursor: pointer; transition: transform 0.2s, background-color 0.2s; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+    .call-btn:hover { transform: scale(1.1); }
     .call-btn.active { background-color: #e5a93c; }
-    .call-btn.end { background-color: #da373c; }
+    .call-btn.end { background-color: var(--danger); }
+
+    /* INCOMING CALL RINGING OVERLAY */
+    .incoming-call-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 24px;
+      color: white;
+      animation: fadeInModal 0.3s ease-out;
+    }
+    
+    .incoming-caller-avatar { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--accent); animation: pulse 1.5s infinite ease-in-out; }
+    .incoming-caller-title { font-size: 2.2rem; font-weight: bold; text-align: center; }
+    .incoming-call-actions { display: flex; gap: 30px; margin-top: 10px; }
+    .ring-btn { padding: 16px 36px; border-radius: 50px; border: none; font-size: 1.3rem; font-weight: bold; cursor: pointer; color: white; transition: transform 0.2s; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+    .ring-btn:hover { transform: scale(1.1); }
+    .ring-btn.accept { background-color: var(--speaking-green); }
+    .ring-btn.decline { background-color: var(--danger); }
+
+    .call-denied-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.9);
+      z-index: 3500;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      color: #f23f43;
+      font-size: 2.4rem;
+      font-weight: bold;
+      animation: fadeInModal 0.2s ease-out;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(88, 101, 242, 0.7); }
+      70% { transform: scale(1.05); box-shadow: 0 0 0 25px rgba(88, 101, 242, 0); }
+      100% { transform: scale(0.98); box-shadow: 0 0 0 0 rgba(88, 101, 242, 0); }
+    }
 
     .banned-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0f172a; color: #f23f43; z-index: 9999; justify-content: center; align-items: center; flex-direction: column; gap: 16px; font-weight: bold; }
   </style>
@@ -233,45 +270,60 @@
 
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
-      <h3 style="color: white;">Welcome to Gng Chat Pro!</h3>
-      <p style="color: #b5bac1; font-size: 0.8rem;">Create or enter your 5-character password (no '-' or '='):</p>
+      <h2 style="color: white; text-align: center;">Welcome to Gng Chat</h2>
+      <p style="color: #b5bac1; font-size: 0.85rem; text-align: center;">Enter username & 5-character password:</p>
       <input type="text" id="usernameInput" placeholder="Username" />
       <input type="password" id="passwordInput" placeholder="5-Char Password" maxlength="5" />
-      <span id="authErrorMsg" style="color: #f23f43; font-size: 0.75rem; display: none;"></span>
+      <span id="authErrorMsg" style="color: #f23f43; font-size: 0.8rem; display: none; text-align: center;"></span>
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
 
-  <div class="overlay" id="panelModal" style="display: none;">
-    <div class="modal-box panel-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-        <h2 style="color: white; font-size: 1.3rem;">🛠️ Owner & Admin Control Panel</h2>
-        <button class="btn-danger" style="padding: 4px 10px;" onclick="togglePanel(false)">✕ Close</button>
+  <div class="overlay" id="settingsModal" style="display: none;">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+        <h3 style="color: white;">⚙️ User Settings</h3>
+        <span style="cursor: pointer; color: var(--text-muted); font-weight: bold;" onclick="closeSettingsModal()">✕</span>
       </div>
       
-      <div class="panel-grid">
-        <div class="panel-card">
-          <h4 style="color: white;">🤖 Bot Creator</h4>
-          <p style="font-size: 0.75rem; color: var(--text-muted);">Create custom automated bots to display across the app.</p>
-          <input type="text" id="newBotNameInput" placeholder="Enter Bot Name..." />
-          <button class="btn-primary" onclick="createCustomBot()">+ Create Bot</button>
-          
-          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active Custom Bots:</span>
-          <div id="botManagerList" style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <button class="btn-primary" style="background-color: #383a40; text-align: left;" onclick="toggleStealthMode()">
+          👻 Ghost Mode: <span id="ghostModeStatus" style="font-weight: bold; color: var(--accent);">OFF</span>
+        </button>
 
-        <div class="panel-card">
-          <h4 style="color: white;">⚡ Server Tools</h4>
-          <p style="font-size: 0.75rem; color: var(--text-muted);">Manage global server state and chat channels.</p>
-          <button class="btn-danger" onclick="clearAllChatHistory()">🗑️ Wipe Active Channel Messages</button>
-          <button class="btn-primary" style="background-color: #e5a93c; margin-top: 6px;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
-        </div>
+        <button class="btn-danger" style="margin-top: 10px;" onclick="logout()">🚪 Log Out Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="incoming-call-overlay" id="incomingCallOverlay">
+    <img id="incomingCallerAvatar" class="incoming-caller-avatar" src="" />
+    <div class="incoming-caller-title" id="incomingCallerText">Someone is calling you...</div>
+    <div class="incoming-call-actions">
+      <button class="ring-btn accept" onclick="acceptIncomingCall()">📞 Accept</button>
+      <button class="ring-btn decline" onclick="declineIncomingCall()">❌ Close</button>
+    </div>
+  </div>
+
+  <div class="call-denied-overlay" id="callDeniedOverlay">
+    🚫 <span id="deniedNoticeText">Call was denied</span>
+  </div>
+
+  <div class="overlay" id="panelModal" style="display: none;">
+    <div class="modal-box" style="width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+        <h3 style="color: white;">🛠️ Owner & Admin Control Panel</h3>
+        <button class="btn-danger" style="padding: 4px 10px;" onclick="togglePanel(false)">✕ Close</button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+        <button class="btn-danger" onclick="clearAllChatHistory()">🗑️ Wipe Active Channel Messages</button>
+        <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
       </div>
     </div>
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Channel Video Call</div>
+    <div class="call-title-header" id="callHeaderTitle">📞 Channel Video Call</div>
     
     <div class="call-grid" id="callGridContainer"></div>
 
@@ -286,9 +338,9 @@
   <div class="overlay" id="callTargetModal" style="display: none;">
     <div class="modal-box">
       <h3 style="color: white;">Call Online Users in #<span id="callModalChanName"></span></h3>
-      <p style="font-size: 0.75rem; color: var(--text-muted);">Select an online member or bot to join a call:</p>
-      <div id="callSelectorList" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
-      <button class="btn-primary" style="background-color: #da373c; margin-top: 8px;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
+      <p style="font-size: 0.8rem; color: var(--text-muted);">Select an online member to call:</p>
+      <div id="callSelectorList" style="display: flex; flex-direction: column; gap: 10px; max-height: 240px; overflow-y: auto;"></div>
+      <button class="btn-primary" style="background-color: var(--danger); margin-top: 8px;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
     </div>
   </div>
 
@@ -305,11 +357,6 @@
         <span class="add-btn" onclick="promptCreateChannel()" title="Create Channel">+</span>
       </div>
       <ul class="channel-list" id="dynamicChannelList"></ul>
-
-      <div class="section-header">
-        <span class="section-title">Direct Messages</span>
-      </div>
-      <ul class="dm-list" id="dynamicBotList"></ul>
     </div>
 
     <div class="user-footer">
@@ -317,15 +364,12 @@
         <div class="avatar-wrapper">
           <img id="userAvatarFooter" class="avatar-sm" src="" />
         </div>
-        <div style="display: flex; flex-direction: column; max-width: 90px;">
-          <span id="userNameFooter" style="font-weight: bold; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-          <span id="userStatusFooter" style="font-size: 0.65rem; color: var(--text-muted);">Online</span>
+        <div style="display: flex; flex-direction: column; max-width: 110px;">
+          <span id="userNameFooter" style="font-weight: bold; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+          <span id="userStatusFooter" style="font-size: 0.7rem; color: var(--text-muted);">Online</span>
         </div>
       </div>
-      <div style="display: flex; gap: 8px; align-items: center;">
-        <span title="Toggle Ghost Mode (Invisible)" onclick="toggleStealthMode()" style="cursor: pointer; font-size: 0.9rem;">👻</span>
-        <span class="settings-cog" onclick="logout()" title="Logout & Reset">🚪</span>
-      </div>
+      <span class="settings-cog" id="settingsGearIcon" onclick="openSettingsModal()" title="Settings">⚙️</span>
     </div>
   </div>
 
@@ -333,7 +377,7 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Call Users</div>
+        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Start Call</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
       </div>
     </div>
@@ -357,13 +401,11 @@
         <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
         <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
         <span class="emoji-item" onclick="insertEmoji('😎')">😎</span>
-        <span class="emoji-item" onclick="insertEmoji('🤡')">🤡</span>
-        <span class="emoji-item" onclick="insertEmoji('🎮')">🎮</span>
       </div>
 
       <div class="input-container">
         <input type="file" id="fileUploadInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)" />
-        <span class="input-btn" onclick="document.getElementById('fileUploadInput').click()" title="Upload Image/Photo">+</span>
+        <span class="input-btn" onclick="document.getElementById('fileUploadInput').click()" title="Upload Image">+</span>
         
         <input type="text" class="chat-input" id="chatInput" placeholder="Message..." onkeydown="handleKey(event)" />
         
@@ -374,14 +416,14 @@
 
   <div class="members-rail">
     <div class="section-title" style="padding: 0;">ONLINE MEMBERS</div>
-    <div id="dynamicOnlineList" style="display: flex; flex-direction: column; gap: 6px;"></div>
+    <div id="dynamicOnlineList" style="display: flex; flex-direction: column; gap: 8px;"></div>
 
     <div class="section-title" style="padding: 12px 0 0 0;">OFFLINE MEMBERS</div>
-    <div id="dynamicOfflineList" style="display: flex; flex-direction: column; gap: 6px; opacity: 0.65;"></div>
+    <div id="dynamicOfflineList" style="display: flex; flex-direction: column; gap: 8px; opacity: 0.65;"></div>
   </div>
 
   <script>
-    // --- LIVE FIREBASE CONFIG ---
+    // LIVE FIREBASE CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyAiyqY0Beycimw6LKy3LZmaQqVdgMJSXwE",
       authDomain: "text-meh-8276c.firebaseapp.com",
@@ -398,21 +440,20 @@
     let user = { name: "", avatar: "", stealthMode: false };
     let activeChannel = "general";
     let channels = ["general", "memes", "pics"];
-    let bots = [{ name: "GngBot", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" }];
     let onlineUsersList = [];
 
-    // Reply state
-    let activeReply = null; // { author, text }
+    let activeReply = null;
 
-    // Call state
+    // Call state variables
     let localVideoStream = null;
     let isMicOn = true;
     let isCamOn = false;
     let isHandRaised = false;
     let inCall = false;
+    let incomingCallData = null;
 
     window.onload = function() {
-      const APP_VERSION = "2.3";
+      const APP_VERSION = "2.5";
       if (localStorage.getItem('gngChatVersion') !== APP_VERSION) {
         localStorage.clear();
         localStorage.setItem('gngChatVersion', APP_VERSION);
@@ -427,8 +468,7 @@
       const savedUser = localStorage.getItem('gngChatUserPro');
       if (savedUser) {
         user = JSON.parse(savedUser);
-        const loginElem = document.getElementById('loginOverlay');
-        if (loginElem) loginElem.style.display = 'none';
+        document.getElementById('loginOverlay').style.display = 'none';
         initApp();
       }
     };
@@ -436,13 +476,30 @@
     function initApp() {
       updateUserFooter();
       listenForChannels();
-      listenForBots();
       switchChannel(activeChannel);
       setupLivePresence();
       listenForActiveCalls();
+      listenForIncomingCalls();
     }
 
-    /* ---- 5-CHARACTER PASSWORD LOGIN / SIGN-UP ---- */
+    /* GEAR SPIN & SETTINGS MODAL */
+    function openSettingsModal() {
+      const gear = document.getElementById('settingsGearIcon');
+      gear.classList.add('spin');
+      setTimeout(() => {
+        gear.classList.remove('spin');
+      }, 500);
+
+      document.getElementById('ghostModeStatus').textContent = user.stealthMode ? "ON" : "OFF";
+      document.getElementById('ghostModeStatus').style.color = user.stealthMode ? "#23a55a" : "var(--accent)";
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    /* 5-CHARACTER PASSWORD LOGIN / SIGN-UP */
     function signIn() {
       const username = document.getElementById('usernameInput').value.trim();
       const password = document.getElementById('passwordInput').value.trim();
@@ -471,14 +528,12 @@
       userRef.once('value').then(snapshot => {
         const acc = snapshot.val();
         if (acc) {
-          // Verify Password
           if (acc.password === password) {
             loginSuccess(username, acc.avatar);
           } else {
             showError("Incorrect password for this account!");
           }
         } else {
-          // Register New Account
           const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
           userRef.set({ username: username, password: password, avatar: avatar }).then(() => {
             loginSuccess(username, avatar);
@@ -501,7 +556,7 @@
       initApp();
     }
 
-    /* ---- LIVE REAL-TIME PRESENCE ---- */
+    /* PRESENCE */
     function setupLivePresence() {
       if (!user.name) return;
 
@@ -539,10 +594,10 @@
 
           if (userData.online) {
             onlineUsersList.push(userData);
-            card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
             onlineContainer.appendChild(card);
           } else {
-            card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
             offlineContainer.appendChild(card);
           }
         });
@@ -557,7 +612,7 @@
       const userRef = db.ref(`presence/${sanitizeKey(user.name)}`);
 
       if (user.stealthMode) {
-        statusLabel.textContent = "Offline (Spoofed)";
+        statusLabel.textContent = "Offline (Ghost)";
         statusLabel.style.color = "#f23f43";
         userRef.set({ name: user.name, avatar: user.avatar, online: false, lastSeen: Date.now() });
       } else {
@@ -565,9 +620,12 @@
         statusLabel.style.color = "var(--text-muted)";
         setupLivePresence();
       }
+
+      document.getElementById('ghostModeStatus').textContent = user.stealthMode ? "ON" : "OFF";
+      document.getElementById('ghostModeStatus').style.color = user.stealthMode ? "#23a55a" : "var(--accent)";
     }
 
-    /* ---- LIVE CHANNELS & MESSAGES SEPARATION ---- */
+    /* CHANNELS & MESSAGES */
     function listenForChannels() {
       db.ref('channels').on('value', (snapshot) => {
         const val = snapshot.val();
@@ -595,7 +653,6 @@
     }
 
     function switchChannel(ch) {
-      // Detach previous channel listener to isolate messages completely
       if (activeChannel) {
         db.ref(`messages/${activeChannel}`).off();
       }
@@ -686,7 +743,7 @@
       view.scrollTop = view.scrollHeight;
     }
 
-    /* ---- REPLIES, EMOJIS & UPLOADS ---- */
+    /* REPLIES, EMOJIS & UPLOADS */
     function setReply(author, text) {
       activeReply = { author: author, text: text };
       document.getElementById('replyTargetAuthor').textContent = `@${author}`;
@@ -725,7 +782,7 @@
       reader.readAsDataURL(file);
     }
 
-    /* ---- REAL-TIME VIDEO & CALL SYSTEM ---- */
+    /* CALL SYSTEM & RINGING NOTIFICATIONS */
     function openCallModal() {
       document.getElementById('callModalChanName').textContent = activeChannel;
       const list = document.getElementById('callSelectorList');
@@ -734,14 +791,12 @@
       const startAllBtn = document.createElement('button');
       startAllBtn.className = 'btn-primary';
       startAllBtn.style.backgroundColor = 'var(--speaking-green)';
-      startAllBtn.textContent = `🚀 Join/Start Call in #${activeChannel}`;
-      startAllBtn.onclick = () => joinChannelCall();
+      startAllBtn.textContent = `🚀 Join/Start Open Call in #${activeChannel}`;
+      startAllBtn.onclick = () => {
+        document.getElementById('callTargetModal').style.display = 'none';
+        joinChannelCall();
+      };
       list.appendChild(startAllBtn);
-
-      const titleReal = document.createElement('div');
-      titleReal.style.cssText = "font-size: 0.75rem; color: #949ba4; margin-top: 10px; font-weight: bold;";
-      titleReal.textContent = "ONLINE MEMBERS:";
-      list.appendChild(titleReal);
 
       onlineUsersList.forEach(u => {
         if (u.name !== user.name) {
@@ -749,48 +804,84 @@
           btn.className = 'btn-primary';
           btn.style.backgroundColor = '#383a40';
           btn.style.textAlign = 'left';
-          btn.textContent = `👤 Call ${u.name}`;
+          btn.textContent = `👤 Direct Call ${u.name}`;
           btn.onclick = () => {
-            joinChannelCall();
-            db.ref(`calls/${activeChannel}/participants/${sanitizeKey(u.name)}`).set({
-              name: u.name,
-              avatar: u.avatar,
-              handRaised: false,
-              camOn: false
-            });
+            document.getElementById('callTargetModal').style.display = 'none';
+            initiateDirectCall(u.name);
           };
           list.appendChild(btn);
         }
       });
 
-      const titleBots = document.createElement('div');
-      titleBots.style.cssText = "font-size: 0.75rem; color: #949ba4; margin-top: 10px; font-weight: bold;";
-      titleBots.textContent = "BOTS:";
-      list.appendChild(titleBots);
-
-      bots.forEach(b => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-primary';
-        btn.style.backgroundColor = '#383a40';
-        btn.style.textAlign = 'left';
-        btn.textContent = `🤖 Call @${b.name}`;
-        btn.onclick = () => {
-          joinChannelCall();
-          db.ref(`calls/${activeChannel}/participants/${sanitizeKey(b.name)}`).set({
-            name: b.name,
-            avatar: b.avatar,
-            handRaised: false,
-            camOn: false
-          });
-        };
-        list.appendChild(btn);
-      });
-
       document.getElementById('callTargetModal').style.display = 'flex';
     }
 
+    function initiateDirectCall(targetUserName) {
+      db.ref(`directCalls/${sanitizeKey(targetUserName)}`).set({
+        caller: user.name,
+        callerAvatar: user.avatar,
+        channel: activeChannel,
+        status: 'ringing'
+      });
+
+      db.ref(`directCalls/${sanitizeKey(targetUserName)}`).on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val && val.status === 'declined') {
+          db.ref(`directCalls/${sanitizeKey(targetUserName)}`).off();
+          db.ref(`directCalls/${sanitizeKey(targetUserName)}`).remove();
+          showCallDeniedNotice(`${targetUserName} denied the call`);
+        } else if (val && val.status === 'accepted') {
+          db.ref(`directCalls/${sanitizeKey(targetUserName)}`).off();
+          joinChannelCall();
+        }
+      });
+    }
+
+    function listenForIncomingCalls() {
+      if (!user.name) return;
+
+      db.ref(`directCalls/${sanitizeKey(user.name)}`).on('value', (snapshot) => {
+        const callData = snapshot.val();
+        if (callData && callData.status === 'ringing') {
+          incomingCallData = callData;
+          document.getElementById('incomingCallerText').textContent = `${callData.caller} is calling you...`;
+          document.getElementById('incomingCallerAvatar').src = callData.callerAvatar;
+          document.getElementById('incomingCallOverlay').style.display = 'flex';
+        } else {
+          document.getElementById('incomingCallOverlay').style.display = 'none';
+        }
+      });
+    }
+
+    function acceptIncomingCall() {
+      if (!incomingCallData) return;
+      
+      const callerName = incomingCallData.caller;
+      const chan = incomingCallData.channel;
+
+      db.ref(`directCalls/${sanitizeKey(user.name)}/status`).set('accepted');
+      document.getElementById('incomingCallOverlay').style.display = 'none';
+      
+      switchChannel(chan);
+      joinChannelCall();
+    }
+
+    function declineIncomingCall() {
+      if (!incomingCallData) return;
+      db.ref(`directCalls/${sanitizeKey(user.name)}/status`).set('declined');
+      document.getElementById('incomingCallOverlay').style.display = 'none';
+    }
+
+    function showCallDeniedNotice(msg) {
+      const notice = document.getElementById('callDeniedOverlay');
+      document.getElementById('deniedNoticeText').textContent = msg;
+      notice.style.display = 'flex';
+      setTimeout(() => {
+        notice.style.display = 'none';
+      }, 2500);
+    }
+
     function joinChannelCall() {
-      document.getElementById('callTargetModal').style.display = 'none';
       document.getElementById('callHeaderTitle').textContent = `📞 #${activeChannel} Video Call`;
       document.getElementById('callOverlay').style.display = 'flex';
       inCall = true;
@@ -824,8 +915,8 @@
             <div class="hand-icon" id="hand-${sanitizeKey(p.name)}" style="display: ${p.handRaised ? 'block' : 'none'};">✋</div>
             <video id="vid-${sanitizeKey(p.name)}" autoplay playsinline style="display: ${p.camOn ? 'block' : 'none'};"></video>
             <div class="call-card-userinfo" id="info-${sanitizeKey(p.name)}">
-              <img src="${p.avatar}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent);" />
-              <span style="font-weight: bold; color: white; font-size: 1.1rem;">${escapeHtml(p.name)}</span>
+              <img src="${p.avatar}" />
+              <span class="call-user-name">${escapeHtml(p.name)}</span>
             </div>
           `;
 
@@ -902,55 +993,7 @@
       db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).remove();
     }
 
-    /* ---- BOTS MANAGER ---- */
-    function listenForBots() {
-      db.ref('bots').on('value', (snapshot) => {
-        const val = snapshot.val();
-        if (val) bots = Object.values(val);
-
-        const list = document.getElementById('dynamicBotList');
-        const managerList = document.getElementById('botManagerList');
-        list.innerHTML = '';
-        if (managerList) managerList.innerHTML = '';
-
-        bots.forEach(b => {
-          const li = document.createElement('li');
-          li.className = 'dm-item';
-          li.innerHTML = `🤖 @${escapeHtml(b.name)}`;
-          li.onclick = () => alert(`DM with @${b.name} active!`);
-          list.appendChild(li);
-
-          if (managerList) {
-            const div = document.createElement('div');
-            div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 4px;";
-            div.innerHTML = `
-              <span style="font-size: 0.85rem; color: white;">🤖 ${escapeHtml(b.name)}</span>
-              <button class="btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="removeBot('${escapeHtml(b.name)}')">Remove</button>
-            `;
-            managerList.appendChild(div);
-          }
-        });
-      });
-    }
-
-    function createCustomBot() {
-      const name = document.getElementById('newBotNameInput').value.trim();
-      if (!name) return;
-
-      const botObj = {
-        name: name,
-        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
-      };
-
-      db.ref(`bots/${sanitizeKey(name)}`).set(botObj);
-      document.getElementById('newBotNameInput').value = '';
-    }
-
-    function removeBot(name) {
-      db.ref(`bots/${sanitizeKey(name)}`).remove();
-    }
-
-    /* ---- GENERAL UTILITIES ---- */
+    /* GENERAL UTILITIES */
     function updateUserFooter() {
       document.getElementById('userNameFooter').textContent = user.name;
       document.getElementById('userAvatarFooter').src = user.avatar;
