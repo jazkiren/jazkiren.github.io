@@ -97,6 +97,7 @@
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
       <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
+      <button class="btn-primary" style="background-color: #da373c;" onclick="clearAllChatHistory()">🗑️ Clear All Chat History</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
       <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
     </div>
@@ -191,6 +192,7 @@
 
       if (data.type === 'CHAT_MESSAGE') {
         renderMessage(data.msg);
+        saveMessageToHistory(data.msg);
         if (!data.isStealth) {
           updateMemberOnline(data.msg.author, data.msg.avatar);
         }
@@ -210,12 +212,42 @@
       updateUserFooter();
       registerUserHistory(user.name, user.avatar);
 
+      // Restore saved messages on page load
+      loadChatHistory();
+
       announcePresence();
       if (heartBeatTimer) clearInterval(heartBeatTimer);
       heartBeatTimer = setInterval(announcePresence, 8000);
 
       renderMembersList();
     }
+
+    /* ---- PERSISTENT CHAT HISTORY FUNCTIONS ---- */
+    function saveMessageToHistory(msgObj) {
+      let history = JSON.parse(localStorage.getItem('gngChatMessages') || '[]');
+      history.push(msgObj);
+      localStorage.setItem('gngChatMessages', JSON.stringify(history));
+    }
+
+    function loadChatHistory() {
+      const view = document.getElementById('messagesView');
+      if (!view) return;
+      view.innerHTML = ''; // Clear before loading
+
+      let history = JSON.parse(localStorage.getItem('gngChatMessages') || '[]');
+      history.forEach(msg => {
+        renderMessage(msg);
+      });
+    }
+
+    function clearAllChatHistory() {
+      if (confirm("Are you sure you want to clear all chat messages?")) {
+        localStorage.removeItem('gngChatMessages');
+        document.getElementById('messagesView').innerHTML = '';
+        togglePanel(false);
+      }
+    }
+    /* ------------------------------------------- */
 
     function registerUserHistory(username, avatar) {
       let history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
@@ -325,6 +357,7 @@
         };
 
         renderMessage(msgObj);
+        saveMessageToHistory(msgObj);
 
         chatChannel.postMessage({
           type: 'CHAT_MESSAGE',
