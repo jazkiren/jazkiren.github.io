@@ -1,54 +1,22 @@
-// Web Audio API engine for generating audio directly in-browser
+// Sound Engine mapped to audio sources
+const discordRingAudio = new Audio('https://raw.githubusercontent.com/xi-3/Discord-Sound-Effects/main/Ringtone.mp3');
+discordRingAudio.loop = true;
+
+const whatsappTextAudio = new Audio('https://raw.githubusercontent.com/shreyas14/WhatsApp-web-clone/master/public/sounds/notification.mp3');
+
 const SoundEngine = {
-  ctx: null,
-
-  init() {
-    if (!this.ctx) {
-      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-    }
+  playRingtone() {
+    discordRingAudio.currentTime = 0;
+    discordRingAudio.play().catch(e => console.log('Audio playback prevented:', e));
   },
 
-  // Plays Discord User Join Tone
-  playJoinSound() {
-    this.init();
-    const now = this.ctx.currentTime;
-    
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(440, now);
-    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
-
-    gain.gain.setValueAtTime(0.15, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.3);
+  stopRingtone() {
+    discordRingAudio.pause();
+    discordRingAudio.currentTime = 0;
   },
 
-  // Plays WhatsApp Text Sent Tone
   playMessageSound() {
-    this.init();
-    const now = this.ctx.currentTime;
-
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(600, now);
-    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.08);
-
-    gain.gain.setValueAtTime(0.2, now);
-    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
-
-    osc.connect(gain);
-    gain.connect(this.ctx.destination);
-
-    osc.start(now);
-    osc.stop(now + 0.1);
+    whatsappTextAudio.currentTime = 0;
+    whatsappTextAudio.play().catch(e => console.log('Audio playback prevented:', e));
   }
 };
