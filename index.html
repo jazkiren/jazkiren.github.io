@@ -52,15 +52,84 @@
     .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
 
     .messages-view { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-    .msg-group { display: flex; gap: 12px; position: relative; }
-    .msg-content { display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+    .msg-group { display: flex; gap: 12px; position: relative; padding: 4px 8px; border-radius: 4px; }
+    .msg-group:hover { background-color: rgba(0,0,0,0.1); }
+    .msg-content { display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; flex: 1; }
     .msg-header { display: flex; align-items: center; gap: 6px; }
     .msg-author { font-weight: 600; color: var(--text-primary); font-size: 0.85rem; }
     .msg-timestamp { font-size: 0.7rem; color: var(--text-muted); }
 
+    /* Reply Snippet Banner inside Message */
+    .reply-snippet {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-left: 2px solid var(--accent);
+      padding-left: 8px;
+      margin-bottom: 2px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      background: rgba(0,0,0,0.15);
+      border-radius: 0 4px 4px 0;
+      padding: 2px 8px;
+    }
+
+    .reply-action-btn {
+      display: none;
+      position: absolute;
+      right: 12px;
+      top: 4px;
+      background: var(--bg-sidebar);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    .msg-group:hover .reply-action-btn { display: block; }
+    .reply-action-btn:hover { color: white; background: var(--accent); }
+
+    .chat-img-attachment { max-width: 280px; max-height: 200px; border-radius: 8px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.1); }
+
     .input-wrapper { padding: 0 14px 16px 14px; position: relative; }
-    .input-container { display: flex; background-color: #383a40; border-radius: 8px; align-items: center; padding: 2px 10px; }
+    
+    /* Replying Active Header Bar */
+    .reply-active-bar {
+      display: none;
+      background-color: #2b2d31;
+      padding: 6px 12px;
+      border-radius: 8px 8px 0 0;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      justify-content: space-between;
+      align-items: center;
+      border-left: 3px solid var(--accent);
+    }
+
+    .input-container { display: flex; background-color: #383a40; border-radius: 8px; align-items: center; padding: 2px 10px; gap: 8px; }
     .chat-input { flex: 1; background-color: transparent; border: none; padding: 10px 6px; color: var(--text-primary); font-size: 0.88rem; outline: none; }
+    .input-btn { cursor: pointer; font-size: 1.1rem; color: var(--text-muted); transition: color 0.2s; }
+    .input-btn:hover { color: white; }
+
+    /* Emoji Picker Modal */
+    .emoji-picker {
+      display: none;
+      position: absolute;
+      bottom: 60px;
+      right: 20px;
+      background-color: var(--bg-sidebar);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+      z-index: 100;
+    }
+    .emoji-item { cursor: pointer; font-size: 1.3rem; text-align: center; border-radius: 4px; padding: 2px; }
+    .emoji-item:hover { background-color: rgba(255,255,255,0.1); }
 
     .members-rail { width: 200px; background-color: var(--bg-sidebar); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
     .member-card { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.82rem; color: var(--text-muted); padding: 4px 6px; border-radius: 4px; }
@@ -72,7 +141,6 @@
     .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
     .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 8px; width: 340px; display: flex; flex-direction: column; gap: 12px; }
     
-    /* ENLARGED ADMIN PANEL */
     .modal-box.panel-box { width: 620px; max-width: 90vw; max-height: 85vh; overflow-y: auto; padding: 28px; }
     .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
     .panel-card { background-color: var(--bg-rail); padding: 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
@@ -81,13 +149,71 @@
     .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
     .btn-danger { background-color: #da373c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
 
-    /* Voice Call Overlay */
-    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.95); z-index: 2000; flex-direction: column; justify-content: space-between; padding: 24px; }
-    .call-grid { display: flex; justify-content: center; align-items: center; gap: 24px; flex: 1; }
-    .call-card { width: 180px; height: 180px; background-color: var(--bg-card); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; border: 2px solid transparent; }
-    .call-card.speaking { border-color: var(--speaking-green); }
-    .call-controls { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; }
-    .call-btn { width: 48px; height: 48px; border-radius: 50%; border: none; background-color: #383a40; color: white; font-size: 1.2rem; cursor: pointer; }
+    /* CALL OVERLAY */
+    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0b0c0e; z-index: 2000; flex-direction: column; justify-content: space-between; padding: 20px; }
+    
+    .call-grid { 
+      display: flex; 
+      flex: 1; 
+      width: 100%; 
+      height: 100%; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 20px; 
+      padding: 10px; 
+      overflow: hidden; 
+    }
+
+    .call-card { 
+      flex: 1; 
+      height: 100%; 
+      max-height: 80vh; 
+      background-color: var(--bg-card); 
+      border-radius: 12px; 
+      display: flex; 
+      flex-direction: column; 
+      justify-content: center; 
+      align-items: center; 
+      gap: 12px; 
+      position: relative; 
+      overflow: hidden;
+      border: 20px solid #000000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .call-card video { 
+      width: 100%; 
+      height: 100%; 
+      object-fit: cover; 
+      position: absolute; 
+      top: 0; 
+      left: 0; 
+    }
+
+    .call-card-userinfo { 
+      position: relative; 
+      z-index: 2; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      gap: 8px; 
+    }
+
+    .hand-icon {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 2rem;
+      background: rgba(0,0,0,0.6);
+      padding: 6px 12px;
+      border-radius: 20px;
+      z-index: 5;
+      display: none;
+    }
+
+    .call-controls { display: flex; justify-content: center; gap: 16px; margin-top: 15px; z-index: 10; }
+    .call-btn { width: 50px; height: 50px; border-radius: 50%; border: none; background-color: #383a40; color: white; font-size: 1.3rem; cursor: pointer; transition: all 0.2s ease; }
+    .call-btn.active { background-color: #e5a93c; }
     .call-btn.end { background-color: #da373c; }
 
     .banned-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0f172a; color: #f23f43; z-index: 9999; justify-content: center; align-items: center; flex-direction: column; gap: 16px; font-weight: bold; }
@@ -108,8 +234,10 @@
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
       <h3 style="color: white;">Welcome to Gng Chat Pro!</h3>
-      <p style="color: #b5bac1; font-size: 0.8rem;">Enter your username to join live chat.</p>
-      <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
+      <p style="color: #b5bac1; font-size: 0.8rem;">Create or enter your 5-character password (no '-' or '='):</p>
+      <input type="text" id="usernameInput" placeholder="Username" />
+      <input type="password" id="passwordInput" placeholder="5-Char Password" maxlength="5" />
+      <span id="authErrorMsg" style="color: #f23f43; font-size: 0.75rem; display: none;"></span>
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
@@ -143,27 +271,23 @@
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Voice Call</div>
-    <div class="call-grid">
-      <div class="call-card speaking" id="userCallCard">
-        <img id="userCallAvatar" src="" style="width: 60px; height: 60px; border-radius: 50%;" />
-        <span style="font-weight: bold; color: white;" id="userCallLabel">You</span>
-      </div>
-      <div class="call-card" id="targetCallCard">
-        <img id="targetCallAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" style="width: 60px; height: 60px; border-radius: 50%;" />
-        <span style="font-weight: bold; color: white;" id="targetCallLabel">Bot</span>
-      </div>
-    </div>
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Channel Video Call</div>
+    
+    <div class="call-grid" id="callGridContainer"></div>
+
     <div class="call-controls">
-      <button class="call-btn" onclick="this.textContent = this.textContent === '🎙️' ? '🔇' : '🎙️'">🎙️</button>
-      <button class="call-btn end" onclick="endCall()">📞</button>
+      <button class="call-btn" id="micBtn" onclick="toggleMic()" title="Mute/Unmute Mic">🎙️</button>
+      <button class="call-btn" id="camBtn" onclick="toggleCamera()" title="Toggle Camera">📹</button>
+      <button class="call-btn" id="handBtn" onclick="toggleRaiseHand()" title="Raise Hand">✋</button>
+      <button class="call-btn end" onclick="endCall()" title="Leave Call">📞</button>
     </div>
   </div>
 
   <div class="overlay" id="callTargetModal" style="display: none;">
     <div class="modal-box">
-      <h3 style="color: white;">Select Target to Call</h3>
-      <div id="callSelectorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      <h3 style="color: white;">Call Online Users in #<span id="callModalChanName"></span></h3>
+      <p style="font-size: 0.75rem; color: var(--text-muted);">Select an online member or bot to join a call:</p>
+      <div id="callSelectorList" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
       <button class="btn-primary" style="background-color: #da373c; margin-top: 8px;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
     </div>
   </div>
@@ -209,7 +333,7 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Call</div>
+        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Call Users</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
       </div>
     </div>
@@ -217,8 +341,33 @@
     <div class="messages-view" id="messagesView"></div>
 
     <div class="input-wrapper">
+      <div class="reply-active-bar" id="replyActiveBar">
+        <span>Replying to <b id="replyTargetAuthor"></b></span>
+        <span style="cursor: pointer;" onclick="cancelReply()">✕</span>
+      </div>
+
+      <div class="emoji-picker" id="emojiPickerModal">
+        <span class="emoji-item" onclick="insertEmoji('😄')">😄</span>
+        <span class="emoji-item" onclick="insertEmoji('😂')">😂</span>
+        <span class="emoji-item" onclick="insertEmoji('🔥')">🔥</span>
+        <span class="emoji-item" onclick="insertEmoji('❤️')">❤️</span>
+        <span class="emoji-item" onclick="insertEmoji('👍')">👍</span>
+        <span class="emoji-item" onclick="insertEmoji('💀')">💀</span>
+        <span class="emoji-item" onclick="insertEmoji('🚀')">🚀</span>
+        <span class="emoji-item" onclick="insertEmoji('💯')">💯</span>
+        <span class="emoji-item" onclick="insertEmoji('🎉')">🎉</span>
+        <span class="emoji-item" onclick="insertEmoji('😎')">😎</span>
+        <span class="emoji-item" onclick="insertEmoji('🤡')">🤡</span>
+        <span class="emoji-item" onclick="insertEmoji('🎮')">🎮</span>
+      </div>
+
       <div class="input-container">
+        <input type="file" id="fileUploadInput" accept="image/*" style="display:none;" onchange="handleFileUpload(event)" />
+        <span class="input-btn" onclick="document.getElementById('fileUploadInput').click()" title="Upload Image/Photo">+</span>
+        
         <input type="text" class="chat-input" id="chatInput" placeholder="Message..." onkeydown="handleKey(event)" />
+        
+        <span class="input-btn" onclick="toggleEmojiPicker()" title="Add Emoji">😊</span>
       </div>
     </div>
   </div>
@@ -250,10 +399,20 @@
     let activeChannel = "general";
     let channels = ["general", "memes", "pics"];
     let bots = [{ name: "GngBot", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" }];
+    let onlineUsersList = [];
+
+    // Reply state
+    let activeReply = null; // { author, text }
+
+    // Call state
+    let localVideoStream = null;
+    let isMicOn = true;
+    let isCamOn = false;
+    let isHandRaised = false;
+    let inCall = false;
 
     window.onload = function() {
-      // ONE-TIME RESET FOR UPDATE v2.1
-      const APP_VERSION = "2.1";
+      const APP_VERSION = "2.3";
       if (localStorage.getItem('gngChatVersion') !== APP_VERSION) {
         localStorage.clear();
         localStorage.setItem('gngChatVersion', APP_VERSION);
@@ -280,6 +439,66 @@
       listenForBots();
       switchChannel(activeChannel);
       setupLivePresence();
+      listenForActiveCalls();
+    }
+
+    /* ---- 5-CHARACTER PASSWORD LOGIN / SIGN-UP ---- */
+    function signIn() {
+      const username = document.getElementById('usernameInput').value.trim();
+      const password = document.getElementById('passwordInput').value.trim();
+      const errBox = document.getElementById('authErrorMsg');
+
+      errBox.style.display = 'none';
+
+      if (!username) {
+        showError("Please enter a username!");
+        return;
+      }
+
+      if (password.length !== 5) {
+        showError("Password must be exactly 5 characters long!");
+        return;
+      }
+
+      if (password.includes('-') || password.includes('=')) {
+        showError("Password cannot contain '-' or '=' characters!");
+        return;
+      }
+
+      const userSanitized = sanitizeKey(username);
+      const userRef = db.ref(`accounts/${userSanitized}`);
+
+      userRef.once('value').then(snapshot => {
+        const acc = snapshot.val();
+        if (acc) {
+          // Verify Password
+          if (acc.password === password) {
+            loginSuccess(username, acc.avatar);
+          } else {
+            showError("Incorrect password for this account!");
+          }
+        } else {
+          // Register New Account
+          const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
+          userRef.set({ username: username, password: password, avatar: avatar }).then(() => {
+            loginSuccess(username, avatar);
+          });
+        }
+      });
+    }
+
+    function showError(msg) {
+      const errBox = document.getElementById('authErrorMsg');
+      errBox.textContent = msg;
+      errBox.style.display = 'block';
+    }
+
+    function loginSuccess(username, avatar) {
+      user.name = username;
+      user.avatar = avatar;
+      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
+      document.getElementById('loginOverlay').style.display = 'none';
+      initApp();
     }
 
     /* ---- LIVE REAL-TIME PRESENCE ---- */
@@ -310,6 +529,7 @@
 
         onlineContainer.innerHTML = '';
         offlineContainer.innerHTML = '';
+        onlineUsersList = [];
 
         const data = snapshot.val() || {};
         Object.keys(data).forEach(key => {
@@ -318,6 +538,7 @@
           card.className = 'member-card';
 
           if (userData.online) {
+            onlineUsersList.push(userData);
             card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
             onlineContainer.appendChild(card);
           } else {
@@ -346,7 +567,7 @@
       }
     }
 
-    /* ---- LIVE CHANNELS & CHAT ---- */
+    /* ---- LIVE CHANNELS & MESSAGES SEPARATION ---- */
     function listenForChannels() {
       db.ref('channels').on('value', (snapshot) => {
         const val = snapshot.val();
@@ -374,6 +595,11 @@
     }
 
     function switchChannel(ch) {
+      // Detach previous channel listener to isolate messages completely
+      if (activeChannel) {
+        db.ref(`messages/${activeChannel}`).off();
+      }
+
       activeChannel = ch;
       document.getElementById('chatTitle').textContent = `# ${ch}`;
       document.getElementById('chatInput').placeholder = `Message #${ch}...`;
@@ -382,6 +608,7 @@
       const activeEl = document.getElementById(`chan-${ch}`);
       if (activeEl) activeEl.classList.add('active');
 
+      cancelReply();
       listenForMessages(ch);
     }
 
@@ -389,7 +616,6 @@
       const view = document.getElementById('messagesView');
       view.innerHTML = '';
 
-      db.ref(`messages/${ch}`).off();
       db.ref(`messages/${ch}`).on('child_added', (snapshot) => {
         const msg = snapshot.val();
         renderMessage(msg);
@@ -398,20 +624,28 @@
 
     function handleKey(e) {
       if (e.key === 'Enter') {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const msgObj = {
-          author: user.name,
-          avatar: user.avatar,
-          text: text,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        db.ref(`messages/${activeChannel}`).push(msgObj);
-        input.value = '';
+        sendMessage();
       }
+    }
+
+    function sendMessage(imageAttachment = null) {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text && !imageAttachment) return;
+
+      const msgObj = {
+        author: user.name,
+        avatar: user.avatar,
+        text: text,
+        image: imageAttachment,
+        replyTo: activeReply ? activeReply : null,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+
+      db.ref(`messages/${activeChannel}`).push(msgObj);
+      input.value = '';
+      cancelReply();
+      hideEmojiPicker();
     }
 
     function renderMessage(msg) {
@@ -420,21 +654,255 @@
 
       const div = document.createElement('div');
       div.className = 'msg-group';
+
+      let replyHTML = '';
+      if (msg.replyTo) {
+        replyHTML = `
+          <div class="reply-snippet">
+            <b>@${escapeHtml(msg.replyTo.author)}:</b> ${escapeHtml(msg.replyTo.text || '[Attachment]')}
+          </div>
+        `;
+      }
+
+      let imageHTML = '';
+      if (msg.image) {
+        imageHTML = `<div><img class="chat-img-attachment" src="${msg.image}" /></div>`;
+      }
+
       div.innerHTML = `
+        <button class="reply-action-btn" onclick="setReply('${escapeHtml(msg.author)}', '${escapeHtml(msg.text || 'Image Attachment')}')">↩ Reply</button>
         <img class="avatar-sm" src="${msg.avatar}" />
         <div class="msg-content">
+          ${replyHTML}
           <div class="msg-header">
             <span class="msg-author">${escapeHtml(msg.author)}</span>
             <span class="msg-timestamp">${msg.timestamp}</span>
           </div>
           <div>${escapeHtml(msg.text)}</div>
+          ${imageHTML}
         </div>
       `;
       view.appendChild(div);
       view.scrollTop = view.scrollHeight;
     }
 
-    /* ---- LIVE BOTS MANAGER ---- */
+    /* ---- REPLIES, EMOJIS & UPLOADS ---- */
+    function setReply(author, text) {
+      activeReply = { author: author, text: text };
+      document.getElementById('replyTargetAuthor').textContent = `@${author}`;
+      document.getElementById('replyActiveBar').style.display = 'flex';
+      document.getElementById('chatInput').focus();
+    }
+
+    function cancelReply() {
+      activeReply = null;
+      document.getElementById('replyActiveBar').style.display = 'none';
+    }
+
+    function toggleEmojiPicker() {
+      const picker = document.getElementById('emojiPickerModal');
+      picker.style.display = (picker.style.display === 'grid') ? 'none' : 'grid';
+    }
+
+    function hideEmojiPicker() {
+      document.getElementById('emojiPickerModal').style.display = 'none';
+    }
+
+    function insertEmoji(char) {
+      const input = document.getElementById('chatInput');
+      input.value += char;
+      input.focus();
+    }
+
+    function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        sendMessage(e.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    /* ---- REAL-TIME VIDEO & CALL SYSTEM ---- */
+    function openCallModal() {
+      document.getElementById('callModalChanName').textContent = activeChannel;
+      const list = document.getElementById('callSelectorList');
+      list.innerHTML = '';
+
+      const startAllBtn = document.createElement('button');
+      startAllBtn.className = 'btn-primary';
+      startAllBtn.style.backgroundColor = 'var(--speaking-green)';
+      startAllBtn.textContent = `🚀 Join/Start Call in #${activeChannel}`;
+      startAllBtn.onclick = () => joinChannelCall();
+      list.appendChild(startAllBtn);
+
+      const titleReal = document.createElement('div');
+      titleReal.style.cssText = "font-size: 0.75rem; color: #949ba4; margin-top: 10px; font-weight: bold;";
+      titleReal.textContent = "ONLINE MEMBERS:";
+      list.appendChild(titleReal);
+
+      onlineUsersList.forEach(u => {
+        if (u.name !== user.name) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-primary';
+          btn.style.backgroundColor = '#383a40';
+          btn.style.textAlign = 'left';
+          btn.textContent = `👤 Call ${u.name}`;
+          btn.onclick = () => {
+            joinChannelCall();
+            db.ref(`calls/${activeChannel}/participants/${sanitizeKey(u.name)}`).set({
+              name: u.name,
+              avatar: u.avatar,
+              handRaised: false,
+              camOn: false
+            });
+          };
+          list.appendChild(btn);
+        }
+      });
+
+      const titleBots = document.createElement('div');
+      titleBots.style.cssText = "font-size: 0.75rem; color: #949ba4; margin-top: 10px; font-weight: bold;";
+      titleBots.textContent = "BOTS:";
+      list.appendChild(titleBots);
+
+      bots.forEach(b => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.style.backgroundColor = '#383a40';
+        btn.style.textAlign = 'left';
+        btn.textContent = `🤖 Call @${b.name}`;
+        btn.onclick = () => {
+          joinChannelCall();
+          db.ref(`calls/${activeChannel}/participants/${sanitizeKey(b.name)}`).set({
+            name: b.name,
+            avatar: b.avatar,
+            handRaised: false,
+            camOn: false
+          });
+        };
+        list.appendChild(btn);
+      });
+
+      document.getElementById('callTargetModal').style.display = 'flex';
+    }
+
+    function joinChannelCall() {
+      document.getElementById('callTargetModal').style.display = 'none';
+      document.getElementById('callHeaderTitle').textContent = `📞 #${activeChannel} Video Call`;
+      document.getElementById('callOverlay').style.display = 'flex';
+      inCall = true;
+
+      db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).set({
+        name: user.name,
+        avatar: user.avatar,
+        handRaised: isHandRaised,
+        camOn: isCamOn
+      });
+
+      db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).onDisconnect().remove();
+    }
+
+    function listenForActiveCalls() {
+      db.ref(`calls/${activeChannel}/participants`).on('value', (snapshot) => {
+        if (!inCall) return;
+
+        const grid = document.getElementById('callGridContainer');
+        grid.innerHTML = '';
+        const participants = snapshot.val() || {};
+        const keys = Object.keys(participants);
+
+        keys.forEach(k => {
+          const p = participants[k];
+          const card = document.createElement('div');
+          card.className = 'call-card';
+          card.id = `call-card-${sanitizeKey(p.name)}`;
+
+          card.innerHTML = `
+            <div class="hand-icon" id="hand-${sanitizeKey(p.name)}" style="display: ${p.handRaised ? 'block' : 'none'};">✋</div>
+            <video id="vid-${sanitizeKey(p.name)}" autoplay playsinline style="display: ${p.camOn ? 'block' : 'none'};"></video>
+            <div class="call-card-userinfo" id="info-${sanitizeKey(p.name)}">
+              <img src="${p.avatar}" style="width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--accent);" />
+              <span style="font-weight: bold; color: white; font-size: 1.1rem;">${escapeHtml(p.name)}</span>
+            </div>
+          `;
+
+          grid.appendChild(card);
+
+          if (p.name === user.name && localVideoStream && isCamOn) {
+            const videoElem = document.getElementById(`vid-${sanitizeKey(user.name)}`);
+            if (videoElem) videoElem.srcObject = localVideoStream;
+          }
+        });
+      });
+    }
+
+    async function toggleCamera() {
+      const btn = document.getElementById('camBtn');
+      isCamOn = !isCamOn;
+
+      if (isCamOn) {
+        try {
+          localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          btn.classList.add('active');
+        } catch (err) {
+          alert("Unable to access camera: " + err.message);
+          isCamOn = false;
+          return;
+        }
+      } else {
+        if (localVideoStream) {
+          localVideoStream.getTracks().forEach(track => track.stop());
+        }
+        btn.classList.remove('active');
+      }
+
+      if (inCall) {
+        db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}/camOn`).set(isCamOn);
+      }
+    }
+
+    function toggleMic() {
+      isMicOn = !isMicOn;
+      const btn = document.getElementById('micBtn');
+      if (localVideoStream && localVideoStream.getAudioTracks().length > 0) {
+        localVideoStream.getAudioTracks()[0].enabled = isMicOn;
+      }
+      btn.textContent = isMicOn ? '🎙️' : '🔇';
+    }
+
+    function toggleRaiseHand() {
+      isHandRaised = !isHandRaised;
+      const btn = document.getElementById('handBtn');
+      if (isHandRaised) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+
+      if (inCall) {
+        db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}/handRaised`).set(isHandRaised);
+      }
+    }
+
+    function endCall() {
+      inCall = false;
+      document.getElementById('callOverlay').style.display = 'none';
+
+      if (localVideoStream) {
+        localVideoStream.getTracks().forEach(track => track.stop());
+      }
+      isCamOn = false;
+      isHandRaised = false;
+      document.getElementById('camBtn').classList.remove('active');
+      document.getElementById('handBtn').classList.remove('active');
+
+      db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).remove();
+    }
+
+    /* ---- BOTS MANAGER ---- */
     function listenForBots() {
       db.ref('bots').on('value', (snapshot) => {
         const val = snapshot.val();
@@ -482,48 +950,7 @@
       db.ref(`bots/${sanitizeKey(name)}`).remove();
     }
 
-    /* ---- CALLS ---- */
-    function openCallModal() {
-      const list = document.getElementById('callSelectorList');
-      list.innerHTML = '';
-
-      bots.forEach(b => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-primary';
-        btn.style.backgroundColor = '#383a40';
-        btn.textContent = `📞 Call Bot @${b.name}`;
-        btn.onclick = () => startCall(b.name, b.avatar);
-        list.appendChild(btn);
-      });
-
-      document.getElementById('callTargetModal').style.display = 'flex';
-    }
-
-    function startCall(targetName, targetAvatar) {
-      document.getElementById('callTargetModal').style.display = 'none';
-      document.getElementById('callHeaderTitle').textContent = `📞 Voice Call with ${targetName}`;
-      document.getElementById('userCallAvatar').src = user.avatar;
-      document.getElementById('userCallLabel').textContent = user.name;
-      document.getElementById('targetCallAvatar').src = targetAvatar;
-      document.getElementById('targetCallLabel').textContent = targetName;
-      document.getElementById('callOverlay').style.display = 'flex';
-    }
-
-    function endCall() {
-      document.getElementById('callOverlay').style.display = 'none';
-    }
-
     /* ---- GENERAL UTILITIES ---- */
-    function signIn() {
-      const val = document.getElementById('usernameInput').value.trim();
-      if (!val) return;
-      user.name = val;
-      user.avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(val)}`;
-      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
-      document.getElementById('loginOverlay').style.display = 'none';
-      initApp();
-    }
-
     function updateUserFooter() {
       document.getElementById('userNameFooter').textContent = user.name;
       document.getElementById('userAvatarFooter').src = user.avatar;
