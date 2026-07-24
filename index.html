@@ -23,7 +23,6 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     
-    /* Website Entrance Animation */
     body { 
       background-color: var(--bg-rail); 
       color: #dbdee1; 
@@ -38,12 +37,12 @@
       to { opacity: 1; transform: scale(1); }
     }
 
-    /* Layout Rails */
+    /* Rails & Sidebar */
     .server-rail { width: 64px; background-color: var(--bg-rail); padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
     .server-icon { width: 44px; height: 44px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; font-size: 1.2rem; }
     .server-icon:hover, .server-icon.active { background-color: var(--accent); border-radius: 10px; }
 
-    .sidebar { width: 240px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; }
+    .sidebar { width: 240px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
     .sidebar-header { padding: 12px 14px; height: 52px; border-bottom: 1px solid rgba(0,0,0,0.2); font-weight: 700; color: var(--text-primary); display: flex; align-items: center; font-size: 1rem; }
     .section-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 12px 6px 12px; }
     .section-title { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; }
@@ -51,15 +50,40 @@
     .add-btn:hover { color: white; }
     
     .channel-list, .dm-list { list-style: none; }
-    .channel-item, .dm-item { padding: 8px 12px; margin: 2px 6px; border-radius: 6px; cursor: pointer; color: var(--text-muted); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 6px; transition: background 0.15s; }
+    .channel-item, .dm-item { 
+      position: relative;
+      padding: 8px 12px; 
+      margin: 2px 6px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      color: var(--text-muted); 
+      font-size: 0.9rem; 
+      font-weight: 500; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      transition: background 0.15s; 
+    }
     .channel-item:hover, .channel-item.active, .dm-item:hover, .dm-item.active { background-color: rgba(255,255,255,0.08); color: var(--text-primary); }
+
+    /* Red Notification Badge */
+    .unread-badge {
+      background-color: var(--danger);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 2px 7px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      animation: popInMsg 0.2s ease-out;
+    }
 
     .user-footer { background-color: rgba(0,0,0,0.25); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
     .user-info { display: flex; align-items: center; gap: 10px; }
     .avatar-wrapper { position: relative; width: 32px; height: 32px; border-radius: 50%; }
     .avatar-sm { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
 
-    /* Spinning Gear Cog Button */
+    /* Spinning Gear Cog */
     .settings-cog { 
       cursor: pointer; 
       color: #b5bac1; 
@@ -68,20 +92,17 @@
       transition: transform 0.5s ease, color 0.2s ease;
     }
     .settings-cog:hover { color: white; }
-    .settings-cog.spin {
-      transform: rotate(360deg);
-    }
+    .settings-cog.spin { transform: rotate(360deg); }
 
-    /* Chat Main Area */
+    /* Main Container */
     .chat-container { flex: 1; background-color: var(--bg-main); display: flex; flex-direction: column; }
     .chat-header { height: 52px; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: var(--text-primary); font-size: 1.1rem; }
     .header-actions { display: flex; gap: 10px; align-items: center; }
-    .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s, transform 0.15s; }
-    .header-btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-1px); }
+    .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600; transition: background 0.2s; }
+    .header-btn:hover { background: rgba(255,255,255,0.1); }
 
     .messages-view { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
     
-    /* Texting Animation */
     .msg-group { 
       display: flex; 
       gap: 12px; 
@@ -105,7 +126,6 @@
     .reply-snippet { font-size: 0.8rem; color: var(--text-muted); border-left: 3px solid var(--accent); padding: 3px 8px; margin-bottom: 4px; background: rgba(0,0,0,0.2); border-radius: 0 4px 4px 0; }
     .reply-action-btn { display: none; position: absolute; right: 12px; top: 6px; background: var(--bg-sidebar); padding: 4px 10px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
     .msg-group:hover .reply-action-btn { display: block; }
-    .reply-action-btn:hover { color: white; background: var(--accent); }
 
     .chat-img-attachment { max-width: 320px; max-height: 240px; border-radius: 8px; margin-top: 6px; border: 1px solid rgba(255,255,255,0.1); }
 
@@ -117,16 +137,17 @@
     .input-btn:hover { color: white; transform: scale(1.1); }
 
     .emoji-picker { display: none; position: absolute; bottom: 65px; right: 20px; background-color: var(--bg-sidebar); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px; grid-template-columns: repeat(6, 1fr); gap: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.5); z-index: 100; }
-    .emoji-item { cursor: pointer; font-size: 1.5rem; text-align: center; border-radius: 6px; padding: 4px; transition: transform 0.1s; }
+    .emoji-item { cursor: pointer; font-size: 1.5rem; text-align: center; border-radius: 6px; padding: 4px; }
     .emoji-item:hover { background-color: rgba(255,255,255,0.1); transform: scale(1.15); }
 
     .members-rail { width: 220px; background-color: var(--bg-sidebar); padding: 14px; display: flex; flex-direction: column; gap: 10px; }
-    .member-card { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 0.88rem; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; }
+    .member-card { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 0.88rem; color: var(--text-muted); padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+    .member-card:hover { background: rgba(255,255,255,0.05); }
     .status-indicator { width: 10px; height: 10px; border-radius: 50%; }
     .online { background-color: #23a55a; }
     .offline { background-color: #80848e; }
 
-    /* Modals & Overlays */
+    /* Modals & Large Settings Layout */
     .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeInModal 0.2s ease-out; }
     
     @keyframes fadeInModal {
@@ -135,13 +156,69 @@
     }
 
     .modal-box { background-color: var(--bg-main); padding: 28px; border-radius: 12px; width: 380px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
-    .modal-box input { padding: 12px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 6px; outline: none; font-size: 0.95rem; }
-    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s, transform 0.1s; }
-    .btn-primary:hover { transform: translateY(-1px); }
-    .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: transform 0.1s; }
-    .btn-danger:hover { transform: translateY(-1px); }
+    
+    /* ENLARGED SETTINGS MODAL */
+    .settings-modal-box { 
+      background-color: var(--bg-main); 
+      padding: 28px; 
+      border-radius: 16px; 
+      width: 620px; 
+      max-height: 85vh; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 16px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+      position: relative;
+    }
 
-    /* CALL OVERLAY ANIMATIONS */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: 55vh;
+      padding-right: 6px;
+    }
+
+    .setting-item {
+      background-color: var(--bg-sidebar);
+      padding: 12px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .setting-item label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .setting-item select, .setting-item input[type="text"] {
+      background: var(--bg-rail);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 8px;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    /* Version Label at Bottom Right */
+    .version-tag {
+      position: absolute;
+      bottom: 12px;
+      right: 18px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+    .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
+
+    /* CALL OVERLAY */
     .call-overlay { 
       display: none; 
       position: fixed; 
@@ -180,12 +257,6 @@
       overflow: hidden;
       border: 20px solid #000000;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      animation: popCard 0.3s ease-out;
-    }
-
-    @keyframes popCard {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
     }
 
     .call-card video { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
@@ -201,7 +272,7 @@
     .call-btn.active { background-color: #e5a93c; }
     .call-btn.end { background-color: var(--danger); }
 
-    /* INCOMING CALL RINGING OVERLAY */
+    /* INCOMING CALL OVERLAY */
     .incoming-call-overlay {
       display: none;
       position: fixed;
@@ -217,7 +288,6 @@
       align-items: center;
       gap: 24px;
       color: white;
-      animation: fadeInModal 0.3s ease-out;
     }
     
     .incoming-caller-avatar { width: 140px; height: 140px; border-radius: 50%; border: 4px solid var(--accent); animation: pulse 1.5s infinite ease-in-out; }
@@ -244,7 +314,6 @@
       color: #f23f43;
       font-size: 2.4rem;
       font-weight: bold;
-      animation: fadeInModal 0.2s ease-out;
     }
 
     @keyframes pulse {
@@ -264,7 +333,6 @@
       <span style="font-size: 0.8rem; color: #949ba4;">Enter Unban Code:</span>
       <input type="password" id="unbanCodeInput" style="padding: 8px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
       <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
-      <span id="banMsg" style="font-size: 0.75rem; color: #f23f43; display: none;">Incorrect Code!</span>
     </div>
   </div>
 
@@ -280,18 +348,99 @@
   </div>
 
   <div class="overlay" id="settingsModal" style="display: none;">
-    <div class="modal-box">
-      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
-        <h3 style="color: white;">⚙️ User Settings</h3>
-        <span style="cursor: pointer; color: var(--text-muted); font-weight: bold;" onclick="closeSettingsModal()">✕</span>
+    <div class="settings-modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+        <h3 style="color: white;">⚙️ Settings Panel</h3>
+        <span style="cursor: pointer; color: var(--text-muted); font-weight: bold; font-size: 1.2rem;" onclick="closeSettingsModal()">✕</span>
       </div>
       
-      <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-        <button class="btn-primary" style="background-color: #383a40; text-align: left;" onclick="toggleStealthMode()">
-          👻 Ghost Mode: <span id="ghostModeStatus" style="font-weight: bold; color: var(--accent);">OFF</span>
-        </button>
+      <div class="settings-grid">
+        <div class="setting-item">
+          <label>1. Ghost Mode (Stealth)</label>
+          <button class="btn-primary" style="background-color: #383a40;" onclick="toggleStealthMode()">
+            Status: <span id="ghostModeStatus">OFF</span>
+          </button>
+        </div>
 
-        <button class="btn-danger" style="margin-top: 10px;" onclick="logout()">🚪 Log Out Account</button>
+        <div class="setting-item">
+          <label>2. UI Theme</label>
+          <select id="settingTheme">
+            <option value="dark">Dark Theme (Default)</option>
+            <option value="midnight">Midnight Black</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>3. Desktop Notifications</label>
+          <select id="settingNotifs">
+            <option value="enabled">Enabled</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>4. Ringing Sound Effects</label>
+          <select id="settingSounds">
+            <option value="on">On (Ringtone Active)</option>
+            <option value="off">Mute Ringtone</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>5. Audio Input Device</label>
+          <select id="settingAudioInput">
+            <option value="default">Default System Microphone</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>6. Video Capture Device</label>
+          <select id="settingVideoInput">
+            <option value="default">Default Camera</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>7. Message Density</label>
+          <select id="settingDensity">
+            <option value="cozy">Cozy (Spacious)</option>
+            <option value="compact">Compact (Fit More Text)</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>8. Auto-Scroll New Messages</label>
+          <select id="settingAutoScroll">
+            <option value="always">Always Scroll</option>
+            <option value="smart">Smart Scroll</option>
+          </select>
+        </div>
+
+        <div class="setting-item">
+          <label>9. Offline Inbox Storage</label>
+          <button class="btn-primary" style="background-color: var(--accent);" onclick="openInboxModal(); closeSettingsModal();">
+            📥 View Offline Inbox
+          </button>
+        </div>
+
+        <div class="setting-item">
+          <label>10. Account Security</label>
+          <button class="btn-danger" onclick="logout()">🚪 Log Out & Reset</button>
+        </div>
+      </div>
+
+      <div class="version-tag">v2.6.0 Pro</div>
+    </div>
+  </div>
+
+  <div class="overlay" id="inboxModal" style="display: none;">
+    <div class="modal-box" style="width: 480px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+        <h3 style="color: white;">📥 Offline Inbox</h3>
+        <span style="cursor: pointer; color: var(--text-muted); font-weight: bold;" onclick="document.getElementById('inboxModal').style.display='none'">✕</span>
+      </div>
+      <div id="inboxItemsList" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+        <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center;">Your inbox is empty!</p>
       </div>
     </div>
   </div>
@@ -312,7 +461,7 @@
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box" style="width: 480px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-        <h3 style="color: white;">🛠️ Owner & Admin Control Panel</h3>
+        <h3 style="color: white;">🛠️ Admin Control Panel</h3>
         <button class="btn-danger" style="padding: 4px 10px;" onclick="togglePanel(false)">✕ Close</button>
       </div>
       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
@@ -323,12 +472,12 @@
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div class="call-title-header" id="callHeaderTitle">📞 Channel Video Call</div>
+    <div class="call-title-header" id="callHeaderTitle">📞 Video / Voice Call</div>
     
     <div class="call-grid" id="callGridContainer"></div>
 
     <div class="call-controls">
-      <button class="call-btn" id="micBtn" onclick="toggleMic()" title="Mute/Unmute Mic">🎙️</button>
+      <button class="call-btn active" id="micBtn" onclick="toggleMic()" title="Mute/Unmute Mic">🎙️</button>
       <button class="call-btn" id="camBtn" onclick="toggleCamera()" title="Toggle Camera">📹</button>
       <button class="call-btn" id="handBtn" onclick="toggleRaiseHand()" title="Raise Hand">✋</button>
       <button class="call-btn end" onclick="endCall()" title="Leave Call">📞</button>
@@ -353,6 +502,11 @@
       <div class="sidebar-header">Gng Chat Pro</div>
       
       <div class="section-header">
+        <span class="section-title">Direct Messages</span>
+      </div>
+      <ul class="dm-list" id="dynamicDmList"></ul>
+
+      <div class="section-header" style="margin-top: 10px;">
         <span class="section-title">Text Channels</span>
         <span class="add-btn" onclick="promptCreateChannel()" title="Create Channel">+</span>
       </div>
@@ -377,7 +531,8 @@
     <div class="chat-header">
       <span id="chatTitle"># general</span>
       <div class="header-actions">
-        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Start Call</div>
+        <div class="header-btn" onclick="openInboxModal()" style="color: #e5a93c;">📥 Inbox</div>
+        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Call</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
       </div>
     </div>
@@ -439,12 +594,18 @@
 
     let user = { name: "", avatar: "", stealthMode: false };
     let activeChannel = "general";
+    let isDmView = false;
+    let activeDmUser = null;
+
     let channels = ["general", "memes", "pics"];
     let onlineUsersList = [];
+    let unreadCounts = {};
+    let inboxMessages = [];
 
     let activeReply = null;
 
-    // Call state variables
+    // Fixed Media Stream Management
+    let localAudioStream = null;
     let localVideoStream = null;
     let isMicOn = true;
     let isCamOn = false;
@@ -453,7 +614,7 @@
     let incomingCallData = null;
 
     window.onload = function() {
-      const APP_VERSION = "2.5";
+      const APP_VERSION = "2.6.0";
       if (localStorage.getItem('gngChatVersion') !== APP_VERSION) {
         localStorage.clear();
         localStorage.setItem('gngChatVersion', APP_VERSION);
@@ -480,15 +641,14 @@
       setupLivePresence();
       listenForActiveCalls();
       listenForIncomingCalls();
+      setupUnreadListeners();
     }
 
-    /* GEAR SPIN & SETTINGS MODAL */
+    /* SPINNING GEAR & ENLARGED SETTINGS */
     function openSettingsModal() {
       const gear = document.getElementById('settingsGearIcon');
       gear.classList.add('spin');
-      setTimeout(() => {
-        gear.classList.remove('spin');
-      }, 500);
+      setTimeout(() => gear.classList.remove('spin'), 500);
 
       document.getElementById('ghostModeStatus').textContent = user.stealthMode ? "ON" : "OFF";
       document.getElementById('ghostModeStatus').style.color = user.stealthMode ? "#23a55a" : "var(--accent)";
@@ -499,7 +659,26 @@
       document.getElementById('settingsModal').style.display = 'none';
     }
 
-    /* 5-CHARACTER PASSWORD LOGIN / SIGN-UP */
+    function openInboxModal() {
+      const container = document.getElementById('inboxItemsList');
+      container.innerHTML = '';
+
+      if (inboxMessages.length === 0) {
+        container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); text-align:center;">Your inbox is empty!</p>';
+      } else {
+        inboxMessages.forEach(msg => {
+          const div = document.createElement('div');
+          div.style.background = 'rgba(255,255,255,0.05)';
+          div.style.padding = '8px 12px';
+          div.style.borderRadius = '6px';
+          div.innerHTML = `<b style="color:var(--accent);">@${escapeHtml(msg.author)}</b> (${msg.channel}): ${escapeHtml(msg.text)}`;
+          container.appendChild(div);
+        });
+      }
+      document.getElementById('inboxModal').style.display = 'flex';
+    }
+
+    /* 5-CHARACTER LOGIN */
     function signIn() {
       const username = document.getElementById('usernameInput').value.trim();
       const password = document.getElementById('passwordInput').value.trim();
@@ -507,20 +686,8 @@
 
       errBox.style.display = 'none';
 
-      if (!username) {
-        showError("Please enter a username!");
-        return;
-      }
-
-      if (password.length !== 5) {
-        showError("Password must be exactly 5 characters long!");
-        return;
-      }
-
-      if (password.includes('-') || password.includes('=')) {
-        showError("Password cannot contain '-' or '=' characters!");
-        return;
-      }
+      if (!username) return showError("Please enter a username!");
+      if (password.length !== 5) return showError("Password must be exactly 5 characters long!");
 
       const userSanitized = sanitizeKey(username);
       const userRef = db.ref(`accounts/${userSanitized}`);
@@ -556,41 +723,50 @@
       initApp();
     }
 
-    /* PRESENCE */
+    /* PRESENCE & DM CREATION */
     function setupLivePresence() {
       if (!user.name) return;
 
       const userRef = db.ref(`presence/${sanitizeKey(user.name)}`);
       
       if (!user.stealthMode) {
-        userRef.set({
-          name: user.name,
-          avatar: user.avatar,
-          online: true,
-          lastSeen: Date.now()
-        });
-        userRef.onDisconnect().set({
-          name: user.name,
-          avatar: user.avatar,
-          online: false,
-          lastSeen: Date.now()
-        });
+        userRef.set({ name: user.name, avatar: user.avatar, online: true, lastSeen: Date.now() });
+        userRef.onDisconnect().set({ name: user.name, avatar: user.avatar, online: false, lastSeen: Date.now() });
       }
 
       db.ref('presence').on('value', (snapshot) => {
         const onlineContainer = document.getElementById('dynamicOnlineList');
         const offlineContainer = document.getElementById('dynamicOfflineList');
+        const dmContainer = document.getElementById('dynamicDmList');
+
         if (!onlineContainer || !offlineContainer) return;
 
         onlineContainer.innerHTML = '';
         offlineContainer.innerHTML = '';
+        dmContainer.innerHTML = '';
         onlineUsersList = [];
 
         const data = snapshot.val() || {};
         Object.keys(data).forEach(key => {
           const userData = data[key];
+          if (userData.name === user.name) return;
+
+          // Render Direct Messages List First
+          const dmLi = document.createElement('li');
+          dmLi.className = `dm-item ${isDmView && activeDmUser === userData.name ? 'active' : ''}`;
+          dmLi.id = `dm-${sanitizeKey(userData.name)}`;
+          
+          const badgeCount = unreadCounts[`dm_${sanitizeKey(userData.name)}`] || 0;
+          const badgeHTML = badgeCount > 0 ? `<span class="unread-badge">${badgeCount}</span>` : '';
+          
+          dmLi.innerHTML = `<span>💬 ${escapeHtml(userData.name)}</span> ${badgeHTML}`;
+          dmLi.onclick = () => openDirectMessage(userData.name);
+          dmContainer.appendChild(dmLi);
+
+          // Member Rails
           const card = document.createElement('div');
           card.className = 'member-card';
+          card.onclick = () => openDirectMessage(userData.name);
 
           if (userData.online) {
             onlineUsersList.push(userData);
@@ -625,22 +801,29 @@
       document.getElementById('ghostModeStatus').style.color = user.stealthMode ? "#23a55a" : "var(--accent)";
     }
 
-    /* CHANNELS & MESSAGES */
+    /* CHANNELS & DIRECT MESSAGES SWITCHING */
     function listenForChannels() {
       db.ref('channels').on('value', (snapshot) => {
         const val = snapshot.val();
         if (val) channels = Object.values(val);
+        renderChannelsList();
+      });
+    }
+
+    function renderChannelsList() {
+      const list = document.getElementById('dynamicChannelList');
+      list.innerHTML = '';
+      channels.forEach(ch => {
+        const li = document.createElement('li');
+        li.className = `channel-item ${!isDmView && ch === activeChannel ? 'active' : ''}`;
+        li.id = `chan-${ch}`;
         
-        const list = document.getElementById('dynamicChannelList');
-        list.innerHTML = '';
-        channels.forEach(ch => {
-          const li = document.createElement('li');
-          li.className = `channel-item ${ch === activeChannel ? 'active' : ''}`;
-          li.id = `chan-${ch}`;
-          li.textContent = `# ${ch}`;
-          li.onclick = () => switchChannel(ch);
-          list.appendChild(li);
-        });
+        const badgeCount = unreadCounts[ch] || 0;
+        const badgeHTML = badgeCount > 0 ? `<span class="unread-badge">${badgeCount}</span>` : '';
+
+        li.innerHTML = `<span># ${ch}</span> ${badgeHTML}`;
+        li.onclick = () => switchChannel(ch);
+        list.appendChild(li);
       });
     }
 
@@ -653,36 +836,75 @@
     }
 
     function switchChannel(ch) {
-      if (activeChannel) {
-        db.ref(`messages/${activeChannel}`).off();
-      }
+      if (activeChannel) db.ref(`messages/${activeChannel}`).off();
 
+      isDmView = false;
       activeChannel = ch;
+      activeDmUser = null;
+      unreadCounts[ch] = 0;
+
       document.getElementById('chatTitle').textContent = `# ${ch}`;
       document.getElementById('chatInput').placeholder = `Message #${ch}...`;
       
-      document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
-      const activeEl = document.getElementById(`chan-${ch}`);
-      if (activeEl) activeEl.classList.add('active');
-
+      renderChannelsList();
+      setupLivePresence();
       cancelReply();
       listenForMessages(ch);
     }
 
-    function listenForMessages(ch) {
+    function openDirectMessage(targetUser) {
+      if (activeChannel) db.ref(`messages/${activeChannel}`).off();
+
+      isDmView = true;
+      activeDmUser = targetUser;
+      
+      // Sorted key for unique 1-on-1 DM room
+      const dmRoomId = [sanitizeKey(user.name), sanitizeKey(targetUser)].sort().join('_DM_');
+      activeChannel = dmRoomId;
+      unreadCounts[`dm_${sanitizeKey(targetUser)}`] = 0;
+
+      document.getElementById('chatTitle').textContent = `💬 DM with @${targetUser}`;
+      document.getElementById('chatInput').placeholder = `Direct Message @${targetUser}...`;
+
+      renderChannelsList();
+      setupLivePresence();
+      cancelReply();
+      listenForMessages(dmRoomId);
+    }
+
+    function listenForMessages(targetKey) {
       const view = document.getElementById('messagesView');
       view.innerHTML = '';
 
-      db.ref(`messages/${ch}`).on('child_added', (snapshot) => {
+      db.ref(`messages/${targetKey}`).on('child_added', (snapshot) => {
         const msg = snapshot.val();
         renderMessage(msg);
       });
     }
 
+    /* UNREAD NOTIFICATIONS & INBOX TRACKING */
+    function setupUnreadListeners() {
+      db.ref('messages').on('child_changed', (snapshot) => {
+        const channelKey = snapshot.key;
+        const messages = snapshot.val();
+        if (!messages) return;
+
+        const lastMsgKey = Object.keys(messages).pop();
+        const lastMsg = messages[lastMsgKey];
+
+        if (lastMsg && lastMsg.author !== user.name) {
+          if (channelKey !== activeChannel) {
+            unreadCounts[channelKey] = (unreadCounts[channelKey] || 0) + 1;
+            inboxMessages.push({ author: lastMsg.author, text: lastMsg.text, channel: channelKey });
+            renderChannelsList();
+            setupLivePresence();
+          }
+        }
+      });
+    }
+
     function handleKey(e) {
-      if (e.key === 'Enter') {
-        sendMessage();
-      }
+      if (e.key === 'Enter') sendMessage();
     }
 
     function sendMessage(imageAttachment = null) {
@@ -712,19 +934,8 @@
       const div = document.createElement('div');
       div.className = 'msg-group';
 
-      let replyHTML = '';
-      if (msg.replyTo) {
-        replyHTML = `
-          <div class="reply-snippet">
-            <b>@${escapeHtml(msg.replyTo.author)}:</b> ${escapeHtml(msg.replyTo.text || '[Attachment]')}
-          </div>
-        `;
-      }
-
-      let imageHTML = '';
-      if (msg.image) {
-        imageHTML = `<div><img class="chat-img-attachment" src="${msg.image}" /></div>`;
-      }
+      let replyHTML = msg.replyTo ? `<div class="reply-snippet"><b>@${escapeHtml(msg.replyTo.author)}:</b> ${escapeHtml(msg.replyTo.text || '[Attachment]')}</div>` : '';
+      let imageHTML = msg.image ? `<div><img class="chat-img-attachment" src="${msg.image}" /></div>` : '';
 
       div.innerHTML = `
         <button class="reply-action-btn" onclick="setReply('${escapeHtml(msg.author)}', '${escapeHtml(msg.text || 'Image Attachment')}')">↩ Reply</button>
@@ -743,7 +954,7 @@
       view.scrollTop = view.scrollHeight;
     }
 
-    /* REPLIES, EMOJIS & UPLOADS */
+    /* REPLIES & EMOJIS */
     function setReply(author, text) {
       activeReply = { author: author, text: text };
       document.getElementById('replyTargetAuthor').textContent = `@${author}`;
@@ -776,22 +987,20 @@
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
-        sendMessage(e.target.result);
-      };
+      reader.onload = function(e) { sendMessage(e.target.result); };
       reader.readAsDataURL(file);
     }
 
-    /* CALL SYSTEM & RINGING NOTIFICATIONS */
+    /* CALL SYSTEM - SEPARATE MIC / CAMERA FIX */
     function openCallModal() {
-      document.getElementById('callModalChanName').textContent = activeChannel;
+      document.getElementById('callModalChanName').textContent = isDmView ? activeDmUser : activeChannel;
       const list = document.getElementById('callSelectorList');
       list.innerHTML = '';
 
       const startAllBtn = document.createElement('button');
       startAllBtn.className = 'btn-primary';
       startAllBtn.style.backgroundColor = 'var(--speaking-green)';
-      startAllBtn.textContent = `🚀 Join/Start Open Call in #${activeChannel}`;
+      startAllBtn.textContent = `🚀 Join/Start Voice Call`;
       startAllBtn.onclick = () => {
         document.getElementById('callTargetModal').style.display = 'none';
         joinChannelCall();
@@ -804,7 +1013,7 @@
           btn.className = 'btn-primary';
           btn.style.backgroundColor = '#383a40';
           btn.style.textAlign = 'left';
-          btn.textContent = `👤 Direct Call ${u.name}`;
+          btn.textContent = `👤 Direct Ring ${u.name}`;
           btn.onclick = () => {
             document.getElementById('callTargetModal').style.display = 'none';
             initiateDirectCall(u.name);
@@ -862,7 +1071,7 @@
       db.ref(`directCalls/${sanitizeKey(user.name)}/status`).set('accepted');
       document.getElementById('incomingCallOverlay').style.display = 'none';
       
-      switchChannel(chan);
+      if (!isDmView) switchChannel(chan);
       joinChannelCall();
     }
 
@@ -876,15 +1085,21 @@
       const notice = document.getElementById('callDeniedOverlay');
       document.getElementById('deniedNoticeText').textContent = msg;
       notice.style.display = 'flex';
-      setTimeout(() => {
-        notice.style.display = 'none';
-      }, 2500);
+      setTimeout(() => notice.style.display = 'none', 2500);
     }
 
-    function joinChannelCall() {
-      document.getElementById('callHeaderTitle').textContent = `📞 #${activeChannel} Video Call`;
+    async function joinChannelCall() {
+      document.getElementById('callHeaderTitle').textContent = `📞 #${isDmView ? activeDmUser : activeChannel} Call`;
       document.getElementById('callOverlay').style.display = 'flex';
       inCall = true;
+
+      // Start Microphone Audio Stream Independently
+      try {
+        localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        isMicOn = true;
+      } catch (e) {
+        console.warn("No Microphone Access Found");
+      }
 
       db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).set({
         name: user.name,
@@ -936,7 +1151,7 @@
 
       if (isCamOn) {
         try {
-          localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+          localVideoStream = await navigator.mediaDevices.getUserMedia({ video: true });
           btn.classList.add('active');
         } catch (err) {
           alert("Unable to access camera: " + err.message);
@@ -958,10 +1173,18 @@
     function toggleMic() {
       isMicOn = !isMicOn;
       const btn = document.getElementById('micBtn');
-      if (localVideoStream && localVideoStream.getAudioTracks().length > 0) {
-        localVideoStream.getAudioTracks()[0].enabled = isMicOn;
+
+      if (localAudioStream && localAudioStream.getAudioTracks().length > 0) {
+        localAudioStream.getAudioTracks()[0].enabled = isMicOn;
       }
-      btn.textContent = isMicOn ? '🎙️' : '🔇';
+      
+      if (isMicOn) {
+        btn.classList.add('active');
+        btn.textContent = '🎙️';
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = '🔇';
+      }
     }
 
     function toggleRaiseHand() {
@@ -982,9 +1205,9 @@
       inCall = false;
       document.getElementById('callOverlay').style.display = 'none';
 
-      if (localVideoStream) {
-        localVideoStream.getTracks().forEach(track => track.stop());
-      }
+      if (localAudioStream) localAudioStream.getTracks().forEach(track => track.stop());
+      if (localVideoStream) localVideoStream.getTracks().forEach(track => track.stop());
+
       isCamOn = false;
       isHandRaised = false;
       document.getElementById('camBtn').classList.remove('active');
@@ -1031,14 +1254,12 @@
         document.getElementById('bannedScreen').style.display = 'none';
         alert("Account Unbanned!");
       } else {
-        document.getElementById('banMsg').style.display = 'block';
+        alert("Incorrect Code!");
       }
     }
 
     function logout() {
-      if (user.name) {
-        db.ref(`presence/${sanitizeKey(user.name)}`).remove();
-      }
+      if (user.name) db.ref(`presence/${sanitizeKey(user.name)}`).remove();
       localStorage.clear();
       location.reload();
     }
