@@ -15,9 +15,6 @@
       --text-muted: #949ba4;
       --speaking-green: #23a55a;
     }
-    body.theme-amoled { --bg-main: #000000; --bg-sidebar: #0a0a0a; --bg-rail: #050505; --bg-card: #121212; }
-    body.theme-cyber { --bg-main: #0d0f18; --bg-sidebar: #131722; --bg-rail: #080a10; --bg-card: #1a1f2c; --accent: #00f0ff; }
-    body.theme-purple { --bg-main: #130f26; --bg-sidebar: #1a1436; --bg-rail: #0c0919; --bg-card: #231b48; --accent: #9d4edd; }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
     body { background-color: var(--bg-rail); color: #dbdee1; height: 100vh; display: flex; overflow: hidden; }
@@ -29,11 +26,14 @@
 
     .sidebar { width: 220px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; }
     .sidebar-header { padding: 12px 14px; height: 48px; border-bottom: 1px solid rgba(0,0,0,0.2); font-weight: 700; color: var(--text-primary); display: flex; align-items: center; }
-    .section-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; padding: 12px 12px 6px 12px; letter-spacing: 0.5px; }
+    .section-header { display: flex; justify-content: space-between; align-items: center; padding: 12px 12px 6px 12px; }
+    .section-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 0.5px; }
+    .add-btn { cursor: pointer; color: var(--text-muted); font-weight: bold; font-size: 0.9rem; }
+    .add-btn:hover { color: white; }
     
     .channel-list, .dm-list { list-style: none; }
     .channel-item, .dm-item { padding: 6px 10px; margin: 2px 6px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
-    .channel-item:hover, .channel-item.active, .dm-item:hover { background-color: rgba(255,255,255,0.06); color: var(--text-primary); }
+    .channel-item:hover, .channel-item.active, .dm-item:hover, .dm-item.active { background-color: rgba(255,255,255,0.06); color: var(--text-primary); }
 
     .user-footer { background-color: rgba(0,0,0,0.2); padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; }
     .user-info { display: flex; align-items: center; gap: 8px; }
@@ -66,9 +66,19 @@
 
     /* Modals & Overlays */
     .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 6px; width: 320px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 6px; width: 340px; display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
     .modal-box input { padding: 8px 10px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 4px; outline: none; }
     .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .btn-danger { background-color: #da373c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+
+    /* Call Overlay */
+    .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.95); z-index: 2000; flex-direction: column; justify-content: space-between; padding: 24px; }
+    .call-grid { display: flex; justify-content: center; align-items: center; gap: 24px; flex: 1; }
+    .call-card { width: 180px; height: 180px; background-color: var(--bg-card); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; border: 2px solid transparent; }
+    .call-card.speaking { border-color: var(--speaking-green); }
+    .call-controls { display: flex; justify-content: center; gap: 16px; margin-bottom: 20px; }
+    .call-btn { width: 48px; height: 48px; border-radius: 50%; border: none; background-color: #383a40; color: white; font-size: 1.2rem; cursor: pointer; }
+    .call-btn.end { background-color: #da373c; }
 
     .banned-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0f172a; color: #f23f43; z-index: 9999; justify-content: center; align-items: center; flex-direction: column; gap: 16px; font-weight: bold; }
   </style>
@@ -97,9 +107,45 @@
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
       <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
-      <button class="btn-primary" style="background-color: #da373c;" onclick="clearAllChatHistory()">🗑️ Clear All Chat History</button>
+      
+      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+        <h4 style="color: white; font-size: 0.85rem; margin-bottom: 6px;">🤖 Bot Manager</h4>
+        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
+          <input type="text" id="newBotNameInput" placeholder="Bot Name..." style="flex: 1;" />
+          <button class="btn-primary" onclick="createCustomBot()">Add Bot</button>
+        </div>
+        <div id="botManagerList" style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
+      </div>
+
+      <button class="btn-primary" style="background-color: #da373c; margin-top: 10px;" onclick="clearAllChatHistory()">🗑️ Clear All Chat History</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
-      <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
+      <button class="btn-primary" style="background-color: #383a40;" onclick="togglePanel(false)">Close Panel</button>
+    </div>
+  </div>
+
+  <div class="call-overlay" id="callOverlay">
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Voice Call with Bot</div>
+    <div class="call-grid">
+      <div class="call-card speaking" id="userCallCard">
+        <img id="userCallAvatar" src="" style="width: 60px; height: 60px; border-radius: 50%;" />
+        <span style="font-weight: bold; color: white;" id="userCallLabel">You</span>
+      </div>
+      <div class="call-card" id="targetCallCard">
+        <img id="targetCallAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" style="width: 60px; height: 60px; border-radius: 50%;" />
+        <span style="font-weight: bold; color: white;" id="targetCallLabel">Bot</span>
+      </div>
+    </div>
+    <div class="call-controls">
+      <button class="call-btn" onclick="this.textContent = this.textContent === '🎙️' ? '🔇' : '🎙️'">🎙️</button>
+      <button class="call-btn end" onclick="endCall()">📞</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="callTargetModal" style="display: none;">
+    <div class="modal-box">
+      <h3 style="color: white;">Select Target to Call</h3>
+      <div id="callSelectorList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      <button class="btn-primary" style="background-color: #da373c; margin-top: 8px;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
     </div>
   </div>
 
@@ -110,10 +156,17 @@
   <div class="sidebar">
     <div>
       <div class="sidebar-header">Gng Chat Pro</div>
-      <div class="section-title">Text Channels</div>
-      <ul class="channel-list">
-        <li class="channel-item active" id="chan-general"># general</li>
-      </ul>
+      
+      <div class="section-header">
+        <span class="section-title">Text Channels</span>
+        <span class="add-btn" onclick="promptCreateChannel()" title="Create Channel">+</span>
+      </div>
+      <ul class="channel-list" id="dynamicChannelList"></ul>
+
+      <div class="section-header">
+        <span class="section-title">Direct Messages</span>
+      </div>
+      <ul class="dm-list" id="dynamicBotList"></ul>
     </div>
 
     <div class="user-footer">
@@ -135,8 +188,9 @@
 
   <div class="chat-container">
     <div class="chat-header">
-      <span># general</span>
+      <span id="chatTitle"># general</span>
       <div class="header-actions">
+        <div class="header-btn" onclick="openCallModal()" style="color: #23a55a;">📞 Call</div>
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
       </div>
     </div>
@@ -145,7 +199,7 @@
 
     <div class="input-wrapper">
       <div class="input-container">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+        <input type="text" class="chat-input" id="chatInput" placeholder="Message..." onkeydown="handleKey(event)" />
       </div>
     </div>
   </div>
@@ -159,18 +213,16 @@
   </div>
 
   <script>
-    let user = {
-      name: "",
-      avatar: "",
-      stealthMode: false
-    };
+    let user = { name: "", avatar: "", stealthMode: false };
+    let activeChannel = "general";
+    let channels = ["general", "memes", "pics"];
+    let bots = [{ name: "GngBot", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" }];
 
     let onlineUsersMap = new Map();
     let heartBeatTimer = null;
     const chatChannel = new BroadcastChannel('gng_chat_network');
 
     window.onload = function() {
-      // Check ban state
       if (localStorage.getItem('gngChatBanned') === 'true') {
         const banElem = document.getElementById('bannedScreen');
         if (banElem) banElem.style.display = 'flex';
@@ -190,12 +242,10 @@
       const data = event.data;
       if (!data) return;
 
-      if (data.type === 'CHAT_MESSAGE') {
+      if (data.type === 'CHAT_MESSAGE' && data.channel === activeChannel) {
         renderMessage(data.msg);
-        saveMessageToHistory(data.msg);
-        if (!data.isStealth) {
-          updateMemberOnline(data.msg.author, data.msg.avatar);
-        }
+        saveMessageToHistory(data.channel, data.msg);
+        if (!data.isStealth) updateMemberOnline(data.msg.author, data.msg.avatar);
       }
 
       if (data.type === 'PRESENCE_PING') {
@@ -212,8 +262,9 @@
       updateUserFooter();
       registerUserHistory(user.name, user.avatar);
 
-      // Restore saved messages on page load
-      loadChatHistory();
+      loadChannels();
+      loadBots();
+      switchChannel(activeChannel);
 
       announcePresence();
       if (heartBeatTimer) clearInterval(heartBeatTimer);
@@ -222,33 +273,153 @@
       renderMembersList();
     }
 
-    /* ---- PERSISTENT CHAT HISTORY FUNCTIONS ---- */
-    function saveMessageToHistory(msgObj) {
-      let history = JSON.parse(localStorage.getItem('gngChatMessages') || '[]');
-      history.push(msgObj);
-      localStorage.setItem('gngChatMessages', JSON.stringify(history));
-    }
-
-    function loadChatHistory() {
-      const view = document.getElementById('messagesView');
-      if (!view) return;
-      view.innerHTML = ''; // Clear before loading
-
-      let history = JSON.parse(localStorage.getItem('gngChatMessages') || '[]');
-      history.forEach(msg => {
-        renderMessage(msg);
+    /* ---- DYNAMIC CHANNELS ---- */
+    function loadChannels() {
+      const savedChan = JSON.parse(localStorage.getItem('gngChatChannels') || '[]');
+      if (savedChan.length > 0) channels = savedChan;
+      
+      const list = document.getElementById('dynamicChannelList');
+      list.innerHTML = '';
+      channels.forEach(ch => {
+        const li = document.createElement('li');
+        li.className = `channel-item ${ch === activeChannel ? 'active' : ''}`;
+        li.id = `chan-${ch}`;
+        li.textContent = `# ${ch}`;
+        li.onclick = () => switchChannel(ch);
+        list.appendChild(li);
       });
     }
 
+    function promptCreateChannel() {
+      const name = prompt("Enter new channel name:")?.trim().toLowerCase().replace(/\s+/g, '-');
+      if (name && !channels.includes(name)) {
+        channels.push(name);
+        localStorage.setItem('gngChatChannels', JSON.stringify(channels));
+        loadChannels();
+        switchChannel(name);
+      }
+    }
+
+    function switchChannel(ch) {
+      activeChannel = ch;
+      document.getElementById('chatTitle').textContent = `# ${ch}`;
+      document.getElementById('chatInput').placeholder = `Message #${ch}...`;
+      
+      document.querySelectorAll('.channel-item, .dm-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(`chan-${ch}`);
+      if (activeEl) activeEl.classList.add('active');
+
+      loadChatHistory(ch);
+    }
+
+    /* ---- BOT MANAGER ---- */
+    function loadBots() {
+      const savedBots = JSON.parse(localStorage.getItem('gngChatBots') || '[]');
+      if (savedBots.length > 0) bots = savedBots;
+
+      const list = document.getElementById('dynamicBotList');
+      const managerList = document.getElementById('botManagerList');
+      list.innerHTML = '';
+      if (managerList) managerList.innerHTML = '';
+
+      bots.forEach(b => {
+        // DM List
+        const li = document.createElement('li');
+        li.className = 'dm-item';
+        li.innerHTML = `🤖 @${escapeHtml(b.name)}`;
+        li.onclick = () => alert(`DM with @${b.name} active!`);
+        list.appendChild(li);
+
+        // Admin Panel List
+        if (managerList) {
+          const div = document.createElement('div');
+          div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;";
+          div.innerHTML = `
+            <span style="font-size: 0.8rem; color: white;">🤖 ${escapeHtml(b.name)}</span>
+            <button class="btn-danger" onclick="removeBot('${escapeHtml(b.name)}')">Remove</button>
+          `;
+          managerList.appendChild(div);
+        }
+      });
+    }
+
+    function createCustomBot() {
+      const name = document.getElementById('newBotNameInput').value.trim();
+      if (!name) return;
+
+      if (!bots.some(b => b.name.toLowerCase() === name.toLowerCase())) {
+        bots.push({
+          name: name,
+          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+        });
+        localStorage.setItem('gngChatBots', JSON.stringify(bots));
+        document.getElementById('newBotNameInput').value = '';
+        loadBots();
+      }
+    }
+
+    function removeBot(name) {
+      bots = bots.filter(b => b.name !== name);
+      localStorage.setItem('gngChatBots', JSON.stringify(bots));
+      loadBots();
+    }
+
+    /* ---- CALLS ---- */
+    function openCallModal() {
+      const list = document.getElementById('callSelectorList');
+      list.innerHTML = '';
+
+      bots.forEach(b => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-primary';
+        btn.style.backgroundColor = '#383a40';
+        btn.textContent = `📞 Call Bot @${b.name}`;
+        btn.onclick = () => startCall(b.name, b.avatar);
+        list.appendChild(btn);
+      });
+
+      document.getElementById('callTargetModal').style.display = 'flex';
+    }
+
+    function startCall(targetName, targetAvatar) {
+      document.getElementById('callTargetModal').style.display = 'none';
+      document.getElementById('callHeaderTitle').textContent = `📞 Voice Call with ${targetName}`;
+      document.getElementById('userCallAvatar').src = user.avatar;
+      document.getElementById('userCallLabel').textContent = user.name;
+      document.getElementById('targetCallAvatar').src = targetAvatar;
+      document.getElementById('targetCallLabel').textContent = targetName;
+      document.getElementById('callOverlay').style.display = 'flex';
+    }
+
+    function endCall() {
+      document.getElementById('callOverlay').style.display = 'none';
+    }
+
+    /* ---- PERSISTENT CHAT HISTORY ---- */
+    function saveMessageToHistory(channel, msgObj) {
+      let history = JSON.parse(localStorage.getItem(`gngMsgs_${channel}`) || '[]');
+      history.push(msgObj);
+      localStorage.setItem(`gngMsgs_${channel}`, JSON.stringify(history));
+    }
+
+    function loadChatHistory(channel) {
+      const view = document.getElementById('messagesView');
+      if (!view) return;
+      view.innerHTML = '';
+
+      let history = JSON.parse(localStorage.getItem(`gngMsgs_${channel}`) || '[]');
+      history.forEach(msg => renderMessage(msg));
+    }
+
     function clearAllChatHistory() {
-      if (confirm("Are you sure you want to clear all chat messages?")) {
-        localStorage.removeItem('gngChatMessages');
+      if (confirm("Clear history for all channels?")) {
+        channels.forEach(ch => localStorage.removeItem(`gngMsgs_${ch}`));
         document.getElementById('messagesView').innerHTML = '';
         togglePanel(false);
       }
     }
-    /* ------------------------------------------- */
 
+    /* ---- GENERAL LOGIC ---- */
     function registerUserHistory(username, avatar) {
       let history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
       history[username] = { name: username, avatar: avatar, lastSeen: Date.now() };
@@ -263,11 +434,7 @@
       if (user.stealthMode) {
         statusLabel.textContent = "Offline (Spoofed)";
         statusLabel.style.color = "#f23f43";
-        chatChannel.postMessage({
-          type: 'PRESENCE_PING',
-          user: { name: user.name, avatar: user.avatar },
-          isStealth: true
-        });
+        chatChannel.postMessage({ type: 'PRESENCE_PING', user: { name: user.name, avatar: user.avatar }, isStealth: true });
         onlineUsersMap.delete(user.name);
       } else {
         statusLabel.textContent = "Online";
@@ -279,11 +446,7 @@
 
     function announcePresence() {
       if (user.name && !user.stealthMode) {
-        chatChannel.postMessage({
-          type: 'PRESENCE_PING',
-          user: { name: user.name, avatar: user.avatar },
-          isStealth: false
-        });
+        chatChannel.postMessage({ type: 'PRESENCE_PING', user: { name: user.name, avatar: user.avatar }, isStealth: false });
         updateMemberOnline(user.name, user.avatar);
       }
     }
@@ -297,7 +460,6 @@
     function renderMembersList() {
       const onlineContainer = document.getElementById('dynamicOnlineList');
       const offlineContainer = document.getElementById('dynamicOfflineList');
-
       if (!onlineContainer || !offlineContainer) return;
 
       onlineContainer.innerHTML = '';
@@ -305,29 +467,19 @@
 
       const history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
 
-      // Online
       onlineUsersMap.forEach((userData, username) => {
         const card = document.createElement('div');
         card.className = 'member-card';
-        card.innerHTML = `
-          <div class="status-indicator online"></div>
-          <img src="${userData.avatar}" style="width: 22px; height: 22px; border-radius: 50%;" />
-          <span>${escapeHtml(username)}</span>
-        `;
+        card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(username)}</span>`;
         onlineContainer.appendChild(card);
       });
 
-      // Persistent Offline
       Object.keys(history).forEach((username) => {
         if (!onlineUsersMap.has(username)) {
           const userData = history[username];
           const card = document.createElement('div');
           card.className = 'member-card';
-          card.innerHTML = `
-            <div class="status-indicator offline"></div>
-            <img src="${userData.avatar}" style="width: 22px; height: 22px; border-radius: 50%;" />
-            <span>${escapeHtml(username)}</span>
-          `;
+          card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(username)}</span>`;
           offlineContainer.appendChild(card);
         }
       });
@@ -357,14 +509,9 @@
         };
 
         renderMessage(msgObj);
-        saveMessageToHistory(msgObj);
+        saveMessageToHistory(activeChannel, msgObj);
 
-        chatChannel.postMessage({
-          type: 'CHAT_MESSAGE',
-          msg: msgObj,
-          isStealth: user.stealthMode
-        });
-
+        chatChannel.postMessage({ type: 'CHAT_MESSAGE', channel: activeChannel, msg: msgObj, isStealth: user.stealthMode });
         input.value = '';
       }
     }
@@ -385,7 +532,6 @@
           <div>${escapeHtml(msg.text)}</div>
         </div>
       `;
-
       view.appendChild(div);
       view.scrollTop = view.scrollHeight;
     }
