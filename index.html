@@ -39,7 +39,7 @@
 
     /* Rails & Sidebar */
     .server-rail { width: 64px; background-color: var(--bg-rail); padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
-    .server-icon { width: 44px; height: 44px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; font-size: 1.2rem; }
+    .server-icon { width: 44px; height: 44px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; font-size: 1.2rem; position: relative; }
     .server-icon:hover, .server-icon.active { background-color: var(--accent); border-radius: 10px; }
 
     .sidebar { width: 240px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; overflow-y: auto; }
@@ -66,7 +66,6 @@
     }
     .channel-item:hover, .channel-item.active, .dm-item:hover, .dm-item.active { background-color: rgba(255,255,255,0.08); color: var(--text-primary); }
 
-    /* Red Notification Badge */
     .unread-badge {
       background-color: var(--danger);
       color: white;
@@ -75,7 +74,15 @@
       border-radius: 10px;
       padding: 2px 7px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-      animation: popInMsg 0.2s ease-out;
+    }
+
+    .call-active-tag {
+      background-color: var(--speaking-green);
+      color: white;
+      font-size: 0.65rem;
+      font-weight: bold;
+      border-radius: 4px;
+      padding: 2px 5px;
     }
 
     .user-footer { background-color: rgba(0,0,0,0.25); padding: 10px 12px; display: flex; align-items: center; justify-content: space-between; }
@@ -83,7 +90,6 @@
     .avatar-wrapper { position: relative; width: 32px; height: 32px; border-radius: 50%; }
     .avatar-sm { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
 
-    /* Spinning Gear Cog */
     .settings-cog { 
       cursor: pointer; 
       color: #b5bac1; 
@@ -94,7 +100,6 @@
     .settings-cog:hover { color: white; }
     .settings-cog.spin { transform: rotate(360deg); }
 
-    /* Main Container */
     .chat-container { flex: 1; background-color: var(--bg-main); display: flex; flex-direction: column; }
     .chat-header { height: 52px; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 0 16px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: var(--text-primary); font-size: 1.1rem; }
     .header-actions { display: flex; gap: 10px; align-items: center; }
@@ -147,7 +152,7 @@
     .online { background-color: #23a55a; }
     .offline { background-color: #80848e; }
 
-    /* Modals & Large Settings Layout */
+    /* Modals & Settings */
     .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeInModal 0.2s ease-out; }
     
     @keyframes fadeInModal {
@@ -157,7 +162,6 @@
 
     .modal-box { background-color: var(--bg-main); padding: 28px; border-radius: 12px; width: 380px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.6); }
     
-    /* ENLARGED SETTINGS MODAL */
     .settings-modal-box { 
       background-color: var(--bg-main); 
       padding: 28px; 
@@ -190,30 +194,10 @@
       border: 1px solid rgba(255,255,255,0.05);
     }
 
-    .setting-item label {
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: var(--text-primary);
-    }
+    .setting-item label { font-size: 0.85rem; font-weight: bold; color: var(--text-primary); }
+    .setting-item select, .setting-item input[type="text"] { background: var(--bg-rail); color: white; border: 1px solid rgba(255,255,255,0.1); padding: 8px; border-radius: 6px; outline: none; }
 
-    .setting-item select, .setting-item input[type="text"] {
-      background: var(--bg-rail);
-      color: white;
-      border: 1px solid rgba(255,255,255,0.1);
-      padding: 8px;
-      border-radius: 6px;
-      outline: none;
-    }
-
-    /* Version Label at Bottom Right */
-    .version-tag {
-      position: absolute;
-      bottom: 12px;
-      right: 18px;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: bold;
-    }
+    .version-tag { position: absolute; bottom: 12px; right: 18px; font-size: 0.75rem; color: var(--text-muted); font-weight: bold; }
 
     .btn-primary { background-color: var(--accent); color: white; border: none; padding: 10px 14px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
     .btn-danger { background-color: var(--danger); color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
@@ -257,6 +241,7 @@
       overflow: hidden;
       border: 20px solid #000000;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      transition: all 0.3s ease;
     }
 
     .call-card video { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
@@ -272,7 +257,6 @@
     .call-btn.active { background-color: #e5a93c; }
     .call-btn.end { background-color: var(--danger); }
 
-    /* INCOMING CALL OVERLAY */
     .incoming-call-overlay {
       display: none;
       position: fixed;
@@ -339,11 +323,27 @@
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
       <h2 style="color: white; text-align: center;">Welcome to Gng Chat</h2>
-      <p style="color: #b5bac1; font-size: 0.85rem; text-align: center;">Enter username & 5-character password:</p>
+      <p style="color: #b5bac1; font-size: 0.85rem; text-align: center;">Login or Register Account:</p>
       <input type="text" id="usernameInput" placeholder="Username" />
+      <input type="email" id="emailInput" placeholder="Email Address" />
       <input type="password" id="passwordInput" placeholder="5-Char Password" maxlength="5" />
       <span id="authErrorMsg" style="color: #f23f43; font-size: 0.8rem; display: none; text-align: center;"></span>
       <button class="btn-primary" onclick="signIn()">Continue</button>
+      <span style="color: var(--accent); font-size:0.8rem; text-align:center; cursor:pointer;" onclick="recoverPassword()">Forgot Password? Use Email Recovery</span>
+    </div>
+  </div>
+
+  <div class="overlay" id="profileModal" style="display: none;">
+    <div class="modal-box" style="text-align: center;">
+      <img id="profileAvatar" src="" style="width:80px; height:80px; border-radius:50%; margin:0 auto;" />
+      <h3 id="profileUsername" style="color: white;"></h3>
+      <p id="profileRole" style="color: var(--accent); font-weight:bold; font-size:0.85rem;"></p>
+      
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+        <button class="btn-danger" id="ownerBanBtn" style="display:none;" onclick="ownerBanUser()">🔨 Ban User From Server</button>
+        <button class="btn-primary" style="background-color:#e5a93c;" onclick="voteBanUser()">⚠️ Vote Ban User (<span id="voteCount">0</span> votes)</button>
+        <button class="btn-primary" style="background-color:#383a40;" onclick="document.getElementById('profileModal').style.display='none'">Close</button>
+      </div>
     </div>
   </div>
 
@@ -379,7 +379,7 @@
         </div>
 
         <div class="setting-item">
-          <label>4. Ringing Sound Effects</label>
+          <label>4. Call Audio Sounds</label>
           <select id="settingSounds">
             <option value="on">On (Ringtone Active)</option>
             <option value="off">Mute Ringtone</option>
@@ -429,7 +429,7 @@
         </div>
       </div>
 
-      <div class="version-tag">v2.6.0 Pro</div>
+      <div class="version-tag">v2.7.0 Pro</div>
     </div>
   </div>
 
@@ -461,7 +461,7 @@
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box" style="width: 480px;">
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
-        <h3 style="color: white;">🛠️ Admin Control Panel</h3>
+        <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
         <button class="btn-danger" style="padding: 4px 10px;" onclick="togglePanel(false)">✕ Close</button>
       </div>
       <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
@@ -472,7 +472,7 @@
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div class="call-title-header" id="callHeaderTitle">📞 Video / Voice Call</div>
+    <div class="call-title-header" id="callHeaderTitle">📞 Voice / Video Call</div>
     
     <div class="call-grid" id="callGridContainer"></div>
 
@@ -494,23 +494,31 @@
   </div>
 
   <div class="server-rail">
-    <div class="server-icon active">⚔️</div>
+    <div class="server-icon" id="dmRailIcon" onclick="switchSidebarSection('dms')" title="Direct Messages">
+      💬
+      <span class="unread-badge" id="dmTotalBadge" style="display:none; position:absolute; top:-4px; right:-4px;">0</span>
+    </div>
+    <div class="server-icon active" id="serverRailIcon" onclick="switchSidebarSection('channels')" title="Group Channels">⚔️</div>
   </div>
 
   <div class="sidebar">
     <div>
       <div class="sidebar-header">Gng Chat Pro</div>
       
-      <div class="section-header">
-        <span class="section-title">Direct Messages</span>
+      <div id="sidebarDmSection" style="display: none;">
+        <div class="section-header">
+          <span class="section-title">Direct Messages</span>
+        </div>
+        <ul class="dm-list" id="dynamicDmList"></ul>
       </div>
-      <ul class="dm-list" id="dynamicDmList"></ul>
 
-      <div class="section-header" style="margin-top: 10px;">
-        <span class="section-title">Text Channels</span>
-        <span class="add-btn" onclick="promptCreateChannel()" title="Create Channel">+</span>
+      <div id="sidebarChannelSection">
+        <div class="section-header">
+          <span class="section-title">Text Channels</span>
+          <span class="add-btn" onclick="promptCreateChannel()" title="Create Channel">+</span>
+        </div>
+        <ul class="channel-list" id="dynamicChannelList"></ul>
       </div>
-      <ul class="channel-list" id="dynamicChannelList"></ul>
     </div>
 
     <div class="user-footer">
@@ -592,7 +600,14 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let user = { name: "", avatar: "", stealthMode: false };
+    // HARDCODED OWNER ACCOUNT (jay / 123@5 / jaydevcrew@gmail.com)
+    const OWNER_ACCOUNT = {
+      username: "jay",
+      password: "123@5",
+      email: "jaydevcrew@gmail.com"
+    };
+
+    let user = { name: "", avatar: "", email: "", stealthMode: false, isOwner: false };
     let activeChannel = "general";
     let isDmView = false;
     let activeDmUser = null;
@@ -601,10 +616,10 @@
     let onlineUsersList = [];
     let unreadCounts = {};
     let inboxMessages = [];
+    let selectedMember = null;
 
     let activeReply = null;
 
-    // Fixed Media Stream Management
     let localAudioStream = null;
     let localVideoStream = null;
     let isMicOn = true;
@@ -613,16 +628,31 @@
     let inCall = false;
     let incomingCallData = null;
 
+    // AUDIO CONTEXT SOUND GENERATOR
+    function playBeepSound(frequency = 440, type = 'sine', duration = 0.2) {
+      try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
     window.onload = function() {
-      const APP_VERSION = "2.6.0";
+      const APP_VERSION = "2.7.0";
       if (localStorage.getItem('gngChatVersion') !== APP_VERSION) {
         localStorage.clear();
         localStorage.setItem('gngChatVersion', APP_VERSION);
       }
 
       if (localStorage.getItem('gngChatBanned') === 'true') {
-        const banElem = document.getElementById('bannedScreen');
-        if (banElem) banElem.style.display = 'flex';
+        document.getElementById('bannedScreen').style.display = 'flex';
         return;
       }
 
@@ -642,9 +672,28 @@
       listenForActiveCalls();
       listenForIncomingCalls();
       setupUnreadListeners();
+      listenForActiveCallBadges();
     }
 
-    /* SPINNING GEAR & ENLARGED SETTINGS */
+    function switchSidebarSection(type) {
+      const dmSection = document.getElementById('sidebarDmSection');
+      const chanSection = document.getElementById('sidebarChannelSection');
+      const dmIcon = document.getElementById('dmRailIcon');
+      const serverIcon = document.getElementById('serverRailIcon');
+
+      if (type === 'dms') {
+        dmSection.style.display = 'block';
+        chanSection.style.display = 'none';
+        dmIcon.classList.add('active');
+        serverIcon.classList.remove('active');
+      } else {
+        dmSection.style.display = 'none';
+        chanSection.style.display = 'block';
+        dmIcon.classList.remove('active');
+        serverIcon.classList.add('active');
+      }
+    }
+
     function openSettingsModal() {
       const gear = document.getElementById('settingsGearIcon');
       gear.classList.add('spin');
@@ -678,16 +727,21 @@
       document.getElementById('inboxModal').style.display = 'flex';
     }
 
-    /* 5-CHARACTER LOGIN */
+    /* SIGN IN & EMAIL RECOVERY */
     function signIn() {
       const username = document.getElementById('usernameInput').value.trim();
+      const email = document.getElementById('emailInput').value.trim();
       const password = document.getElementById('passwordInput').value.trim();
-      const errBox = document.getElementById('authErrorMsg');
 
-      errBox.style.display = 'none';
+      if (!username || !password) return showError("Username & Password required!");
+      if (password.length !== 5) return showError("Password must be exactly 5 characters!");
 
-      if (!username) return showError("Please enter a username!");
-      if (password.length !== 5) return showError("Password must be exactly 5 characters long!");
+      // Check Hardcoded Owner
+      if (username.toLowerCase() === OWNER_ACCOUNT.username && password === OWNER_ACCOUNT.password) {
+        user.isOwner = true;
+        loginSuccess(username, `https://api.dicebear.com/7.x/bottts/svg?seed=${username}`, OWNER_ACCOUNT.email);
+        return;
+      }
 
       const userSanitized = sanitizeKey(username);
       const userRef = db.ref(`accounts/${userSanitized}`);
@@ -696,16 +750,40 @@
         const acc = snapshot.val();
         if (acc) {
           if (acc.password === password) {
-            loginSuccess(username, acc.avatar);
+            user.isOwner = acc.isOwner || false;
+            loginSuccess(username, acc.avatar, acc.email);
           } else {
             showError("Incorrect password for this account!");
           }
         } else {
+          if (!email) return showError("Email address required for new accounts!");
           const avatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
-          userRef.set({ username: username, password: password, avatar: avatar }).then(() => {
-            loginSuccess(username, avatar);
+          userRef.set({ username: username, password: password, email: email, avatar: avatar, isOwner: false }).then(() => {
+            loginSuccess(username, avatar, email);
           });
         }
+      });
+    }
+
+    function recoverPassword() {
+      const email = prompt("Enter your registered account Email:");
+      if (!email) return;
+
+      if (email.toLowerCase() === OWNER_ACCOUNT.email) {
+        alert(`Password recovered for Owner jay: Password is "${OWNER_ACCOUNT.password}"`);
+        return;
+      }
+
+      db.ref('accounts').once('value').then(snapshot => {
+        const accounts = snapshot.val() || {};
+        let found = false;
+        Object.keys(accounts).forEach(k => {
+          if (accounts[k].email && accounts[k].email.toLowerCase() === email.toLowerCase()) {
+            alert(`Password Recovery: Username: ${accounts[k].username}, Password: ${accounts[k].password}`);
+            found = true;
+          }
+        });
+        if (!found) alert("No account found with that email address!");
       });
     }
 
@@ -715,23 +793,24 @@
       errBox.style.display = 'block';
     }
 
-    function loginSuccess(username, avatar) {
+    function loginSuccess(username, avatar, email) {
       user.name = username;
       user.avatar = avatar;
+      user.email = email;
       localStorage.setItem('gngChatUserPro', JSON.stringify(user));
       document.getElementById('loginOverlay').style.display = 'none';
       initApp();
     }
 
-    /* PRESENCE & DM CREATION */
+    /* PRESENCE & MEMBER PROFILES */
     function setupLivePresence() {
       if (!user.name) return;
 
       const userRef = db.ref(`presence/${sanitizeKey(user.name)}`);
       
       if (!user.stealthMode) {
-        userRef.set({ name: user.name, avatar: user.avatar, online: true, lastSeen: Date.now() });
-        userRef.onDisconnect().set({ name: user.name, avatar: user.avatar, online: false, lastSeen: Date.now() });
+        userRef.set({ name: user.name, avatar: user.avatar, online: true, isOwner: user.isOwner, lastSeen: Date.now() });
+        userRef.onDisconnect().set({ name: user.name, avatar: user.avatar, online: false, isOwner: user.isOwner, lastSeen: Date.now() });
       }
 
       db.ref('presence').on('value', (snapshot) => {
@@ -747,37 +826,83 @@
         onlineUsersList = [];
 
         const data = snapshot.val() || {};
+        let totalDmUnread = 0;
+
         Object.keys(data).forEach(key => {
           const userData = data[key];
           if (userData.name === user.name) return;
 
-          // Render Direct Messages List First
           const dmLi = document.createElement('li');
           dmLi.className = `dm-item ${isDmView && activeDmUser === userData.name ? 'active' : ''}`;
-          dmLi.id = `dm-${sanitizeKey(userData.name)}`;
           
           const badgeCount = unreadCounts[`dm_${sanitizeKey(userData.name)}`] || 0;
+          totalDmUnread += badgeCount;
           const badgeHTML = badgeCount > 0 ? `<span class="unread-badge">${badgeCount}</span>` : '';
           
           dmLi.innerHTML = `<span>💬 ${escapeHtml(userData.name)}</span> ${badgeHTML}`;
           dmLi.onclick = () => openDirectMessage(userData.name);
           dmContainer.appendChild(dmLi);
 
-          // Member Rails
           const card = document.createElement('div');
           card.className = 'member-card';
-          card.onclick = () => openDirectMessage(userData.name);
+          card.onclick = () => openProfileModal(userData);
+
+          const crown = userData.isOwner ? ' 👑' : '';
 
           if (userData.online) {
             onlineUsersList.push(userData);
-            card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}${crown}</span>`;
             onlineContainer.appendChild(card);
           } else {
-            card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:24px;height:24px;border-radius:50%;"/><span>${escapeHtml(userData.name)}${crown}</span>`;
             offlineContainer.appendChild(card);
           }
         });
+
+        const dmTotalBadge = document.getElementById('dmTotalBadge');
+        if (totalDmUnread > 0) {
+          dmTotalBadge.textContent = totalDmUnread;
+          dmTotalBadge.style.display = 'inline-block';
+        } else {
+          dmTotalBadge.style.display = 'none';
+        }
       });
+    }
+
+    function openProfileModal(userData) {
+      selectedMember = userData;
+      document.getElementById('profileAvatar').src = userData.avatar;
+      document.getElementById('profileUsername').textContent = userData.name;
+      document.getElementById('profileRole').textContent = userData.isOwner ? "👑 Server Owner" : "Member";
+
+      if (user.isOwner) {
+        document.getElementById('ownerBanBtn').style.display = 'block';
+      } else {
+        document.getElementById('ownerBanBtn').style.display = 'none';
+      }
+
+      db.ref(`votebans/${sanitizeKey(userData.name)}`).once('value', snapshot => {
+        const votes = snapshot.val() || {};
+        document.getElementById('voteCount').textContent = Object.keys(votes).length;
+      });
+
+      document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    function ownerBanUser() {
+      if (!selectedMember) return;
+      if (confirm(`Ban ${selectedMember.name} from the server?`)) {
+        db.ref(`bans/${sanitizeKey(selectedMember.name)}`).set(true);
+        alert(`${selectedMember.name} has been banned!`);
+        document.getElementById('profileModal').style.display = 'none';
+      }
+    }
+
+    function voteBanUser() {
+      if (!selectedMember) return;
+      db.ref(`votebans/${sanitizeKey(selectedMember.name)}/${sanitizeKey(user.name)}`).set(true);
+      alert(`Vote submitted against ${selectedMember.name}`);
+      document.getElementById('profileModal').style.display = 'none';
     }
 
     function toggleStealthMode() {
@@ -821,9 +946,22 @@
         const badgeCount = unreadCounts[ch] || 0;
         const badgeHTML = badgeCount > 0 ? `<span class="unread-badge">${badgeCount}</span>` : '';
 
-        li.innerHTML = `<span># ${ch}</span> ${badgeHTML}`;
+        li.innerHTML = `<span># ${ch} <span id="call-tag-${ch}"></span></span> ${badgeHTML}`;
         li.onclick = () => switchChannel(ch);
         list.appendChild(li);
+      });
+    }
+
+    function listenForActiveCallBadges() {
+      channels.forEach(ch => {
+        db.ref(`calls/${ch}/participants`).on('value', snapshot => {
+          const participants = snapshot.val() || {};
+          const count = Object.keys(participants).length;
+          const tag = document.getElementById(`call-tag-${ch}`);
+          if (tag) {
+            tag.innerHTML = count > 0 ? `<span class="call-active-tag">📞 ${count}</span>` : '';
+          }
+        });
       });
     }
 
@@ -858,7 +996,6 @@
       isDmView = true;
       activeDmUser = targetUser;
       
-      // Sorted key for unique 1-on-1 DM room
       const dmRoomId = [sanitizeKey(user.name), sanitizeKey(targetUser)].sort().join('_DM_');
       activeChannel = dmRoomId;
       unreadCounts[`dm_${sanitizeKey(targetUser)}`] = 0;
@@ -866,6 +1003,7 @@
       document.getElementById('chatTitle').textContent = `💬 DM with @${targetUser}`;
       document.getElementById('chatInput').placeholder = `Direct Message @${targetUser}...`;
 
+      switchSidebarSection('dms');
       renderChannelsList();
       setupLivePresence();
       cancelReply();
@@ -893,6 +1031,7 @@
         const lastMsg = messages[lastMsgKey];
 
         if (lastMsg && lastMsg.author !== user.name) {
+          playBeepSound(600, 'sine', 0.15);
           if (channelKey !== activeChannel) {
             unreadCounts[channelKey] = (unreadCounts[channelKey] || 0) + 1;
             inboxMessages.push({ author: lastMsg.author, text: lastMsg.text, channel: channelKey });
@@ -991,7 +1130,7 @@
       reader.readAsDataURL(file);
     }
 
-    /* CALL SYSTEM - SEPARATE MIC / CAMERA FIX */
+    /* CALL SYSTEM - GROUP SOUNDS & REALTIME LEAVE FIX */
     function openCallModal() {
       document.getElementById('callModalChanName').textContent = isDmView ? activeDmUser : activeChannel;
       const list = document.getElementById('callSelectorList');
@@ -1000,7 +1139,7 @@
       const startAllBtn = document.createElement('button');
       startAllBtn.className = 'btn-primary';
       startAllBtn.style.backgroundColor = 'var(--speaking-green)';
-      startAllBtn.textContent = `🚀 Join/Start Voice Call`;
+      startAllBtn.textContent = `🚀 Join Group Call in #${activeChannel}`;
       startAllBtn.onclick = () => {
         document.getElementById('callTargetModal').style.display = 'none';
         joinChannelCall();
@@ -1026,6 +1165,7 @@
     }
 
     function initiateDirectCall(targetUserName) {
+      playBeepSound(800, 'triangle', 0.4);
       db.ref(`directCalls/${sanitizeKey(targetUserName)}`).set({
         caller: user.name,
         callerAvatar: user.avatar,
@@ -1052,6 +1192,7 @@
       db.ref(`directCalls/${sanitizeKey(user.name)}`).on('value', (snapshot) => {
         const callData = snapshot.val();
         if (callData && callData.status === 'ringing') {
+          playBeepSound(500, 'square', 0.5);
           incomingCallData = callData;
           document.getElementById('incomingCallerText').textContent = `${callData.caller} is calling you...`;
           document.getElementById('incomingCallerAvatar').src = callData.callerAvatar;
@@ -1093,7 +1234,6 @@
       document.getElementById('callOverlay').style.display = 'flex';
       inCall = true;
 
-      // Start Microphone Audio Stream Independently
       try {
         localAudioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         isMicOn = true;
@@ -1159,9 +1299,7 @@
           return;
         }
       } else {
-        if (localVideoStream) {
-          localVideoStream.getTracks().forEach(track => track.stop());
-        }
+        if (localVideoStream) localVideoStream.getTracks().forEach(track => track.stop());
         btn.classList.remove('active');
       }
 
@@ -1216,9 +1354,8 @@
       db.ref(`calls/${activeChannel}/participants/${sanitizeKey(user.name)}`).remove();
     }
 
-    /* GENERAL UTILITIES */
     function updateUserFooter() {
-      document.getElementById('userNameFooter').textContent = user.name;
+      document.getElementById('userNameFooter').textContent = user.name + (user.isOwner ? " 👑" : "");
       document.getElementById('userAvatarFooter').src = user.avatar;
     }
 
