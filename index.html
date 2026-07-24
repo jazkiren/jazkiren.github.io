@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gng Chat Pro</title>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     :root {
       --bg-main: #313338;
@@ -66,12 +70,18 @@
 
     /* Modals & Overlays */
     .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 6px; width: 340px; display: flex; flex-direction: column; gap: 12px; max-height: 85vh; overflow-y: auto; }
-    .modal-box input { padding: 8px 10px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 4px; outline: none; }
-    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-    .btn-danger { background-color: #da373c; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.75rem; }
+    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 8px; width: 340px; display: flex; flex-direction: column; gap: 12px; }
+    
+    /* ENLARGED ADMIN PANEL */
+    .modal-box.panel-box { width: 620px; max-width: 90vw; max-height: 85vh; overflow-y: auto; padding: 28px; }
+    .panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 10px; }
+    .panel-card { background-color: var(--bg-rail); padding: 14px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
 
-    /* Call Overlay */
+    .modal-box input { padding: 10px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 4px; outline: none; }
+    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+    .btn-danger { background-color: #da373c; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: bold; }
+
+    /* Voice Call Overlay */
     .call-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(15, 23, 42, 0.95); z-index: 2000; flex-direction: column; justify-content: space-between; padding: 24px; }
     .call-grid { display: flex; justify-content: center; align-items: center; gap: 24px; flex: 1; }
     .call-card { width: 180px; height: 180px; background-color: var(--bg-card); border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px; border: 2px solid transparent; }
@@ -98,33 +108,42 @@
   <div class="overlay" id="loginOverlay">
     <div class="modal-box">
       <h3 style="color: white;">Welcome to Gng Chat Pro!</h3>
-      <p style="color: #b5bac1; font-size: 0.8rem;">Enter your username to join.</p>
+      <p style="color: #b5bac1; font-size: 0.8rem;">Enter your username to join live chat.</p>
       <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
       <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
   </div>
 
   <div class="overlay" id="panelModal" style="display: none;">
-    <div class="modal-box">
-      <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
-      
-      <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
-        <h4 style="color: white; font-size: 0.85rem; margin-bottom: 6px;">🤖 Bot Manager</h4>
-        <div style="display: flex; gap: 6px; margin-bottom: 8px;">
-          <input type="text" id="newBotNameInput" placeholder="Bot Name..." style="flex: 1;" />
-          <button class="btn-primary" onclick="createCustomBot()">Add Bot</button>
-        </div>
-        <div id="botManagerList" style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
+    <div class="modal-box panel-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 12px;">
+        <h2 style="color: white; font-size: 1.3rem;">🛠️ Owner & Admin Control Panel</h2>
+        <button class="btn-danger" style="padding: 4px 10px;" onclick="togglePanel(false)">✕ Close</button>
       </div>
+      
+      <div class="panel-grid">
+        <div class="panel-card">
+          <h4 style="color: white;">🤖 Bot Creator</h4>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">Create custom automated bots to display across the app.</p>
+          <input type="text" id="newBotNameInput" placeholder="Enter Bot Name..." />
+          <button class="btn-primary" onclick="createCustomBot()">+ Create Bot</button>
+          
+          <span style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px;">Active Custom Bots:</span>
+          <div id="botManagerList" style="display: flex; flex-direction: column; gap: 6px; max-height: 120px; overflow-y: auto;"></div>
+        </div>
 
-      <button class="btn-primary" style="background-color: #da373c; margin-top: 10px;" onclick="clearAllChatHistory()">🗑️ Clear All Chat History</button>
-      <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
-      <button class="btn-primary" style="background-color: #383a40;" onclick="togglePanel(false)">Close Panel</button>
+        <div class="panel-card">
+          <h4 style="color: white;">⚡ Server Tools</h4>
+          <p style="font-size: 0.75rem; color: var(--text-muted);">Manage global server state and chat channels.</p>
+          <button class="btn-danger" onclick="clearAllChatHistory()">🗑️ Wipe Active Channel Messages</button>
+          <button class="btn-primary" style="background-color: #e5a93c; margin-top: 6px;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <div class="call-overlay" id="callOverlay">
-    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Voice Call with Bot</div>
+    <div style="text-align: center; font-weight: bold; font-size: 1.2rem; color: white;" id="callHeaderTitle">📞 Voice Call</div>
     <div class="call-grid">
       <div class="call-card speaking" id="userCallCard">
         <img id="userCallAvatar" src="" style="width: 60px; height: 60px; border-radius: 50%;" />
@@ -213,14 +232,17 @@
   </div>
 
   <script>
+    // --- Public Live Firebase Config (Real-Time Cloud Backend) ---
+    const firebaseConfig = {
+      databaseURL: "https://gng-chat-default-rtdb.firebaseio.com"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     let user = { name: "", avatar: "", stealthMode: false };
     let activeChannel = "general";
     let channels = ["general", "memes", "pics"];
     let bots = [{ name: "GngBot", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" }];
-
-    let onlineUsersMap = new Map();
-    let heartBeatTimer = null;
-    const chatChannel = new BroadcastChannel('gng_chat_network');
 
     window.onload = function() {
       if (localStorage.getItem('gngChatBanned') === 'true') {
@@ -238,64 +260,102 @@
       }
     };
 
-    chatChannel.onmessage = function(event) {
-      const data = event.data;
-      if (!data) return;
-
-      if (data.type === 'CHAT_MESSAGE' && data.channel === activeChannel) {
-        renderMessage(data.msg);
-        saveMessageToHistory(data.channel, data.msg);
-        if (!data.isStealth) updateMemberOnline(data.msg.author, data.msg.avatar);
-      }
-
-      if (data.type === 'PRESENCE_PING') {
-        if (!data.isStealth) {
-          updateMemberOnline(data.user.name, data.user.avatar);
-        } else {
-          onlineUsersMap.delete(data.user.name);
-          renderMembersList();
-        }
-      }
-    };
-
     function initApp() {
       updateUserFooter();
-      registerUserHistory(user.name, user.avatar);
-
-      loadChannels();
-      loadBots();
+      listenForChannels();
+      listenForBots();
       switchChannel(activeChannel);
-
-      announcePresence();
-      if (heartBeatTimer) clearInterval(heartBeatTimer);
-      heartBeatTimer = setInterval(announcePresence, 8000);
-
-      renderMembersList();
+      setupLivePresence();
     }
 
-    /* ---- DYNAMIC CHANNELS ---- */
-    function loadChannels() {
-      const savedChan = JSON.parse(localStorage.getItem('gngChatChannels') || '[]');
-      if (savedChan.length > 0) channels = savedChan;
+    /* ---- LIVE REAL-TIME PRESENCE (EVERYONE & EVERY DEVICE) ---- */
+    function setupLivePresence() {
+      if (!user.name) return;
+
+      const userRef = db.ref(`presence/${sanitizeKey(user.name)}`);
       
-      const list = document.getElementById('dynamicChannelList');
-      list.innerHTML = '';
-      channels.forEach(ch => {
-        const li = document.createElement('li');
-        li.className = `channel-item ${ch === activeChannel ? 'active' : ''}`;
-        li.id = `chan-${ch}`;
-        li.textContent = `# ${ch}`;
-        li.onclick = () => switchChannel(ch);
-        list.appendChild(li);
+      if (!user.stealthMode) {
+        userRef.set({
+          name: user.name,
+          avatar: user.avatar,
+          online: true,
+          lastSeen: Date.now()
+        });
+        userRef.onDisconnect().set({
+          name: user.name,
+          avatar: user.avatar,
+          online: false,
+          lastSeen: Date.now()
+        });
+      }
+
+      // Sync presence for all connected users live
+      db.ref('presence').on('value', (snapshot) => {
+        const onlineContainer = document.getElementById('dynamicOnlineList');
+        const offlineContainer = document.getElementById('dynamicOfflineList');
+        if (!onlineContainer || !offlineContainer) return;
+
+        onlineContainer.innerHTML = '';
+        offlineContainer.innerHTML = '';
+
+        const data = snapshot.val() || {};
+        Object.keys(data).forEach(key => {
+          const userData = data[key];
+          const card = document.createElement('div');
+          card.className = 'member-card';
+
+          if (userData.online) {
+            card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            onlineContainer.appendChild(card);
+          } else {
+            card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(userData.name)}</span>`;
+            offlineContainer.appendChild(card);
+          }
+        });
+      });
+    }
+
+    function toggleStealthMode() {
+      user.stealthMode = !user.stealthMode;
+      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
+      
+      const statusLabel = document.getElementById('userStatusFooter');
+      const userRef = db.ref(`presence/${sanitizeKey(user.name)}`);
+
+      if (user.stealthMode) {
+        statusLabel.textContent = "Offline (Spoofed)";
+        statusLabel.style.color = "#f23f43";
+        userRef.set({ name: user.name, avatar: user.avatar, online: false, lastSeen: Date.now() });
+      } else {
+        statusLabel.textContent = "Online";
+        statusLabel.style.color = "var(--text-muted)";
+        setupLivePresence();
+      }
+    }
+
+    /* ---- LIVE CHANNELS & CHAT ---- */
+    function listenForChannels() {
+      db.ref('channels').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) channels = Object.values(val);
+        
+        const list = document.getElementById('dynamicChannelList');
+        list.innerHTML = '';
+        channels.forEach(ch => {
+          const li = document.createElement('li');
+          li.className = `channel-item ${ch === activeChannel ? 'active' : ''}`;
+          li.id = `chan-${ch}`;
+          li.textContent = `# ${ch}`;
+          li.onclick = () => switchChannel(ch);
+          list.appendChild(li);
+        });
       });
     }
 
     function promptCreateChannel() {
       const name = prompt("Enter new channel name:")?.trim().toLowerCase().replace(/\s+/g, '-');
       if (name && !channels.includes(name)) {
-        channels.push(name);
-        localStorage.setItem('gngChatChannels', JSON.stringify(channels));
-        loadChannels();
+        db.ref(`channels/${sanitizeKey(name)}`).set(name);
         switchChannel(name);
       }
     }
@@ -305,41 +365,90 @@
       document.getElementById('chatTitle').textContent = `# ${ch}`;
       document.getElementById('chatInput').placeholder = `Message #${ch}...`;
       
-      document.querySelectorAll('.channel-item, .dm-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
       const activeEl = document.getElementById(`chan-${ch}`);
       if (activeEl) activeEl.classList.add('active');
 
-      loadChatHistory(ch);
+      listenForMessages(ch);
     }
 
-    /* ---- BOT MANAGER ---- */
-    function loadBots() {
-      const savedBots = JSON.parse(localStorage.getItem('gngChatBots') || '[]');
-      if (savedBots.length > 0) bots = savedBots;
+    function listenForMessages(ch) {
+      const view = document.getElementById('messagesView');
+      view.innerHTML = '';
 
-      const list = document.getElementById('dynamicBotList');
-      const managerList = document.getElementById('botManagerList');
-      list.innerHTML = '';
-      if (managerList) managerList.innerHTML = '';
+      db.ref(`messages/${ch}`).off(); // Detach previous channel listener
+      db.ref(`messages/${ch}`).on('child_added', (snapshot) => {
+        const msg = snapshot.val();
+        renderMessage(msg);
+      });
+    }
 
-      bots.forEach(b => {
-        // DM List
-        const li = document.createElement('li');
-        li.className = 'dm-item';
-        li.innerHTML = `🤖 @${escapeHtml(b.name)}`;
-        li.onclick = () => alert(`DM with @${b.name} active!`);
-        list.appendChild(li);
+    function handleKey(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if (!text) return;
 
-        // Admin Panel List
-        if (managerList) {
-          const div = document.createElement('div');
-          div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px;";
-          div.innerHTML = `
-            <span style="font-size: 0.8rem; color: white;">🤖 ${escapeHtml(b.name)}</span>
-            <button class="btn-danger" onclick="removeBot('${escapeHtml(b.name)}')">Remove</button>
-          `;
-          managerList.appendChild(div);
-        }
+        const msgObj = {
+          author: user.name,
+          avatar: user.avatar,
+          text: text,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+
+        db.ref(`messages/${activeChannel}`).push(msgObj);
+        input.value = '';
+      }
+    }
+
+    function renderMessage(msg) {
+      const view = document.getElementById('messagesView');
+      if (!view) return;
+
+      const div = document.createElement('div');
+      div.className = 'msg-group';
+      div.innerHTML = `
+        <img class="avatar-sm" src="${msg.avatar}" />
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-author">${escapeHtml(msg.author)}</span>
+            <span class="msg-timestamp">${msg.timestamp}</span>
+          </div>
+          <div>${escapeHtml(msg.text)}</div>
+        </div>
+      `;
+      view.appendChild(div);
+      view.scrollTop = view.scrollHeight;
+    }
+
+    /* ---- LIVE BOTS MANAGER ---- */
+    function listenForBots() {
+      db.ref('bots').on('value', (snapshot) => {
+        const val = snapshot.val();
+        if (val) bots = Object.values(val);
+
+        const list = document.getElementById('dynamicBotList');
+        const managerList = document.getElementById('botManagerList');
+        list.innerHTML = '';
+        if (managerList) managerList.innerHTML = '';
+
+        bots.forEach(b => {
+          const li = document.createElement('li');
+          li.className = 'dm-item';
+          li.innerHTML = `🤖 @${escapeHtml(b.name)}`;
+          li.onclick = () => alert(`DM with @${b.name} active!`);
+          list.appendChild(li);
+
+          if (managerList) {
+            const div = document.createElement('div');
+            div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); padding: 6px 10px; border-radius: 4px;";
+            div.innerHTML = `
+              <span style="font-size: 0.85rem; color: white;">🤖 ${escapeHtml(b.name)}</span>
+              <button class="btn-danger" style="padding:2px 6px; font-size:0.7rem;" onclick="removeBot('${escapeHtml(b.name)}')">Remove</button>
+            `;
+            managerList.appendChild(div);
+          }
+        });
       });
     }
 
@@ -347,21 +456,17 @@
       const name = document.getElementById('newBotNameInput').value.trim();
       if (!name) return;
 
-      if (!bots.some(b => b.name.toLowerCase() === name.toLowerCase())) {
-        bots.push({
-          name: name,
-          avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
-        });
-        localStorage.setItem('gngChatBots', JSON.stringify(bots));
-        document.getElementById('newBotNameInput').value = '';
-        loadBots();
-      }
+      const botObj = {
+        name: name,
+        avatar: `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(name)}`
+      };
+
+      db.ref(`bots/${sanitizeKey(name)}`).set(botObj);
+      document.getElementById('newBotNameInput').value = '';
     }
 
     function removeBot(name) {
-      bots = bots.filter(b => b.name !== name);
-      localStorage.setItem('gngChatBots', JSON.stringify(bots));
-      loadBots();
+      db.ref(`bots/${sanitizeKey(name)}`).remove();
     }
 
     /* ---- CALLS ---- */
@@ -395,96 +500,7 @@
       document.getElementById('callOverlay').style.display = 'none';
     }
 
-    /* ---- PERSISTENT CHAT HISTORY ---- */
-    function saveMessageToHistory(channel, msgObj) {
-      let history = JSON.parse(localStorage.getItem(`gngMsgs_${channel}`) || '[]');
-      history.push(msgObj);
-      localStorage.setItem(`gngMsgs_${channel}`, JSON.stringify(history));
-    }
-
-    function loadChatHistory(channel) {
-      const view = document.getElementById('messagesView');
-      if (!view) return;
-      view.innerHTML = '';
-
-      let history = JSON.parse(localStorage.getItem(`gngMsgs_${channel}`) || '[]');
-      history.forEach(msg => renderMessage(msg));
-    }
-
-    function clearAllChatHistory() {
-      if (confirm("Clear history for all channels?")) {
-        channels.forEach(ch => localStorage.removeItem(`gngMsgs_${ch}`));
-        document.getElementById('messagesView').innerHTML = '';
-        togglePanel(false);
-      }
-    }
-
-    /* ---- GENERAL LOGIC ---- */
-    function registerUserHistory(username, avatar) {
-      let history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
-      history[username] = { name: username, avatar: avatar, lastSeen: Date.now() };
-      localStorage.setItem('gngChatUserRegistry', JSON.stringify(history));
-    }
-
-    function toggleStealthMode() {
-      user.stealthMode = !user.stealthMode;
-      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
-      
-      const statusLabel = document.getElementById('userStatusFooter');
-      if (user.stealthMode) {
-        statusLabel.textContent = "Offline (Spoofed)";
-        statusLabel.style.color = "#f23f43";
-        chatChannel.postMessage({ type: 'PRESENCE_PING', user: { name: user.name, avatar: user.avatar }, isStealth: true });
-        onlineUsersMap.delete(user.name);
-      } else {
-        statusLabel.textContent = "Online";
-        statusLabel.style.color = "var(--text-muted)";
-        announcePresence();
-      }
-      renderMembersList();
-    }
-
-    function announcePresence() {
-      if (user.name && !user.stealthMode) {
-        chatChannel.postMessage({ type: 'PRESENCE_PING', user: { name: user.name, avatar: user.avatar }, isStealth: false });
-        updateMemberOnline(user.name, user.avatar);
-      }
-    }
-
-    function updateMemberOnline(name, avatar) {
-      onlineUsersMap.set(name, { name, avatar, lastSeen: Date.now() });
-      registerUserHistory(name, avatar);
-      renderMembersList();
-    }
-
-    function renderMembersList() {
-      const onlineContainer = document.getElementById('dynamicOnlineList');
-      const offlineContainer = document.getElementById('dynamicOfflineList');
-      if (!onlineContainer || !offlineContainer) return;
-
-      onlineContainer.innerHTML = '';
-      offlineContainer.innerHTML = '';
-
-      const history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
-
-      onlineUsersMap.forEach((userData, username) => {
-        const card = document.createElement('div');
-        card.className = 'member-card';
-        card.innerHTML = `<div class="status-indicator online"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(username)}</span>`;
-        onlineContainer.appendChild(card);
-      });
-
-      Object.keys(history).forEach((username) => {
-        if (!onlineUsersMap.has(username)) {
-          const userData = history[username];
-          const card = document.createElement('div');
-          card.className = 'member-card';
-          card.innerHTML = `<div class="status-indicator offline"></div><img src="${userData.avatar}" style="width:22px;height:22px;border-radius:50%;"/><span>${escapeHtml(username)}</span>`;
-          offlineContainer.appendChild(card);
-        }
-      });
-    }
-
+    /* ---- GENERAL UTILITIES ---- */
     function signIn() {
       const val = document.getElementById('usernameInput').value.trim();
       if (!val) return;
@@ -493,47 +509,6 @@
       localStorage.setItem('gngChatUserPro', JSON.stringify(user));
       document.getElementById('loginOverlay').style.display = 'none';
       initApp();
-    }
-
-    function handleKey(e) {
-      if (e.key === 'Enter') {
-        const input = document.getElementById('chatInput');
-        const text = input.value.trim();
-        if (!text) return;
-
-        const msgObj = {
-          author: user.name,
-          avatar: user.avatar,
-          text: text,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        renderMessage(msgObj);
-        saveMessageToHistory(activeChannel, msgObj);
-
-        chatChannel.postMessage({ type: 'CHAT_MESSAGE', channel: activeChannel, msg: msgObj, isStealth: user.stealthMode });
-        input.value = '';
-      }
-    }
-
-    function renderMessage(msg) {
-      const view = document.getElementById('messagesView');
-      if (!view) return;
-
-      const div = document.createElement('div');
-      div.className = 'msg-group';
-      div.innerHTML = `
-        <img class="avatar-sm" src="${msg.avatar}" />
-        <div class="msg-content">
-          <div class="msg-header">
-            <span class="msg-author">${escapeHtml(msg.author)}</span>
-            <span class="msg-timestamp">${msg.timestamp}</span>
-          </div>
-          <div>${escapeHtml(msg.text)}</div>
-        </div>
-      `;
-      view.appendChild(div);
-      view.scrollTop = view.scrollHeight;
     }
 
     function updateUserFooter() {
@@ -554,6 +529,12 @@
       document.getElementById('panelModal').style.display = show ? 'flex' : 'none';
     }
 
+    function clearAllChatHistory() {
+      if (confirm(`Clear all messages in #${activeChannel}?`)) {
+        db.ref(`messages/${activeChannel}`).remove();
+      }
+    }
+
     function testBanSelf() {
       togglePanel(false);
       localStorage.setItem('gngChatBanned', 'true');
@@ -572,8 +553,15 @@
     }
 
     function logout() {
+      if (user.name) {
+        db.ref(`presence/${sanitizeKey(user.name)}`).remove();
+      }
       localStorage.clear();
       location.reload();
+    }
+
+    function sanitizeKey(str) {
+      return String(str).replace(/[.#$\[\]]/g, "_");
     }
 
     function escapeHtml(str) {
