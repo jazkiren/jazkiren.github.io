@@ -4,72 +4,354 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gng Chat Pro</title>
-
   <link rel="stylesheet" href="ui.css" />
 </head>
-<body>
+<body class="theme-dark">
 
-  <div class="server-rail">
-    <div class="server-icon active">⚔️</div>
+  <div class="banned-screen" id="bannedScreen">
+    ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
+    <div class="ban-box">
+      <span style="font-size: 0.8rem; color: #949ba4;">Enter Unban Code:</span>
+      <input type="password" id="unbanCodeInput" style="padding: 8px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
+      <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
+      <span id="banMsg" style="font-size: 0.75rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
+    </div>
   </div>
 
-  <div class="sidebar">
-    <div class="sidebar-header" style="padding: 12px; font-weight: bold;">
-      <span>Gng Chat Pro</span>
+  <div class="overlay" id="loginOverlay">
+    <div class="modal-box">
+      <h3 style="color: white;">Welcome to Gng Chat Pro!</h3>
+      <p style="color: #b5bac1; font-size: 0.8rem;">Enter your username to join.</p>
+      <input type="text" id="usernameInput" placeholder="Username" onkeydown="if(event.key==='Enter') signIn()" />
+      <button class="btn-primary" onclick="signIn()">Continue</button>
     </div>
-    <div style="padding: 12px; font-size: 0.7rem; color: var(--text-muted);">TEXT CHANNELS</div>
-    <ul style="list-style: none; padding: 0 10px;">
-      <li style="padding: 6px; cursor: pointer; color: var(--text-primary);"># general</li>
-    </ul>
   </div>
 
-  <div class="chat-container">
-    <div style="height: 48px; padding: 0 14px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(0,0,0,0.2);">
-      <span># general</span>
-      <button onclick="initiateCallSequence()" style="background: var(--accent); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer;">📞 Call</button>
-    </div>
+  <div class="fullscreen-settings" id="fullscreenSettings">
+    <div class="close-settings-btn" onclick="toggleSettings(false)">✕</div>
+    <div style="display: flex; height: 100%;">
+      <div class="settings-nav">
+        <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: bold; margin-bottom: 6px;">USER SETTINGS</div>
+        <div class="settings-nav-item active" onclick="switchSettingsTab('profile')">My Profile</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('appearance')">Appearance & Themes</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('audio')">Voice & Audio</div>
+        <div class="settings-nav-item" onclick="switchSettingsTab('account')">Account & Security</div>
+      </div>
 
-    <div class="messages-view" id="messagesView" style="flex: 1; padding: 14px; overflow-y: auto;"></div>
+      <div class="settings-content">
+        <div class="settings-section active" id="tab-profile">
+          <h3 style="color: white;">User Profile</h3>
+          
+          <div class="profile-card-preview">
+            <div class="profile-banner-display" id="previewBanner"></div>
+            <div class="profile-card-body">
+              <img id="previewAvatar" class="profile-card-avatar" src="" />
+              <h4 id="previewName" style="color: white; margin-top: 4px; font-size: 0.95rem;"></h4>
+              <p id="previewStatus" style="font-size: 0.75rem; color: var(--text-muted);"></p>
+              <p id="previewBio" style="font-size: 0.8rem; color: white; margin-top: 6px;"></p>
+            </div>
+          </div>
 
-    <div class="input-wrapper">
-      <div class="input-container">
-        <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+          <label style="font-size: 0.75rem; font-weight: bold;">DISPLAY NAME</label>
+          <input type="text" id="editNameInput" oninput="updateProfilePreview()" />
+
+          <label style="font-size: 0.75rem; font-weight: bold;">CUSTOM STATUS</label>
+          <input type="text" id="editStatusInput" placeholder="What's on your mind?" oninput="updateProfilePreview()" />
+
+          <label style="font-size: 0.75rem; font-weight: bold;">ABOUT ME (BIO)</label>
+          <textarea id="editBioInput" rows="2" placeholder="Tell the gang about yourself..." oninput="updateProfilePreview()"></textarea>
+
+          <label style="font-size: 0.75rem; font-weight: bold;">BANNER COLOR</label>
+          <input type="color" id="editBannerInput" value="#5865f2" onchange="updateProfilePreview()" />
+
+          <label style="font-size: 0.75rem; font-weight: bold;">AVATAR BORDER ANIMATION</label>
+          <select id="editAnimSelect" onchange="updateProfilePreview()">
+            <option value="none">None</option>
+            <option value="anim-glow">Neon Glow</option>
+            <option value="anim-pulse">Pulsing Ring</option>
+            <option value="anim-rainbow">Rainbow Wave</option>
+            <option value="anim-cyber">Cyber Spark</option>
+          </select>
+
+          <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
+        </div>
+
+        <div class="settings-section" id="tab-appearance">
+          <h3 style="color: white;">Theme Customization</h3>
+          <label style="font-size: 0.75rem; font-weight: bold;">CHOOSE THEME</label>
+          <select id="themeSelect" onchange="applyTheme(this.value)">
+            <option value="dark">Discord Dark</option>
+            <option value="amoled">AMOLED Pitch Black</option>
+            <option value="cyber">Neon Cyberpunk</option>
+            <option value="purple">Midnight Purple</option>
+          </select>
+        </div>
+
+        <div class="settings-section" id="tab-audio">
+          <h3 style="color: white;">Voice & Microphone</h3>
+          <label style="font-size: 0.75rem; font-weight: bold;">INPUT DEVICE</label>
+          <select id="micSelect">
+            <option value="default">Default Microphone</option>
+          </select>
+        </div>
+
+        <div class="settings-section" id="tab-account">
+          <h3 style="color: white;">Account Options</h3>
+          <button class="btn-primary" style="background-color: #da373c;" onclick="logout()">Log Out & Clear Local Data</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="members-rail" id="membersList">
-    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold;">ONLINE MEMBERS</div>
+  <div class="overlay" id="panelModal" style="display: none;">
+    <div class="modal-box">
+      <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
+      <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot Call</button>
+      <button class="btn-primary" style="background-color: #383a40;" onclick="triggerFakeMention()">🔔 Trigger Test Mention</button>
+      <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
+      <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
+    </div>
+  </div>
+
+  <div class="overlay" id="callTargetModal" style="display: none;">
+    <div class="modal-box">
+      <h3 style="color: white;">Select User to Call</h3>
+      <div id="callUserList" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      <button class="btn-primary" style="background-color: #da373c;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
+    </div>
+  </div>
+
+  <div class="incoming-call-overlay" id="incomingCallOverlay">
+    <div class="caller-avatar-ring">
+      <img id="incomingCallerAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
+    </div>
+    <div style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="incomingCallerName">Incoming Voice Call...</div>
+    <div style="color: var(--text-muted); font-size: 0.85rem;">Inviting you to a voice chat</div>
+
+    <div class="incoming-actions">
+      <button class="action-btn-circle btn-decline" onclick="declineIncomingCall()" title="Decline Call">✕</button>
+      <button class="action-btn-circle btn-accept" onclick="acceptIncomingCall()" title="Accept Call">📞</button>
+    </div>
+  </div>
+
+  <div class="call-overlay" id="callOverlay">
+    <div style="font-weight: bold; font-size: 1.1rem; color: #f2f3f5; display: flex; align-items: center; gap: 8px;">
+      <span>📞</span> Gng Voice Call — Live
+    </div>
+    
+    <div class="call-grid">
+      <div class="call-user-card" id="userCallCard">
+        <video id="webcamVideo" class="webcam-preview" autoplay playsinline muted></video>
+        <div class="call-avatar-pulse" id="userPulseCard">
+          <img id="callUserAvatar" src="" />
+        </div>
+        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;" id="callUserName">You</span>
+      </div>
+
+      <div class="call-user-card" id="botCallCard">
+        <div class="call-avatar-pulse">
+          <img id="otherCallAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
+        </div>
+        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;" id="otherCallUserName">Bot</span>
+      </div>
+    </div>
+
+    <div class="call-controls">
+      <button class="call-btn" id="muteBtn" onclick="toggleMute()">🎙️</button>
+      <button class="call-btn" id="camBtn" onclick="toggleCamera()">📹</button>
+      <button class="call-btn" onclick="simulateSpeakingToggle()" title="Simulate Speaking">🗣️</button>
+      <button class="call-btn end-btn" onclick="endCall()">📞</button>
+    </div>
+  </div>
+
+  <div class="server-rail">
+    <div class="server-icon active">⚔️</div>
+    <div class="server-icon">🔥</div>
+  </div>
+
+  <div class="sidebar">
+    <div>
+      <div class="sidebar-header">
+        <span>Gng Chat Pro</span>
+      </div>
+
+      <div class="section-title">Text Channels</div>
+      <ul class="channel-list">
+        <li class="channel-item active" id="chan-general" onclick="switchChannel('general')"># general</li>
+        <li class="channel-item" id="chan-lounge" onclick="switchChannel('lounge')"># lounge</li>
+      </ul>
+
+      <div class="section-title">Direct Messages</div>
+      <ul class="dm-list">
+        <li class="dm-item" id="chan-dm-bot" onclick="switchChannel('dm-bot')">💬 @Bot</li>
+      </ul>
+    </div>
+
+    <div class="user-footer">
+      <div class="user-info">
+        <div class="avatar-wrapper" id="userAvatarWrapper">
+          <img id="userAvatarFooter" class="avatar-sm" src="" />
+        </div>
+        <div style="display: flex; flex-direction: column; max-width: 110px;">
+          <span id="userNameFooter" style="font-weight: bold; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+          <span id="userStatusFooter" style="font-size: 0.65rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Online</span>
+        </div>
+      </div>
+      <span class="settings-cog" onclick="toggleSettings(true)">⚙️</span>
+    </div>
+  </div>
+
+  <div class="chat-container">
+    <div class="chat-header">
+      <span id="chatTitle"># general</span>
+      <div class="header-actions">
+        <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
+        <div class="header-btn" onclick="initiateCallSequence()" style="color: #23a55a;">📞 Start Call</div>
+        <div class="header-btn" onclick="clearMentions()">
+          📬 Inbox
+          <span class="badge" id="inboxBadge">0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="messages-view" id="messagesView"></div>
+
+    <div class="input-wrapper">
+      <div class="emoji-menu" id="emojiMenu"></div>
+
+      <div class="reply-banner" id="replyBanner">
+        <span id="replyBannerText">Replying to...</span>
+        <span style="cursor: pointer;" onclick="cancelReply()">✕</span>
+      </div>
+      
+      <div class="input-container">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
+        <span class="emoji-picker-btn" onclick="toggleEmojiPicker()">😊</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="members-rail">
+    <div class="section-title" style="padding: 0;">ONLINE MEMBERS</div>
+    <div id="dynamicMembersList" style="display: flex; flex-direction: column; gap: 8px;"></div>
   </div>
 
   <script src="js/sounds.js"></script>
   <script src="js/calling.js"></script>
-
   <script>
-    let activeUser = "You";
-    let onlineUsers = ["You", "Bot"];
-
-    window.onload = function() {
-      renderMembers();
-
-      // Trigger Discord Join Sound on First User Click Interaction
-      document.body.addEventListener('click', () => {
-        SoundEngine.playJoinSound();
-      }, { once: true });
+    let user = {
+      name: "",
+      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Cyber",
+      status: "Coding...",
+      bio: "Gang Chat member!",
+      banner: "#5865f2",
+      animation: "anim-glow",
+      theme: "dark"
     };
 
-    function renderMembers() {
-      const container = document.getElementById('membersList');
-      container.innerHTML = `<div style="font-size: 0.7rem; color: var(--text-muted); font-weight: bold; margin-bottom: 8px;">ONLINE MEMBERS</div>`;
+    let activeChannel = "general";
+    let activeReply = null;
+    let mentionCount = 0;
+    let onlineUsersMap = new Map();
+
+    // BroadcastChannel cross-tab communication setup
+    const chatChannel = new BroadcastChannel('gng_chat_network');
+
+    const emojis = ["😂", "🔥", "⚔️", "💀", "😎", "👍", "❤️", "🎮", "🚀", "🎉", "💩", "🤖", "👀", "💯", "✨"];
+
+    window.onload = function() {
+      if (localStorage.getItem('gngChatBanned') === 'true') {
+        document.getElementById('bannedScreen').style.display = 'flex';
+        return;
+      }
+
+      const savedUser = localStorage.getItem('gngChatUserPro');
+      if (savedUser) {
+        user = JSON.parse(savedUser);
+        document.getElementById('loginOverlay').style.display = 'none';
+        initApp();
+      }
+
+      buildEmojiPicker();
+    };
+
+    // Receive broadcast messages from other tabs
+    chatChannel.onmessage = function(event) {
+      const data = event.data;
       
-      onlineUsers.forEach(user => {
+      if (data.type === 'CHAT_MESSAGE') {
+        if (data.channel === activeChannel) {
+          renderIncomingMessage(data.author, data.text, data.avatar, data.reply);
+        }
+        SoundEngine.playMessageSound();
+        registerOnlineUser(data.author, data.avatar);
+      } 
+      else if (data.type === 'USER_PRESENCE') {
+        registerOnlineUser(data.author, data.avatar);
+      }
+      else if (data.type === 'CALL_INVITE' && data.targetUser === user.name) {
+        document.getElementById('incomingCallerName').textContent = `${data.callerName} is calling...`;
+        document.getElementById('incomingCallerAvatar').src = data.callerAvatar;
+        document.getElementById('incomingCallOverlay').style.display = 'flex';
+        SoundEngine.playRingtone();
+      }
+    };
+
+    function initApp() {
+      document.getElementById('userNameFooter').textContent = user.name;
+      document.getElementById('userAvatarFooter').src = user.avatar;
+      document.getElementById('callUserName').textContent = user.name;
+      document.getElementById('callUserAvatar').src = user.avatar;
+      document.getElementById('userStatusFooter').textContent = user.status;
+      
+      applyTheme(user.theme);
+      registerOnlineUser(user.name, user.avatar);
+      registerOnlineUser("Bot", "https://api.dicebear.com/7.x/bottts/svg?seed=Bot");
+
+      // Broadcast user presence to other active tabs
+      chatChannel.postMessage({
+        type: 'USER_PRESENCE',
+        author: user.name,
+        avatar: user.avatar
+      });
+    }
+
+    function registerOnlineUser(name, avatar) {
+      onlineUsersMap.set(name, avatar);
+      renderMembersList();
+      updateCallTargetList();
+    }
+
+    function renderMembersList() {
+      const list = document.getElementById('dynamicMembersList');
+      list.innerHTML = "";
+      
+      onlineUsersMap.forEach((avatar, name) => {
         const div = document.createElement('div');
         div.className = 'member-card';
+        div.onclick = () => toggleSettings(true);
         div.innerHTML = `
+          <img class="avatar-sm" src="${avatar}" />
+          <span style="color: var(--text-primary); flex: 1;">${name}</span>
           <span class="status-indicator online"></span>
-          <span style="color: var(--text-primary); font-size: 0.85rem;">${user}</span>
         `;
-        container.appendChild(div);
+        list.appendChild(div);
+      });
+    }
+
+    function updateCallTargetList() {
+      const list = document.getElementById('callUserList');
+      list.innerHTML = "";
+      
+      onlineUsersMap.forEach((avatar, name) => {
+        if (name !== user.name) {
+          const btn = document.createElement('button');
+          btn.className = 'btn-primary';
+          btn.style.margin = '2px 0';
+          btn.textContent = `📞 Call ${name}`;
+          btn.onclick = () => startCallTarget(name);
+          list.appendChild(btn);
+        }
       });
     }
 
@@ -77,29 +359,183 @@
       if (e.key === 'Enter') {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
-        if (msg !== '') {
-          addMessage(activeUser, msg);
-          input.value = '';
+        if (msg !== "") {
+          renderIncomingMessage(user.name, msg, user.avatar, activeReply);
+          
+          // Broadcast to other open tabs
+          chatChannel.postMessage({
+            type: 'CHAT_MESSAGE',
+            channel: activeChannel,
+            author: user.name,
+            avatar: user.avatar,
+            text: msg,
+            reply: activeReply
+          });
+
+          SoundEngine.playMessageSound();
+          input.value = "";
+          cancelReply();
         }
       }
     }
 
-    function addMessage(author, text) {
+    function renderIncomingMessage(author, text, avatar, replyData) {
       const view = document.getElementById('messagesView');
       const div = document.createElement('div');
-      div.style.marginBottom = "10px";
-      div.innerHTML = `<strong style="color: var(--accent);">${author}:</strong> ${text}`;
+      div.className = 'msg-group';
+      
+      let replyHTML = replyData ? `<div class="reply-quote">Replying to ${replyData.author}: "${replyData.text}"</div>` : '';
+
+      div.innerHTML = `
+        <img class="avatar-sm" src="${avatar}" />
+        <div class="msg-content">
+          ${replyHTML}
+          <div class="msg-header">
+            <span class="msg-author">${author}</span>
+            <span class="msg-timestamp">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+          </div>
+          <div>${text}</div>
+        </div>
+      `;
       view.appendChild(div);
       view.scrollTop = view.scrollHeight;
+    }
 
-      // Sound trigger
-      SoundEngine.playMessageSound();
+    function buildEmojiPicker() {
+      const menu = document.getElementById('emojiMenu');
+      emojis.forEach(e => {
+        const span = document.createElement('span');
+        span.className = 'emoji-item';
+        span.textContent = e;
+        span.onclick = () => {
+          document.getElementById('chatInput').value += e;
+          toggleEmojiPicker();
+        };
+        menu.appendChild(span);
+      });
+    }
 
-      // Sync active chatter into online list
-      if (!onlineUsers.includes(author)) {
-        onlineUsers.push(author);
-        renderMembers();
+    function toggleEmojiPicker() {
+      const menu = document.getElementById('emojiMenu');
+      menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
+    }
+
+    function verifyUnbanCode() {
+      const codeInput = document.getElementById('unbanCodeInput').value.trim();
+      if (codeInput === '9785') {
+        localStorage.removeItem('gngChatBanned');
+        document.getElementById('bannedScreen').style.display = 'none';
+        location.reload();
+      } else {
+        localStorage.removeItem('gngChatUserPro');
+        document.getElementById('banMsg').style.display = 'block';
       }
+    }
+
+    function signIn() {
+      const name = document.getElementById('usernameInput').value.trim();
+      if (name !== "") {
+        user.name = name;
+        localStorage.setItem('gngChatUserPro', JSON.stringify(user));
+        document.getElementById('loginOverlay').style.display = 'none';
+        initApp();
+      }
+    }
+
+    function switchChannel(channel) {
+      activeChannel = channel;
+      document.getElementById('chatTitle').textContent = `# ${channel}`;
+      document.getElementById('messagesView').innerHTML = "";
+    }
+
+    function promptPanelAccess() {
+      const code = prompt("Enter Admin Passcode:");
+      if (code === "9785") {
+        document.getElementById('panelModal').style.display = 'flex';
+      } else {
+        alert("Access Denied!");
+      }
+    }
+
+    function togglePanel(show) {
+      document.getElementById('panelModal').style.display = show ? 'flex' : 'none';
+    }
+
+    function triggerBotCall() {
+      togglePanel(false);
+      startCallTarget("Bot");
+    }
+
+    function triggerFakeMention() {
+      togglePanel(false);
+      mentionCount++;
+      const badge = document.getElementById('inboxBadge');
+      badge.textContent = mentionCount;
+      badge.style.display = 'inline-block';
+    }
+
+    function clearMentions() {
+      mentionCount = 0;
+      const badge = document.getElementById('inboxBadge');
+      badge.style.display = 'none';
+    }
+
+    function testBanSelf() {
+      localStorage.setItem('gngChatBanned', 'true');
+      location.reload();
+    }
+
+    function toggleSettings(show) {
+      document.getElementById('fullscreenSettings').style.display = show ? 'block' : 'none';
+      if (show) {
+        document.getElementById('editNameInput').value = user.name;
+        document.getElementById('editStatusInput').value = user.status;
+        document.getElementById('editBioInput').value = user.bio;
+        updateProfilePreview();
+      }
+    }
+
+    function switchSettingsTab(tab) {
+      document.querySelectorAll('.settings-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.settings-section').forEach(el => el.classList.remove('active'));
+      
+      event.target.classList.add('active');
+      document.getElementById(`tab-${tab}`).classList.add('active');
+    }
+
+    function updateProfilePreview() {
+      document.getElementById('previewName').textContent = document.getElementById('editNameInput').value || user.name;
+      document.getElementById('previewStatus').textContent = document.getElementById('editStatusInput').value || user.status;
+      document.getElementById('previewBio').textContent = document.getElementById('editBioInput').value || user.bio;
+      document.getElementById('previewBanner').style.backgroundColor = document.getElementById('editBannerInput').value;
+      document.getElementById('previewAvatar').src = user.avatar;
+    }
+
+    function saveSettings() {
+      user.name = document.getElementById('editNameInput').value || user.name;
+      user.status = document.getElementById('editStatusInput').value || user.status;
+      user.bio = document.getElementById('editBioInput').value || user.bio;
+      user.banner = document.getElementById('editBannerInput').value;
+      user.animation = document.getElementById('editAnimSelect').value;
+
+      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
+      initApp();
+      toggleSettings(false);
+    }
+
+    function applyTheme(theme) {
+      document.body.className = `theme-${theme}`;
+      user.theme = theme;
+    }
+
+    function logout() {
+      localStorage.clear();
+      location.reload();
+    }
+
+    function cancelReply() {
+      activeReply = null;
+      document.getElementById('replyBanner').style.display = 'none';
     }
   </script>
 </body>
