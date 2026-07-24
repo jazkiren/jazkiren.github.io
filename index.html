@@ -232,10 +232,17 @@
   </div>
 
   <script>
-    // --- Public Live Firebase Config (Real-Time Cloud Backend) ---
+    // --- LIVE FIREBASE CONFIG ---
     const firebaseConfig = {
-      databaseURL: "https://gng-chat-default-rtdb.firebaseio.com"
+      apiKey: "AIzaSyAiyqY0Beycimw6LKy3LZmaQqVdgMJSXwE",
+      authDomain: "text-meh-8276c.firebaseapp.com",
+      databaseURL: "https://text-meh-8276c-default-rtdb.firebaseio.com",
+      projectId: "text-meh-8276c",
+      storageBucket: "text-meh-8276c.firebasestorage.app",
+      messagingSenderId: "885223147383",
+      appId: "1:885223147383:web:794d95b118a5eb0c208372"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -245,6 +252,13 @@
     let bots = [{ name: "GngBot", avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=GngBot" }];
 
     window.onload = function() {
+      // ONE-TIME RESET FOR UPDATE v2.1
+      const APP_VERSION = "2.1";
+      if (localStorage.getItem('gngChatVersion') !== APP_VERSION) {
+        localStorage.clear();
+        localStorage.setItem('gngChatVersion', APP_VERSION);
+      }
+
       if (localStorage.getItem('gngChatBanned') === 'true') {
         const banElem = document.getElementById('bannedScreen');
         if (banElem) banElem.style.display = 'flex';
@@ -268,7 +282,7 @@
       setupLivePresence();
     }
 
-    /* ---- LIVE REAL-TIME PRESENCE (EVERYONE & EVERY DEVICE) ---- */
+    /* ---- LIVE REAL-TIME PRESENCE ---- */
     function setupLivePresence() {
       if (!user.name) return;
 
@@ -289,7 +303,6 @@
         });
       }
 
-      // Sync presence for all connected users live
       db.ref('presence').on('value', (snapshot) => {
         const onlineContainer = document.getElementById('dynamicOnlineList');
         const offlineContainer = document.getElementById('dynamicOfflineList');
@@ -376,7 +389,7 @@
       const view = document.getElementById('messagesView');
       view.innerHTML = '';
 
-      db.ref(`messages/${ch}`).off(); // Detach previous channel listener
+      db.ref(`messages/${ch}`).off();
       db.ref(`messages/${ch}`).on('child_added', (snapshot) => {
         const msg = snapshot.val();
         renderMessage(msg);
