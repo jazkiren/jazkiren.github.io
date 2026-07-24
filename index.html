@@ -4,17 +4,84 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Gng Chat Pro</title>
-  <link rel="stylesheet" href="ui.css" />
+  <style>
+    :root {
+      --bg-main: #313338;
+      --bg-sidebar: #2b2d31;
+      --bg-rail: #1e1f22;
+      --bg-card: #1e2024;
+      --accent: #5865f2;
+      --text-primary: #f2f3f5;
+      --text-muted: #949ba4;
+      --speaking-green: #23a55a;
+    }
+    body.theme-amoled { --bg-main: #000000; --bg-sidebar: #0a0a0a; --bg-rail: #050505; --bg-card: #121212; }
+    body.theme-cyber { --bg-main: #0d0f18; --bg-sidebar: #131722; --bg-rail: #080a10; --bg-card: #1a1f2c; --accent: #00f0ff; }
+    body.theme-purple { --bg-main: #130f26; --bg-sidebar: #1a1436; --bg-rail: #0c0919; --bg-card: #231b48; --accent: #9d4edd; }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { background-color: var(--bg-rail); color: #dbdee1; height: 100vh; display: flex; overflow: hidden; }
+
+    /* Layout Rails */
+    .server-rail { width: 64px; background-color: var(--bg-rail); padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 10px; border-right: 1px solid rgba(255,255,255,0.05); }
+    .server-icon { width: 40px; height: 40px; background-color: var(--bg-main); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; color: var(--text-primary); transition: all 0.2s ease; }
+    .server-icon:hover, .server-icon.active { background-color: var(--accent); border-radius: 10px; }
+
+    .sidebar { width: 220px; background-color: var(--bg-sidebar); display: flex; flex-direction: column; justify-content: space-between; }
+    .sidebar-header { padding: 12px 14px; height: 48px; border-bottom: 1px solid rgba(0,0,0,0.2); font-weight: 700; color: var(--text-primary); display: flex; align-items: center; }
+    .section-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); font-weight: bold; padding: 12px 12px 6px 12px; letter-spacing: 0.5px; }
+    
+    .channel-list, .dm-list { list-style: none; }
+    .channel-item, .dm-item { padding: 6px 10px; margin: 2px 6px; border-radius: 4px; cursor: pointer; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+    .channel-item:hover, .channel-item.active, .dm-item:hover { background-color: rgba(255,255,255,0.06); color: var(--text-primary); }
+
+    .user-footer { background-color: rgba(0,0,0,0.2); padding: 8px 10px; display: flex; align-items: center; justify-content: space-between; }
+    .user-info { display: flex; align-items: center; gap: 8px; }
+    .avatar-wrapper { position: relative; width: 28px; height: 28px; border-radius: 50%; }
+    .avatar-sm { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+    .settings-cog { cursor: pointer; color: #b5bac1; font-size: 1rem; }
+
+    /* Chat Main Area */
+    .chat-container { flex: 1; background-color: var(--bg-main); display: flex; flex-direction: column; }
+    .chat-header { height: 48px; border-bottom: 1px solid rgba(0,0,0,0.2); padding: 0 14px; display: flex; align-items: center; justify-content: space-between; font-weight: bold; color: var(--text-primary); }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-btn { cursor: pointer; background: var(--bg-sidebar); padding: 5px 10px; border-radius: 4px; font-size: 0.8rem; }
+
+    .messages-view { flex: 1; padding: 14px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+    .msg-group { display: flex; gap: 12px; position: relative; }
+    .msg-content { display: flex; flex-direction: column; gap: 2px; font-size: 0.9rem; }
+    .msg-header { display: flex; align-items: center; gap: 6px; }
+    .msg-author { font-weight: 600; color: var(--text-primary); font-size: 0.85rem; }
+    .msg-timestamp { font-size: 0.7rem; color: var(--text-muted); }
+
+    .input-wrapper { padding: 0 14px 16px 14px; position: relative; }
+    .input-container { display: flex; background-color: #383a40; border-radius: 8px; align-items: center; padding: 2px 10px; }
+    .chat-input { flex: 1; background-color: transparent; border: none; padding: 10px 6px; color: var(--text-primary); font-size: 0.88rem; outline: none; }
+
+    .members-rail { width: 200px; background-color: var(--bg-sidebar); padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .member-card { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.82rem; color: var(--text-muted); padding: 4px 6px; border-radius: 4px; }
+    .status-indicator { width: 8px; height: 8px; border-radius: 50%; }
+    .online { background-color: #23a55a; }
+    .offline { background-color: #80848e; }
+
+    /* Modals & Overlays */
+    .overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-box { background-color: var(--bg-main); padding: 24px; border-radius: 6px; width: 320px; display: flex; flex-direction: column; gap: 12px; }
+    .modal-box input { padding: 8px 10px; background-color: var(--bg-rail); border: 1px solid var(--bg-sidebar); color: white; border-radius: 4px; outline: none; }
+    .btn-primary { background-color: var(--accent); color: white; border: none; padding: 8px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+
+    .banned-screen { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #0f172a; color: #f23f43; z-index: 9999; justify-content: center; align-items: center; flex-direction: column; gap: 16px; font-weight: bold; }
+  </style>
 </head>
 <body class="theme-dark">
 
   <div class="banned-screen" id="bannedScreen">
     ⛔ YOU HAVE BEEN BANNED FROM GNG CHAT
-    <div class="ban-box">
+    <div style="background-color: #1e293b; padding: 20px; border-radius: 8px; display: flex; flex-direction: column; gap: 10px;">
       <span style="font-size: 0.8rem; color: #949ba4;">Enter Unban Code:</span>
       <input type="password" id="unbanCodeInput" style="padding: 8px; text-align: center;" placeholder="Enter Code..." onkeydown="if(event.key==='Enter') verifyUnbanCode()" />
       <button class="btn-primary" onclick="verifyUnbanCode()">Submit Code</button>
-      <span id="banMsg" style="font-size: 0.75rem; color: #f23f43; display: none;">Incorrect Code! Account Permanently Deleted.</span>
+      <span id="banMsg" style="font-size: 0.75rem; color: #f23f43; display: none;">Incorrect Code!</span>
     </div>
   </div>
 
@@ -27,204 +94,57 @@
     </div>
   </div>
 
-  <div class="fullscreen-settings" id="fullscreenSettings">
-    <div class="close-settings-btn" onclick="toggleSettings(false)">✕</div>
-    <div style="display: flex; height: 100%;">
-      <div class="settings-nav">
-        <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: bold; margin-bottom: 6px;">USER SETTINGS</div>
-        <div class="settings-nav-item active" onclick="switchSettingsTab('profile')">My Profile</div>
-        <div class="settings-nav-item" onclick="switchSettingsTab('appearance')">Appearance & Themes</div>
-        <div class="settings-nav-item" onclick="switchSettingsTab('audio')">Voice & Audio</div>
-        <div class="settings-nav-item" onclick="switchSettingsTab('account')">Account & Security</div>
-      </div>
-
-      <div class="settings-content">
-        <div class="settings-section active" id="tab-profile">
-          <h3 style="color: white;">User Profile</h3>
-          
-          <div class="profile-card-preview">
-            <div class="profile-banner-display" id="previewBanner"></div>
-            <div class="profile-card-body">
-              <img id="previewAvatar" class="profile-card-avatar" src="" />
-              <h4 id="previewName" style="color: white; margin-top: 4px; font-size: 0.95rem;"></h4>
-              <p id="previewStatus" style="font-size: 0.75rem; color: var(--text-muted);"></p>
-              <p id="previewBio" style="font-size: 0.8rem; color: white; margin-top: 6px;"></p>
-            </div>
-          </div>
-
-          <label style="font-size: 0.75rem; font-weight: bold;">DISPLAY NAME</label>
-          <input type="text" id="editNameInput" oninput="updateProfilePreview()" />
-
-          <label style="font-size: 0.75rem; font-weight: bold;">CUSTOM STATUS</label>
-          <input type="text" id="editStatusInput" placeholder="What's on your mind?" oninput="updateProfilePreview()" />
-
-          <label style="font-size: 0.75rem; font-weight: bold;">ABOUT ME (BIO)</label>
-          <textarea id="editBioInput" rows="2" placeholder="Tell the gang about yourself..." oninput="updateProfilePreview()"></textarea>
-
-          <label style="font-size: 0.75rem; font-weight: bold;">BANNER COLOR</label>
-          <input type="color" id="editBannerInput" value="#5865f2" onchange="updateProfilePreview()" />
-
-          <label style="font-size: 0.75rem; font-weight: bold;">AVATAR BORDER ANIMATION</label>
-          <select id="editAnimSelect" onchange="updateProfilePreview()">
-            <option value="none">None</option>
-            <option value="anim-glow">Neon Glow</option>
-            <option value="anim-pulse">Pulsing Ring</option>
-            <option value="anim-rainbow">Rainbow Wave</option>
-            <option value="anim-cyber">Cyber Spark</option>
-          </select>
-
-          <button class="btn-primary" onclick="saveSettings()">Save Changes</button>
-        </div>
-
-        <div class="settings-section" id="tab-appearance">
-          <h3 style="color: white;">Theme Customization</h3>
-          <label style="font-size: 0.75rem; font-weight: bold;">CHOOSE THEME</label>
-          <select id="themeSelect" onchange="applyTheme(this.value)">
-            <option value="dark">Discord Dark</option>
-            <option value="amoled">AMOLED Pitch Black</option>
-            <option value="cyber">Neon Cyberpunk</option>
-            <option value="purple">Midnight Purple</option>
-          </select>
-        </div>
-
-        <div class="settings-section" id="tab-audio">
-          <h3 style="color: white;">Voice & Microphone</h3>
-          <label style="font-size: 0.75rem; font-weight: bold;">INPUT DEVICE</label>
-          <select id="micSelect">
-            <option value="default">Default Microphone</option>
-          </select>
-        </div>
-
-        <div class="settings-section" id="tab-account">
-          <h3 style="color: white;">Account Options</h3>
-          <button class="btn-primary" style="background-color: #da373c;" onclick="logout()">Log Out & Clear Local Data</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="overlay" id="panelModal" style="display: none;">
     <div class="modal-box">
       <h3 style="color: white;">🛠️ Owner & Admin Panel</h3>
-      <button class="btn-primary" onclick="triggerBotCall()">📞 Force Bot Call</button>
       <button class="btn-primary" style="background-color: #e5a93c;" onclick="testBanSelf()">⚠️ Test Ban Screen</button>
       <button class="btn-primary" style="background-color: #da373c;" onclick="togglePanel(false)">Close Panel</button>
     </div>
   </div>
 
-  <div class="overlay" id="callTargetModal" style="display: none;">
-    <div class="modal-box">
-      <h3 style="color: white;">Select User to Call</h3>
-      <div id="callUserList" style="display: flex; flex-direction: column; gap: 8px;"></div>
-      <button class="btn-primary" style="background-color: #da373c;" onclick="document.getElementById('callTargetModal').style.display='none'">Cancel</button>
-    </div>
-  </div>
-
-  <div class="incoming-call-overlay" id="incomingCallOverlay">
-    <div class="caller-avatar-ring">
-      <img id="incomingCallerAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
-    </div>
-    <div style="font-weight: bold; font-size: 1.2rem; color: #f2f3f5;" id="incomingCallerName">Incoming Voice Call...</div>
-    <div style="color: var(--text-muted); font-size: 0.85rem;">Inviting you to a voice chat</div>
-
-    <div class="incoming-actions">
-      <button class="action-btn-circle btn-decline" onclick="declineIncomingCall()" title="Decline Call">✕</button>
-      <button class="action-btn-circle btn-accept" onclick="acceptIncomingCall()" title="Accept Call">📞</button>
-    </div>
-  </div>
-
-  <div class="call-overlay" id="callOverlay">
-    <div style="font-weight: bold; font-size: 1.1rem; color: #f2f3f5; display: flex; align-items: center; gap: 8px;">
-      <span>📞</span> Gng Voice Call — Live
-    </div>
-    
-    <div class="call-grid">
-      <div class="call-user-card" id="userCallCard">
-        <video id="webcamVideo" class="webcam-preview" autoplay playsinline muted></video>
-        <div class="call-avatar-pulse" id="userPulseCard">
-          <img id="callUserAvatar" src="" />
-        </div>
-        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;" id="callUserName">You</span>
-      </div>
-
-      <div class="call-user-card" id="botCallCard">
-        <div class="call-avatar-pulse">
-          <img id="otherCallAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Bot" />
-        </div>
-        <span style="font-weight: bold; font-size: 0.95rem; color: #f2f3f5;" id="otherCallUserName">Bot</span>
-      </div>
-    </div>
-
-    <div class="call-controls">
-      <button class="call-btn" id="muteBtn" onclick="toggleMute()">🎙️</button>
-      <button class="call-btn" id="camBtn" onclick="toggleCamera()">📹</button>
-      <button class="call-btn" onclick="simulateSpeakingToggle()" title="Simulate Speaking">🗣️</button>
-      <button class="call-btn end-btn" onclick="endCall()">📞</button>
-    </div>
-  </div>
-
   <div class="server-rail">
     <div class="server-icon active">⚔️</div>
-    <div class="server-icon">🔥</div>
   </div>
 
   <div class="sidebar">
     <div>
-      <div class="sidebar-header">
-        <span>Gng Chat Pro</span>
-      </div>
-
+      <div class="sidebar-header">Gng Chat Pro</div>
       <div class="section-title">Text Channels</div>
       <ul class="channel-list">
-        <li class="channel-item active" id="chan-general" onclick="switchChannel('general')"># general</li>
-        <li class="channel-item" id="chan-lounge" onclick="switchChannel('lounge')"># lounge</li>
-      </ul>
-
-      <div class="section-title">Direct Messages</div>
-      <ul class="dm-list">
-        <li class="dm-item" id="chan-dm-bot" onclick="switchChannel('dm-bot')">💬 @Bot</li>
+        <li class="channel-item active" id="chan-general"># general</li>
       </ul>
     </div>
 
     <div class="user-footer">
       <div class="user-info">
-        <div class="avatar-wrapper" id="userAvatarWrapper">
+        <div class="avatar-wrapper">
           <img id="userAvatarFooter" class="avatar-sm" src="" />
         </div>
-        <div style="display: flex; flex-direction: column; max-width: 100px;">
+        <div style="display: flex; flex-direction: column; max-width: 90px;">
           <span id="userNameFooter" style="font-weight: bold; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
-          <span id="userStatusFooter" style="font-size: 0.65rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Online</span>
+          <span id="userStatusFooter" style="font-size: 0.65rem; color: var(--text-muted);">Online</span>
         </div>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
         <span title="Toggle Ghost Mode (Invisible)" onclick="toggleStealthMode()" style="cursor: pointer; font-size: 0.9rem;">👻</span>
-        <span class="settings-cog" onclick="toggleSettings(true)">⚙️</span>
+        <span class="settings-cog" onclick="logout()" title="Logout & Reset">🚪</span>
       </div>
     </div>
   </div>
 
   <div class="chat-container">
     <div class="chat-header">
-      <span id="chatTitle"># general</span>
+      <span># general</span>
       <div class="header-actions">
         <div class="header-btn" onclick="promptPanelAccess()" style="color: var(--accent);">🛠️ Panel</div>
-        <div class="header-btn" onclick="initiateCallSequence()" style="color: #23a55a;">📞 Start Call</div>
       </div>
     </div>
 
     <div class="messages-view" id="messagesView"></div>
 
     <div class="input-wrapper">
-      <div class="emoji-menu" id="emojiMenu"></div>
-
-      <div class="reply-banner" id="replyBanner">
-        <span id="replyBannerText">Replying to...</span>
-        <span style="cursor: pointer;" onclick="cancelReply()">✕</span>
-      </div>
-      
       <div class="input-container">
         <input type="text" class="chat-input" id="chatInput" placeholder="Message #general..." onkeydown="handleKey(event)" />
-        <span class="emoji-picker-btn" onclick="toggleEmojiPicker()">😊</span>
       </div>
     </div>
   </div>
@@ -237,42 +157,32 @@
     <div id="dynamicOfflineList" style="display: flex; flex-direction: column; gap: 6px; opacity: 0.65;"></div>
   </div>
 
-  <script src="js/sounds.js"></script>
-  <script src="js/calling.js"></script>
   <script>
     let user = {
       name: "",
-      avatar: "https://api.dicebear.com/7.x/bottts/svg?seed=Cyber",
-      status: "Coding...",
-      bio: "Gang Chat member!",
-      banner: "#5865f2",
-      animation: "anim-glow",
-      theme: "dark",
+      avatar: "",
       stealthMode: false
     };
 
-    let activeChannel = "general";
-    let activeReply = null;
     let onlineUsersMap = new Map();
     let heartBeatTimer = null;
-
     const chatChannel = new BroadcastChannel('gng_chat_network');
-    const emojis = ["😂", "🔥", "⚔️", "💀", "😎", "👍", "❤️", "🎮", "🚀", "🎉", "💩", "🤖", "👀", "💯", "✨"];
 
     window.onload = function() {
+      // Check ban state
       if (localStorage.getItem('gngChatBanned') === 'true') {
-        document.getElementById('bannedScreen').style.display = 'flex';
+        const banElem = document.getElementById('bannedScreen');
+        if (banElem) banElem.style.display = 'flex';
         return;
       }
 
       const savedUser = localStorage.getItem('gngChatUserPro');
       if (savedUser) {
         user = JSON.parse(savedUser);
-        document.getElementById('loginOverlay').style.display = 'none';
+        const loginElem = document.getElementById('loginOverlay');
+        if (loginElem) loginElem.style.display = 'none';
         initApp();
       }
-
-      buildEmojiPicker();
     };
 
     chatChannel.onmessage = function(event) {
@@ -280,10 +190,7 @@
       if (!data) return;
 
       if (data.type === 'CHAT_MESSAGE') {
-        if (data.channel === activeChannel) {
-          renderMessage(data.msg);
-          SoundEngine.playMessageSound();
-        }
+        renderMessage(data.msg);
         if (!data.isStealth) {
           updateMemberOnline(data.msg.author, data.msg.avatar);
         }
@@ -297,19 +204,10 @@
           renderMembersList();
         }
       }
-
-      if (data.type === 'CALL_INVITE' && data.targetUser === user.name) {
-        document.getElementById('incomingCallerName').textContent = `${data.callerName} is calling...`;
-        document.getElementById('incomingCallerAvatar').src = data.callerAvatar;
-        document.getElementById('incomingCallOverlay').style.display = 'flex';
-        SoundEngine.playRingtone();
-      }
     };
 
     function initApp() {
-      applyTheme(user.theme);
       updateUserFooter();
-      updateProfilePreview();
       registerUserHistory(user.name, user.avatar);
 
       announcePresence();
@@ -367,24 +265,15 @@
     function renderMembersList() {
       const onlineContainer = document.getElementById('dynamicOnlineList');
       const offlineContainer = document.getElementById('dynamicOfflineList');
-      const callUserList = document.getElementById('callUserList');
 
       if (!onlineContainer || !offlineContainer) return;
 
       onlineContainer.innerHTML = '';
       offlineContainer.innerHTML = '';
-      if (callUserList) callUserList.innerHTML = '';
-
-      if (callUserList) {
-        const botBtn = document.createElement('button');
-        botBtn.className = 'btn-primary';
-        botBtn.textContent = '📞 Call Bot (Test)';
-        botBtn.onclick = () => startCallTarget('Bot');
-        callUserList.appendChild(botBtn);
-      }
 
       const history = JSON.parse(localStorage.getItem('gngChatUserRegistry') || '{}');
 
+      // Online
       onlineUsersMap.forEach((userData, username) => {
         const card = document.createElement('div');
         card.className = 'member-card';
@@ -394,17 +283,9 @@
           <span>${escapeHtml(username)}</span>
         `;
         onlineContainer.appendChild(card);
-
-        if (callUserList && username !== user.name) {
-          const userCallBtn = document.createElement('button');
-          userCallBtn.className = 'btn-primary';
-          userCallBtn.style.backgroundColor = '#383a40';
-          userCallBtn.textContent = `📞 Call ${username}`;
-          userCallBtn.onclick = () => startCallTarget(username);
-          callUserList.appendChild(userCallBtn);
-        }
       });
 
+      // Persistent Offline
       Object.keys(history).forEach((username) => {
         if (!onlineUsersMap.has(username)) {
           const userData = history[username];
@@ -440,46 +321,35 @@
           author: user.name,
           avatar: user.avatar,
           text: text,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          reply: activeReply
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         };
 
         renderMessage(msgObj);
 
         chatChannel.postMessage({
           type: 'CHAT_MESSAGE',
-          channel: activeChannel,
           msg: msgObj,
           isStealth: user.stealthMode
         });
 
         input.value = '';
-        cancelReply();
       }
     }
 
     function renderMessage(msg) {
       const view = document.getElementById('messagesView');
+      if (!view) return;
+
       const div = document.createElement('div');
       div.className = 'msg-group';
-
-      let replyHTML = '';
-      if (msg.reply) {
-        replyHTML = `<div class="reply-quote"> Replying to <b>@${escapeHtml(msg.reply.author)}</b>: "${escapeHtml(msg.reply.text)}"</div>`;
-      }
-
       div.innerHTML = `
         <img class="avatar-sm" src="${msg.avatar}" />
         <div class="msg-content">
-          ${replyHTML}
           <div class="msg-header">
             <span class="msg-author">${escapeHtml(msg.author)}</span>
             <span class="msg-timestamp">${msg.timestamp}</span>
           </div>
           <div>${escapeHtml(msg.text)}</div>
-        </div>
-        <div class="msg-actions">
-          <button class="msg-action-btn" onclick="setReply('${escapeHtml(msg.author)}', '${escapeHtml(msg.text)}')">Reply</button>
         </div>
       `;
 
@@ -487,102 +357,9 @@
       view.scrollTop = view.scrollHeight;
     }
 
-    function setReply(author, text) {
-      activeReply = { author, text };
-      document.getElementById('replyBannerText').textContent = `Replying to @${author}`;
-      document.getElementById('replyBanner').style.display = 'flex';
-    }
-
-    function cancelReply() {
-      activeReply = null;
-      document.getElementById('replyBanner').style.display = 'none';
-    }
-
-    function switchChannel(chan) {
-      activeChannel = chan;
-      document.querySelectorAll('.channel-item, .dm-item').forEach(el => el.classList.remove('active'));
-      const activeEl = document.getElementById(`chan-${chan}`);
-      if (activeEl) activeEl.classList.add('active');
-      document.getElementById('chatTitle').textContent = `# ${chan}`;
-      document.getElementById('messagesView').innerHTML = '';
-    }
-
     function updateUserFooter() {
       document.getElementById('userNameFooter').textContent = user.name;
       document.getElementById('userAvatarFooter').src = user.avatar;
-      document.getElementById('userAvatarWrapper').className = `avatar-wrapper ${user.animation}`;
-      document.getElementById('callUserAvatar').src = user.avatar;
-      document.getElementById('callUserName').textContent = user.name;
-    }
-
-    function toggleSettings(show) {
-      document.getElementById('fullscreenSettings').style.display = show ? 'block' : 'none';
-      if (show) {
-        document.getElementById('editNameInput').value = user.name;
-        document.getElementById('editStatusInput').value = user.status;
-        document.getElementById('editBioInput').value = user.bio;
-        document.getElementById('editBannerInput').value = user.banner;
-        document.getElementById('editAnimSelect').value = user.animation;
-      }
-    }
-
-    function switchSettingsTab(tab) {
-      document.querySelectorAll('.settings-nav-item').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.settings-section').forEach(el => el.classList.remove('active'));
-      
-      event.target.classList.add('active');
-      document.getElementById(`tab-${tab}`).classList.add('active');
-    }
-
-    function updateProfilePreview() {
-      const name = document.getElementById('editNameInput').value || user.name;
-      const status = document.getElementById('editStatusInput').value || user.status;
-      const bio = document.getElementById('editBioInput').value || user.bio;
-      const banner = document.getElementById('editBannerInput').value || user.banner;
-
-      document.getElementById('previewName').textContent = name;
-      document.getElementById('previewStatus').textContent = status;
-      document.getElementById('previewBio').textContent = bio;
-      document.getElementById('previewBanner').style.backgroundColor = banner;
-      document.getElementById('previewAvatar').src = user.avatar;
-    }
-
-    function saveSettings() {
-      user.name = document.getElementById('editNameInput').value || user.name;
-      user.status = document.getElementById('editStatusInput').value;
-      user.bio = document.getElementById('editBioInput').value;
-      user.banner = document.getElementById('editBannerInput').value;
-      user.animation = document.getElementById('editAnimSelect').value;
-
-      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
-      updateUserFooter();
-      announcePresence();
-      toggleSettings(false);
-    }
-
-    function applyTheme(theme) {
-      user.theme = theme;
-      document.body.className = `theme-${theme}`;
-      localStorage.setItem('gngChatUserPro', JSON.stringify(user));
-    }
-
-    function buildEmojiPicker() {
-      const menu = document.getElementById('emojiMenu');
-      emojis.forEach(e => {
-        const span = document.createElement('span');
-        span.className = 'emoji-item';
-        span.textContent = e;
-        span.onclick = () => {
-          document.getElementById('chatInput').value += e;
-          menu.style.display = 'none';
-        };
-        menu.appendChild(span);
-      });
-    }
-
-    function toggleEmojiPicker() {
-      const menu = document.getElementById('emojiMenu');
-      menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
     }
 
     function promptPanelAccess() {
@@ -596,11 +373,6 @@
 
     function togglePanel(show) {
       document.getElementById('panelModal').style.display = show ? 'flex' : 'none';
-    }
-
-    function triggerBotCall() {
-      togglePanel(false);
-      startCallTarget('Bot');
     }
 
     function testBanSelf() {
